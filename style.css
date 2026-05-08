@@ -568,3 +568,20 @@ body {
     color: #024950;
     font-weight: 600;
 }
+
+/* Spotlight Hover Effect */
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(
+        600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+        rgba(15, 164, 175, 0.15),
+        transparent 40%
+    );
+    pointer-events: none;
+    z-index: 9999;
+}

@@ -159,26 +159,88 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    const slides = document.querySelectorAll('.slide');
-    let currentSlide = 0;
+/* about.js — interactions for the About page */
 
-    if (slides.length === 0) return;
+// ── Mobile nav toggle ─────────────────────────
+const hamburger = document.getElementById('hamburger');
+const navLinks  = document.getElementById('nav-links');
 
-    function nextSlide() {
-        // Remove active class from current slide
-        slides[currentSlide].classList.remove('active');
-        
-        // Move to the next slide, looping back to 0 at the end
-        currentSlide = (currentSlide + 1) % slides.length;
-        
-        // Add active class to new slide
-        slides[currentSlide].classList.add('active');
+if (hamburger && navLinks) {
+  hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+  });
+  navLinks.querySelectorAll('a').forEach(a =>
+    a.addEventListener('click', () => navLinks.classList.remove('open'))
+  );
+}
+
+// ── Scroll-reveal ─────────────────────────────
+const revealObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        // Stagger siblings inside the same parent
+        const siblings = entry.target.parentElement.querySelectorAll('.reveal');
+        siblings.forEach((el, idx) => {
+          el.style.transitionDelay = `${idx * 80}ms`;
+        });
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.12, rootMargin: '0px 0px -48px 0px' }
+);
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ── Parallax hero orbs on mouse move ─────────
+const hero = document.getElementById('hero');
+if (hero) {
+  hero.addEventListener('mousemove', (e) => {
+    const { innerWidth: w, innerHeight: h } = window;
+    const dx = (e.clientX / w - 0.5) * 18;
+    const dy = (e.clientY / h - 0.5) * 18;
+    document.querySelectorAll('.hero-orb').forEach((orb, i) => {
+      const factor = (i + 1) * 0.6;
+      orb.style.transform = `translate(${dx * factor}px, ${dy * factor}px)`;
+    });
+  });
+}
+
+// ── Stat counter animation ─────────────────────
+function animateCounter(el) {
+  const target = el.dataset.target;
+  const isNum  = /^\d+$/.test(target);
+  if (!isNum) return; // skip labels like "PK-Wide"
+
+  let start = 0;
+  const end = parseInt(target, 10);
+  const duration = 1400;
+  const startTime = performance.now();
+
+  function step(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+    el.textContent = Math.floor(eased * end).toLocaleString();
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = end.toLocaleString() + (el.dataset.suffix || '');
+  }
+  requestAnimationFrame(step);
+}
+
+const statNums = document.querySelectorAll('.stat-num');
+const statObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateCounter(entry.target);
+      statObserver.unobserve(entry.target);
     }
+  });
+}, { threshold: 0.5 });
 
-    // Change slide every 1 second (1000 milliseconds)
-    setInterval(nextSlide, 1000);
-});
+statNums.forEach(el => statObserver.observe(el));
 
 // Spotlight Hover Effect
 document.addEventListener('mousemove', (e) => {
@@ -230,5 +292,120 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('a, button, input, select, textarea, .ff-card, .pillar-card, .info-card, .form-card, .social-btn').forEach(el => {
         el.addEventListener('mouseenter', addHover);
         el.addEventListener('mouseleave', removeHover);
+    });
+});
+
+/* ── Carousel Logic (2D Staggered Demo Layout) ── */
+document.addEventListener('DOMContentLoaded', () => {
+    const cards = Array.from(document.querySelectorAll('.perfume-card'));
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    let currentIndex = 2; // Center card index initially
+    const totalCards = cards.length;
+
+    function updateCarousel() {
+        cards.forEach((card, i) => {
+            // Remove existing classes
+            card.classList.remove('card-center', 'card-inner', 'card-outer');
+            
+            // Re-apply classes based on distance from currentIndex
+            let diff = i - currentIndex;
+            
+            // Handle wrapping
+            if (diff > 2) diff -= totalCards;
+            if (diff < -2) diff += totalCards;
+
+            if (diff === 0) {
+                card.classList.add('card-center');
+                // Ensure only the center card has an h1 and "Buy Now"
+                const title = card.querySelector('h1, h2');
+                if (title) {
+                    title.outerHTML = `<h1>${title.textContent}</h1>`;
+                }
+                const btn = card.querySelector('button');
+                if (btn) {
+                    btn.className = 'buy-now-btn';
+                    btn.textContent = 'Buy Now';
+                }
+                // Add center-rays if not present
+                if (!card.querySelector('.center-rays')) {
+                    const rays = document.createElement('div');
+                    rays.className = 'center-rays';
+                    card.insertBefore(rays, card.firstChild);
+                }
+            } else if (Math.abs(diff) === 1) {
+                card.classList.add('card-inner');
+                // Ensure side cards have h2 and "Buy"
+                const title = card.querySelector('h1, h2');
+                if (title) {
+                    title.outerHTML = `<h2>${title.textContent}</h2>`;
+                }
+                const btn = card.querySelector('button');
+                if (btn) {
+                    btn.className = 'buy-btn';
+                    btn.textContent = 'Buy';
+                }
+                // Remove center-rays if present
+                const rays = card.querySelector('.center-rays');
+                if (rays) card.removeChild(rays);
+            } else if (Math.abs(diff) === 2) {
+                card.classList.add('card-outer');
+                // Ensure side cards have h2 and "Buy"
+                const title = card.querySelector('h1, h2');
+                if (title) {
+                    title.outerHTML = `<h2>${title.textContent}</h2>`;
+                }
+                const btn = card.querySelector('button');
+                if (btn) {
+                    btn.className = 'buy-btn';
+                    btn.textContent = 'Buy';
+                }
+                // Remove center-rays if present
+                const rays = card.querySelector('.center-rays');
+                if (rays) card.removeChild(rays);
+            }
+        });
+    }
+
+    nextBtn.addEventListener('click', () => {
+        currentIndex = (currentIndex + 1) % totalCards;
+        updateCarousel();
+    });
+
+    prevBtn.addEventListener('click', () => {
+        currentIndex = (currentIndex - 1 + totalCards) % totalCards;
+        updateCarousel();
+    });
+
+    cards.forEach((card, idx) => {
+        card.addEventListener('click', () => {
+            if (currentIndex !== idx) {
+                currentIndex = idx;
+                updateCarousel();
+            }
+        });
+    });
+
+    // Initialize
+    updateCarousel();
+
+    // Mobile nav toggle
+    const hamburger = document.getElementById('hamburger');
+    const navLinks  = document.getElementById('nav-links');
+
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('open');
+        });
+        navLinks.querySelectorAll('a').forEach(a =>
+            a.addEventListener('click', () => navLinks.classList.remove('open'))
+        );
+    }
+
+    // Spotlight Hover Effect
+    document.addEventListener('mousemove', (e) => {
+        document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+        document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
     });
 });
