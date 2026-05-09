@@ -26,49 +26,30 @@ body {
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
-/* Background Slider */
-.background-slider {
+/* Hero background video */
+.hero-video-wrap {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     z-index: 1;
+    overflow: hidden;
+    background: #000;
 }
 
-.slide {
-    position: absolute;
-    top: 0;
-    left: 0;
+.hero-video {
+    display: block;
     width: 100%;
     height: 100%;
-    background-size: cover;
-    background-position: center;
-    opacity: 0;
-    transition: opacity 0.8s ease-in-out, transform 4s ease-out; /* Slight zoom effect for premium feel */
-    transform: scale(1.05);
+    object-fit: cover;
+    object-position: center;
 }
 
-.slide.active {
-    opacity: 1;
-    transform: scale(1);
-}
-
-/* Dark Overlay */
-.overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* Gradient with teal accent for premium feel */
-    background: linear-gradient(
-        to bottom, 
-        rgba(2, 73, 80, 0.25) 0%, 
-        rgba(2, 73, 80, 0.4) 50%, 
-        rgba(2, 73, 80, 0.6) 100%
-    );
-    z-index: 2;
+@media (prefers-reduced-motion: reduce) {
+    .hero-video {
+        display: none;
+    }
 }
 
 .content-container {
@@ -263,8 +244,9 @@ body {
 
 /* Featured Fragrances Section */
 .featured-fragrances {
+    --ff-section-bg: #D8C3A5;
     padding: 80px 48px 120px;
-    background-color: #D8C3A5;
+    background-color: var(--ff-section-bg);
     text-align: center;
     width: 100%;
 }
@@ -301,19 +283,64 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     margin-bottom: 24px;
-    border: 1px solid rgba(0,0,0,0.05);
+    border: none;
+    /* Soft rim + beige bloom so colored panels merge into section background */
+    box-shadow:
+        0 14px 42px rgba(2, 52, 58, 0.12),
+        0 0 0 1px rgba(216, 195, 165, 0.35),
+        0 0 48px 26px rgba(216, 195, 165, 0.55);
 }
 
-.ff-card:nth-child(1) .ff-img-container { background-color: #024950; }
-.ff-card:nth-child(2) .ff-img-container { background-color: #0FA4AF; }
-.ff-card:nth-child(3) .ff-img-container { background-color: #8E8D8A; }
-.ff-card:nth-child(4) .ff-img-container { background-color: #6b8a8d; }
+/* Radial fade: rich color in the center → section beige at the edges */
+.ff-card:nth-child(1) .ff-img-container {
+    background: radial-gradient(
+        ellipse 125% 118% at 50% 44%,
+        #024950 0%,
+        #024950 50%,
+        rgba(2, 73, 80, 0.88) 72%,
+        rgba(216, 195, 165, 0.5) 88%,
+        var(--ff-section-bg) 100%
+    );
+}
+
+.ff-card:nth-child(2) .ff-img-container {
+    background: radial-gradient(
+        ellipse 125% 118% at 50% 44%,
+        #0FA4AF 0%,
+        #0FA4AF 48%,
+        rgba(15, 164, 175, 0.82) 70%,
+        rgba(216, 195, 165, 0.52) 88%,
+        var(--ff-section-bg) 100%
+    );
+}
+
+.ff-card:nth-child(3) .ff-img-container {
+    background: radial-gradient(
+        ellipse 125% 118% at 50% 44%,
+        #8E8D8A 0%,
+        #8E8D8A 48%,
+        rgba(142, 141, 138, 0.82) 70%,
+        rgba(216, 195, 165, 0.52) 88%,
+        var(--ff-section-bg) 100%
+    );
+}
+
+.ff-card:nth-child(4) .ff-img-container {
+    background: radial-gradient(
+        ellipse 125% 118% at 50% 44%,
+        #6b8a8d 0%,
+        #6b8a8d 48%,
+        rgba(107, 138, 141, 0.82) 70%,
+        rgba(216, 195, 165, 0.52) 88%,
+        var(--ff-section-bg) 100%
+    );
+}
 
 .ff-img-container img {
     height: 100%;
     object-fit: contain;
+    border-radius: 14px;
     filter: drop-shadow(10px 10px 15px rgba(0,0,0,0.2));
 }
 
@@ -569,14 +596,11 @@ body {
     font-weight: 600;
 }
 
-/* Spotlight Hover Effect */
+/* Spotlight hover — use inset, not 100vw (vw ignores scrollbar → horizontal overflow) */
 body::after {
     content: "";
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+    inset: 0;
     background: radial-gradient(
         600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
         rgba(15, 164, 175, 0.15),

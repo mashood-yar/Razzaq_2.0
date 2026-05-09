@@ -539,54 +539,7 @@ cite {
 }
 .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
 
-/* ── Footer ───────────────────────────────────── */
-.footer { border-top: 1px solid rgba(2, 73, 80, 0.1); background: rgba(234, 231, 220, 0.8); }
-.footer-inner {
-  max-width: 1200px; margin: 0 auto;
-  padding: 60px 52px 40px;
-  display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px;
-}
-@media (max-width: 768px) {
-  .footer-inner { grid-template-columns: 1fr 1fr; padding: 48px 24px 32px; }
-}
-@media (max-width: 480px) { .footer-inner { grid-template-columns: 1fr; } }
-.footer-logo {
-  font-family: 'Cormorant Garamond', serif; font-style: italic;
-  font-size: 22px; font-weight: 400; color: var(--gold);
-  letter-spacing: 0.04em; margin-bottom: 10px;
-}
-.footer-tagline {
-  font-size: 12px; color: var(--noir);
-  font-weight: 300; line-height: 1.6; max-width: 260px;
-}
-.footer-group-title {
-  font-size: 9px; letter-spacing: 0.3em;
-  text-transform: uppercase; color: var(--gold);
-  font-weight: 400; margin-bottom: 16px;
-}
-.footer-links-group ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-.footer-links-group a {
-  text-decoration: none; font-size: 12.5px;
-  color: var(--noir); font-weight: 300;
-  transition: color 0.2s;
-}
-.footer-links-group a:hover { color: var(--gold); }
-.footer-bottom {
-  border-top: 1px solid rgba(234,231,220,0.07);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 18px 52px; max-width: 1200px; margin: 0 auto;
-}
-@media (max-width: 640px) {
-  .footer-bottom { padding: 18px 24px; flex-direction: column; gap: 8px; text-align: center; }
-}
-.footer-bottom p { font-size: 11px; color: var(--noir); font-weight: 300; letter-spacing: 0.04em; }
-.footer-help {
-  font-size: 11px; color: var(--gold); text-decoration: none;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  border-bottom: 1px solid rgba(15,164,175,0.35); padding-bottom: 1px;
-  transition: opacity 0.2s;
-}
-.footer-help:hover { opacity: 0.7; }
+/* Footer: footer-global.css */
 
 /* Spotlight Hover Effect */
 body::after {
