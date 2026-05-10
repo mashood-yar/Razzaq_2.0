@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | Razzaq Luxe</title>
+  <meta name="description" content="Shipping & payment — secure checkout demo for Razzaq Luxe.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="site-shell.css">
+  <link rel="stylesheet" href="checkout-flow.css">
+  <link rel="stylesheet" href="footer-global.css">
+</head>
+<body>
+  <a class="shell-skip" href="#checkout-main">Skip to checkout</a>
+
+  <header class="phase1-header">
+    <div class="announcement-bar">
+      <div class="announcement-track">
+        <span>Free Delivery on Orders Above PKR 2,500</span><span class="sep">·</span>
+        <span>Authentic Luxury Fragrances</span><span class="sep">·</span>
+        <span>Cash on Delivery Across Pakistan</span><span class="sep">·</span>
+        <span>Free Delivery on Orders Above PKR 2,500</span><span class="sep">·</span>
+        <span>Authentic Luxury Fragrances</span><span class="sep">·</span>
+        <span>Cash on Delivery Across Pakistan</span><span class="sep">·</span>
+      </div>
+    </div>
+    <nav class="phase1-nav" aria-label="Primary">
+      <a href="index.html" class="logo" aria-label="Razzaq Luxe — home"><span class="logo-text">Razzaq Luxe</span></a>
+      <div class="phase1-nav-links">
+        <a href="index.html">Home</a>
+        <a href="collections.html">Collections</a>
+        <a href="fragrances.html">Shop</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="policies.html">Policies</a>
+      </div>
+      <div class="phase1-nav-actions">
+        <a href="login.html" class="nav-account">Account</a>
+        <div class="divider" aria-hidden="true"></div>
+        <a href="cart.html" class="cart-btn" aria-label="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="checkout-main" class="shell-main shell-main--checkout" tabindex="-1">
+    <div class="checkout-page-inner">
+      <div class="checkout-intro">
+        <p class="shell-page-eyebrow">Checkout</p>
+        <p class="shell-lead">Secure demo — no real payment is processed. Orders are stored in your browser session only.</p>
+      </div>
+
+      <div id="checkout-empty" class="shell-card">
+        <p>Your cart is empty.</p>
+        <p style="margin-top:16px;">
+          <a class="shell-btn" href="fragrances.html">Continue shopping</a>
+        </p>
+      </div>
+
+      <div id="checkout-flow" class="checkout-layout" hidden>
+        <div class="checkout-form-panel">
+          <form id="checkout-form" novalidate>
+            <h1 class="checkout-h1">Checkout</h1>
+
+            <ol class="checkout-stepper" aria-label="Checkout progress">
+              <li id="step-label-1" class="checkout-stepper-item is-active">Information</li>
+              <li id="step-label-2" class="checkout-stepper-item">Payment</li>
+              <li id="step-label-3" class="checkout-stepper-item">Complete Order</li>
+            </ol>
+
+            <!-- Step 1: Information -->
+            <div id="step-panel-1" class="checkout-step-panel" data-step="1">
+              <div class="co-field-row co-field-row--2">
+                <div class="co-field">
+                  <label class="co-label" for="ship-name">Name</label>
+                  <input class="co-input" id="ship-name" name="name" required autocomplete="name" placeholder="Full name">
+                </div>
+                <div class="co-field">
+                  <label class="co-label" for="ship-phone">Phone No</label>
+                  <input class="co-input" id="ship-phone" name="phone" type="tel" autocomplete="tel" required placeholder="+92 …">
+                </div>
+              </div>
+              <div class="co-field">
+                <label class="co-label" for="ship-email">Email Address</label>
+                <input class="co-input" id="ship-email" name="email" type="email" required autocomplete="email" placeholder="you@example.com">
+              </div>
+              <div class="co-field">
+                <label class="co-label" for="ship-address">Delivery Address</label>
+                <textarea class="co-textarea" id="ship-address" name="address" rows="3" required autocomplete="street-address" placeholder="Street, area, landmark"></textarea>
+              </div>
+              <div class="co-field-row co-field-row--2">
+                <div class="co-field">
+                  <label class="co-label" for="ship-postal">Postal Code</label>
+                  <input class="co-input" id="ship-postal" name="postal" inputmode="numeric" autocomplete="postal-code" placeholder="54000">
+                </div>
+                <div class="co-field">
+                  <label class="co-label" for="ship-state">State</label>
+                  <input class="co-input" id="ship-state" name="state" required autocomplete="address-level1" placeholder="Province / region">
+                </div>
+              </div>
+              <div class="co-field">
+                <label class="co-label" for="ship-note">Note <span style="font-weight:400;color:#9ca3af;">(Optional)</span></label>
+                <textarea class="co-textarea" id="ship-note" name="note" rows="2" placeholder="Delivery instructions"></textarea>
+              </div>
+            </div>
+
+            <!-- Step 2: Payment -->
+            <div id="step-panel-2" class="checkout-step-panel" data-step="2" hidden>
+              <div class="co-pay-hint" role="note">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                <span>Cash on delivery, demo card, or pay via bank transfer / Upaisa — details below.</span>
+              </div>
+
+              <div class="co-pay-tabs" role="tablist" aria-label="Payment method">
+                <button type="button" class="co-pay-tab is-active" role="tab" id="tab-cod" aria-selected="true" data-pay-panel="pay-cod">Cash on delivery</button>
+                <button type="button" class="co-pay-tab" role="tab" id="tab-card" aria-selected="false" data-pay-panel="pay-card">Credit / Debit card</button>
+              </div>
+
+              <div id="pay-cod" class="co-pay-panel" role="tabpanel" aria-labelledby="tab-cod">
+                <p style="font-size:14px;color:#4b5563;line-height:1.6;margin:0;">Pay when your order arrives. Our courier will confirm the amount before handing over your parcel.</p>
+                <input type="hidden" id="pay-method" name="pay-method" value="cod">
+              </div>
+
+              <div id="pay-card" class="co-pay-panel" role="tabpanel" aria-labelledby="tab-card" hidden>
+                <div class="co-field">
+                  <label class="co-label" for="card-num">Card number</label>
+                  <input class="co-input" id="card-num" inputmode="numeric" autocomplete="cc-number" placeholder="4242 4242 4242 4242">
+                </div>
+                <div class="co-field-row co-field-row--2">
+                  <div class="co-field">
+                    <label class="co-label" for="card-exp">Expiry</label>
+                    <input class="co-input" id="card-exp" autocomplete="cc-exp" placeholder="MM / YY">
+                  </div>
+                  <div class="co-field">
+                    <label class="co-label" for="card-cvv">CVV</label>
+                    <input class="co-input" id="card-cvv" inputmode="numeric" autocomplete="cc-csc" placeholder="123" maxlength="4">
+                  </div>
+                </div>
+                <div class="co-field">
+                  <label class="co-label" for="card-name">Name on card</label>
+                  <input class="co-input" id="card-name" autocomplete="cc-name" placeholder="As on card">
+                </div>
+              </div>
+
+              <div class="co-bank-details" aria-labelledby="co-bank-heading">
+                <h3 class="co-bank-details__title" id="co-bank-heading">Bank transfer</h3>
+                <p class="co-bank-details__intro">Pay directly to our Bank Islami account. Include your order reference in the transfer note when possible.</p>
+                <dl class="co-bank-details__list">
+                  <div class="co-bank-details__row">
+                    <dt>Title</dt>
+                    <dd>BASHIR AHMED</dd>
+                  </div>
+                  <div class="co-bank-details__row">
+                    <dt>Bank name</dt>
+                    <dd>Bank Islami</dd>
+                  </div>
+                  <div class="co-bank-details__row">
+                    <dt>Account no.</dt>
+                    <dd><span class="co-bank-details__mono">103100660870001</span></dd>
+                  </div>
+                  <div class="co-bank-details__row">
+                    <dt>IBAN</dt>
+                    <dd><span class="co-bank-details__mono">PK43BKIP0103100660870001</span></dd>
+                  </div>
+                </dl>
+                <h3 class="co-bank-details__subtitle">Upaisa</h3>
+                <p class="co-bank-details__upaisa"><span class="co-bank-details__mono">03332361713</span></p>
+              </div>
+            </div>
+
+            <!-- Step 3: Review -->
+            <div id="step-panel-3" class="checkout-step-panel" data-step="3" hidden>
+              <dl class="co-review-block" id="review-shipping"></dl>
+              <dl class="co-review-block" id="review-payment"></dl>
+              <p style="font-size:13px;color:#6b7280;margin:0;">By placing your order you agree to our store policies. This remains a demo checkout.</p>
+            </div>
+
+            <div class="co-actions">
+              <button type="button" class="co-btn-ghost" id="checkout-back" hidden>Back</button>
+              <button type="button" class="co-btn-primary" id="checkout-next">Proceed</button>
+              <button type="submit" class="co-btn-primary" id="checkout-submit" hidden>Place order</button>
+            </div>
+          </form>
+        </div>
+
+        <aside class="checkout-side-panel" aria-label="Order summary">
+          <h2 class="checkout-side-title">Your cart</h2>
+          <div class="checkout-side-cart">
+            <div id="checkout-items"></div>
+          </div>
+          <div class="checkout-price-details">
+            <div class="co-price-row"><span>Items</span><span id="checkout-subtotal">Rs.0</span></div>
+            <div class="co-price-row co-price-row--muted" id="checkout-discount-row" hidden><span>Discount</span><span id="checkout-discount">−Rs.0</span></div>
+            <div class="co-price-row"><span>Shipping</span><span id="checkout-shipping">Rs.200</span></div>
+            <div class="co-discount-row">
+              <input type="text" id="discount-code" placeholder="Discount code" autocomplete="off" aria-label="Discount code">
+              <button type="button" class="co-apply-btn" id="discount-apply">Apply</button>
+            </div>
+            <p class="co-discount-msg" id="discount-msg" aria-live="polite"></p>
+            <div class="co-price-row co-price-row--total"><span>Total</span><span id="checkout-total">Rs.0</span></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+      <footer class="site-footer">
+      <div class="site-footer__media" aria-hidden="true">
+        <video class="site-footer__video" src="assets/footer-bg.mp4" autoplay muted loop playsinline preload="metadata"></video>
+      </div>
+      <div class="site-footer__panel">
+        <div class="site-footer__inner">
+          <div class="site-footer__brand">
+            <p class="site-footer__name">Razzaq Luxe</p>
+            <p class="site-footer__tagline">Wear the Royalty — luxury fragrances rooted in Arabian elegance.</p>
+          </div>
+          <nav class="site-footer__nav" aria-label="Explore">
+            <p class="site-footer__heading">Explore</p>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="collections.html">Collections</a></li>
+              <li><a href="fragrances.html">Shop</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="contact.html">Contact</a></li>
+              <li><a href="track-order.html">Track order</a></li>
+              <li><a href="policies.html">Policies</a></li>
+            </ul>
+          </nav>
+          <div class="site-footer__follow">
+            <p class="site-footer__heading">Follow</p>
+            <div class="site-footer__social">
+              <a class="site-footer__social-btn site-footer__social-btn--ig" href="https://www.instagram.com/razzaqluxe/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="5" ry="5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.25" fill="currentColor"/></svg>
+              </a>
+              <a class="site-footer__social-btn site-footer__social-btn--tt" href="https://www.tiktok.com/@razzaqluxe" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48.01 2.96.02 4.44-.9-.24-1.92-.29-2.77.09-1.09.47-1.87 1.42-2.18 2.55-.18.63-.15 1.31-.05 1.95.23 1.45 1.33 2.78 2.74 3.22 1.05.36 2.22.18 3.15-.38 1.04-.65 1.68-1.83 1.82-3.01.05-.39.05-.79.05-1.19V.02h-.01z"/></svg>
+              </a>
+              <a class="site-footer__social-btn site-footer__social-btn--fb" href="https://www.facebook.com/razzaqluxe" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </a>
+              <a class="site-footer__social-btn site-footer__social-btn--wa" href="https://wa.me/923332361713" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.237-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.884 9.884"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="site-footer__legal">
+          <p>© 2026 Razzaq Luxe. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+<a href="https://wa.me/923332361713" class="footer-fab footer-fab--whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.237-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.884 9.884"/></svg></a>
+
+  <script src="js/config.js"></script>
+  <script src="js/integrations.js"></script>
+  <script src="js/order-remote.js"></script>
+  <script src="checkout.js"></script>
+</body>
+</html>

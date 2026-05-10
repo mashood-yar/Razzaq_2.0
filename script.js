@@ -1,10 +1,15 @@
-// Custom Cursor JS
+// Page transitions, optional custom cursor (fine pointer + motion OK), spotlight coords
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Page Transition Logic ---
-    if (!document.getElementById('page-transition-style')) {
-        const transitionStyle = document.createElement('style');
-        transitionStyle.id = 'page-transition-style';
-        transitionStyle.textContent = `
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const finePointer = window.matchMedia('(pointer: fine)').matches;
+    const useCustomCursor = !reducedMotion && finePointer;
+
+    /* --- Page transition --- */
+    if (!reducedMotion) {
+        if (!document.getElementById('page-transition-style')) {
+            const transitionStyle = document.createElement('style');
+            transitionStyle.id = 'page-transition-style';
+            transitionStyle.textContent = `
           #page-transition {
             position: fixed;
             top: 0;
@@ -29,52 +34,59 @@ document.addEventListener('DOMContentLoaded', () => {
             transform: translateY(0);
           }
         `;
-        document.head.appendChild(transitionStyle);
-    }
+            document.head.appendChild(transitionStyle);
+        }
 
-    if (!document.getElementById('page-transition')) {
-        const transitionEl = document.createElement('div');
-        transitionEl.id = 'page-transition';
-        document.body.appendChild(transitionEl);
+        if (!document.getElementById('page-transition')) {
+            const transitionEl = document.createElement('div');
+            transitionEl.id = 'page-transition';
+            document.body.appendChild(transitionEl);
 
-        // Animate out on load (reveal the page)
-        requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-                transitionEl.classList.add('reveal');
+                requestAnimationFrame(() => {
+                    transitionEl.classList.add('reveal');
+                });
             });
-        });
 
-        // Animate in on link click (cover the page)
-        document.addEventListener('click', (e) => {
-            const link = e.target.closest('a');
-            if (link && link.href && !link.hasAttribute('target') && !link.href.includes('#') && link.hostname === window.location.hostname) {
-                e.preventDefault();
-                
-                // Reset to bottom
-                transitionEl.classList.remove('reveal');
-                transitionEl.classList.add('cover');
-                
-                // Force reflow
-                void transitionEl.offsetWidth;
-                
-                // Animate up to cover
-                transitionEl.classList.add('active');
-                
-                setTimeout(() => {
-                    window.location.href = link.href;
-                }, 600);
-            }
-        });
+            document.addEventListener('click', (e) => {
+                const link = e.target.closest('a');
+                if (
+                    link &&
+                    link.href &&
+                    !link.hasAttribute('target') &&
+                    !link.href.includes('#') &&
+                    link.hostname === window.location.hostname
+                ) {
+                    e.preventDefault();
+
+                    transitionEl.classList.remove('reveal');
+                    transitionEl.classList.add('cover');
+
+                    void transitionEl.offsetWidth;
+
+                    transitionEl.classList.add('active');
+
+                    setTimeout(() => {
+                        window.location.href = link.href;
+                    }, 600);
+                }
+            });
+        }
     }
 
-    // Add CSS dynamically
+    /* --- Custom cursor + card hover polish (matches ui-ux-pro-max: motion only) --- */
     if (!document.getElementById('hover-effect-style')) {
         const style = document.createElement('style');
         style.id = 'hover-effect-style';
-        style.textContent = `
-        body, a, button, input, select, textarea, .ff-card, .pillar-card, .info-card, .form-card, .social-btn {
+        const hideSystemCursor =
+            useCustomCursor ?
+                `body, a, button, input, select, textarea, .pillar-card, .info-card, .form-card, .social-btn {
             cursor: none !important;
-        }
+        }`
+            :   '';
+
+        style.textContent = `
+        ${hideSystemCursor}
         .custom-cursor {
             position: fixed;
             top: 0;
@@ -92,17 +104,16 @@ document.addEventListener('DOMContentLoaded', () => {
             height: 0px;
         }
 
-        /* Global Content Hover Glow */
-        .ff-card, .pillar-card, .info-card, .form-card, .stat-item, .story-img-wrap, .glass-card {
+        .pillar-card, .info-card, .form-card, .stat-item, .story-img-wrap, .glass-card {
             position: relative;
             z-index: 1;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 240ms cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 240ms cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-        .ff-card:hover, .pillar-card:hover, .info-card:hover, .form-card:hover, .stat-item:hover, .story-img-wrap:hover, .glass-card:hover {
+        .pillar-card:hover, .info-card:hover, .form-card:hover, .stat-item:hover, .story-img-wrap:hover, .glass-card:hover {
             transform: translateY(-4px) scale(1.01);
             box-shadow: 0 16px 40px rgba(15, 164, 175, 0.15);
         }
-        .ff-card::after, .pillar-card::after, .info-card::after, .form-card::after, .glass-card::after {
+        .pillar-card::after, .info-card::after, .form-card::after, .glass-card::after {
             content: "";
             position: absolute;
             inset: 0;
@@ -112,123 +123,91 @@ document.addEventListener('DOMContentLoaded', () => {
                 transparent 40%
             ) fixed;
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: opacity 240ms ease;
             pointer-events: none;
             z-index: 10;
             border-radius: inherit;
         }
-        .ff-card:hover::after, .pillar-card:hover::after, .info-card:hover::after, .form-card:hover::after, .glass-card:hover::after {
+        .pillar-card:hover::after, .info-card:hover::after, .form-card:hover::after, .glass-card:hover::after {
             opacity: 1;
         }
         `;
         document.head.appendChild(style);
     }
 
-    const cursor = document.createElement('div');
-    cursor.classList.add('custom-cursor');
-    document.body.appendChild(cursor);
+    if (useCustomCursor) {
+        const cursor = document.createElement('div');
+        cursor.classList.add('custom-cursor');
+        document.body.appendChild(cursor);
 
-    let mouseX = 0, mouseY = 0;
-    let cursorX = 0, cursorY = 0;
+        let mouseX = 0,
+            mouseY = 0;
+        let cursorX = 0,
+            cursorY = 0;
 
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-    });
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
 
-    function loop() {
-        cursorX += (mouseX - cursorX) * 0.5;
-        cursorY += (mouseY - cursorY) * 0.5;
-        
-        cursor.style.transform = `translate(${cursorX - 4}px, ${cursorY - 4}px)`;
-        
+        function loop() {
+            cursorX += (mouseX - cursorX) * 0.5;
+            cursorY += (mouseY - cursorY) * 0.5;
+
+            cursor.style.transform = `translate(${cursorX - 4}px, ${cursorY - 4}px)`;
+
+            requestAnimationFrame(loop);
+        }
         requestAnimationFrame(loop);
+
+        const addHover = () => cursor.classList.add('hover');
+        const removeHover = () => cursor.classList.remove('hover');
+
+        document.querySelectorAll('a, button, input, select, textarea, .pillar-card, .info-card, .form-card, .social-btn').forEach((el) => {
+            el.addEventListener('mouseenter', addHover);
+            el.addEventListener('mouseleave', removeHover);
+        });
     }
-    requestAnimationFrame(loop);
 
-    const addHover = () => {
-        cursor.classList.add('hover');
-    };
-    const removeHover = () => {
-        cursor.classList.remove('hover');
-    };
+    /* --- Hero rotating headline word (index) --- */
+    const heroRotatingWordEl = document.getElementById('hero-rotating-word');
+    if (heroRotatingWordEl) {
+        const words = ['Scents.', 'Perfumes.', 'Fragrances.'];
+        let wordIndex = 0;
 
-    document.querySelectorAll('a, button, input, select, textarea, .ff-card, .pillar-card, .info-card, .form-card, .social-btn').forEach(el => {
-        el.addEventListener('mouseenter', addHover);
-        el.addEventListener('mouseleave', removeHover);
-    });
-});
+        if (reducedMotion) {
+            heroRotatingWordEl.textContent = words[0];
+        } else {
+            const cycleMs = 1400;
+            const fadeMs = 420;
 
-document.addEventListener('DOMContentLoaded', () => {
+            window.setInterval(() => {
+                heroRotatingWordEl.classList.add('hero-rotating-word--hide');
+                window.setTimeout(() => {
+                    wordIndex = (wordIndex + 1) % words.length;
+                    heroRotatingWordEl.textContent = words[wordIndex];
+                    heroRotatingWordEl.classList.remove('hero-rotating-word--hide');
+                }, fadeMs);
+            }, cycleMs);
+        }
+    }
+
+    /* --- Hero / carousel slides (other pages) --- */
     const slides = document.querySelectorAll('.slide');
-    let currentSlide = 0;
+    if (slides.length > 0 && !reducedMotion) {
+        let currentSlide = 0;
 
-    if (slides.length === 0) return;
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
 
-    function nextSlide() {
-        // Remove active class from current slide
-        slides[currentSlide].classList.remove('active');
-        
-        // Move to the next slide, looping back to 0 at the end
-        currentSlide = (currentSlide + 1) % slides.length;
-        
-        // Add active class to new slide
-        slides[currentSlide].classList.add('active');
+        setInterval(nextSlide, 1000);
     }
-
-    // Change slide every 1 second (1000 milliseconds)
-    setInterval(nextSlide, 1000);
 });
 
-// Spotlight Hover Effect
 document.addEventListener('mousemove', (e) => {
     document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
     document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
-});
-
-// Custom Cursor JS
-document.addEventListener('DOMContentLoaded', () => {
-    const cursor = document.createElement('div');
-    cursor.classList.add('custom-cursor');
-    document.body.appendChild(cursor);
-
-    const cursorFollower = document.createElement('div');
-    cursorFollower.classList.add('custom-cursor-follower');
-    document.body.appendChild(cursorFollower);
-
-    let mouseX = 0, mouseY = 0;
-    let cursorX = 0, cursorY = 0;
-    let followerX = 0, followerY = 0;
-
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-    });
-
-    function loop() {
-        cursorX += (mouseX - cursorX) * 0.5;
-        cursorY += (mouseY - cursorY) * 0.5;
-        followerX += (mouseX - followerX) * 0.15;
-        followerY += (mouseY - followerY) * 0.15;
-        
-        cursor.style.transform = `translate(${cursorX - 4}px, ${cursorY - 4}px)`;
-        cursorFollower.style.transform = `translate(${followerX - 16}px, ${followerY - 16}px)`;
-        
-        requestAnimationFrame(loop);
-    }
-    requestAnimationFrame(loop);
-
-    const addHover = () => {
-        cursor.classList.add('hover');
-        cursorFollower.classList.add('hover');
-    };
-    const removeHover = () => {
-        cursor.classList.remove('hover');
-        cursorFollower.classList.remove('hover');
-    };
-
-    document.querySelectorAll('a, button, input, select, textarea, .ff-card, .pillar-card, .info-card, .form-card, .social-btn').forEach(el => {
-        el.addEventListener('mouseenter', addHover);
-        el.addEventListener('mouseleave', removeHover);
-    });
 });

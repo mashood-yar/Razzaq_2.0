@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,500;1,600&family=Bebas+Neue&display=swap" rel="stylesheet">
 </head>
 <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <div class="hero-container">
         <div class="main-wrapper">
         <div class="hero-video-wrap" aria-hidden="true">
@@ -20,27 +21,31 @@
 
         <div class="content-container">
             <nav class="navbar">
-                <a href="index.html" class="logo" style="text-decoration: none;">
-                    <span style="font-family: 'Playfair Display', serif; font-style: italic; font-weight: 600; font-size: 24px; letter-spacing: -1px; transform: rotate(-5deg); display: inline-block; color: #024950;">mors</span>
+                <a href="index.html" class="logo" aria-label="Razzaq Luxe — home">
+                    <span class="logo-text">Razzaq Luxe</span>
                 </a>
                 <div class="nav-links">
                     <a href="index.html">HOME</a>
-                    <a href="fragrances.html">OUR FRAGRANCES</a>
+                    <a href="collections.html">COLLECTIONS</a>
+                    <a href="fragrances.html">SHOP</a>
                     <a href="about.html">ABOUT</a>
                     <a href="contact.html">CONTACT</a>
+                    <a href="policies.html">POLICIES</a>
                 </div>
                 <div class="nav-actions">
+                    <a href="login.html" style="font-family:'Inter',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#024950;text-decoration:none;padding:6px 8px;border-radius:999px;border:1px solid rgba(2,73,80,0.15);">Account</a>
                     <div class="divider"></div>
-                    <button class="cart-btn" aria-label="Cart">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <a href="cart.html" class="cart-btn" aria-label="Cart">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="9" cy="21" r="1"/>
+                            <circle cx="20" cy="21" r="1"/>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
                         </svg>
-                    </button>
+                    </a>
                 </div>
             </nav>
 
-            <main class="hero">
+            <main id="main-content" class="hero" tabindex="-1">
                 <div class="status-badge">
                     <span class="dot"></span>
                     AVAILABLE FOR NEW PROJECTS
@@ -48,18 +53,20 @@
                 
                 <h1 class="hero-title">
                     Designing timeless<br>
-                    <span class="italic-serif">Stories.</span>
+                    <span class="hero-word-slot" aria-live="polite">
+                        <span class="italic-serif hero-rotating-word" id="hero-rotating-word">Scents.</span>
+                    </span>
                 </h1>
 
                 <div class="hero-actions">
-                    <a href="#" class="btn btn-primary">
+                    <a href="fragrances.html" class="btn btn-primary">
                         VIEW WORK 
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                             <polyline points="12 5 19 12 12 19"></polyline>
                         </svg>
                     </a>
-                    <a href="#" class="btn btn-secondary">GET IN TOUCH</a>
+                    <a href="contact.html" class="btn btn-secondary">GET IN TOUCH</a>
                 </div>
             </main>
         </div>
@@ -68,7 +75,8 @@
 
     <section class="featured-fragrances">
         <div class="ff-header">
-            <h2>FEATURED FRAGRANCES</h2>
+            <p class="ff-kicker">Shop the collection</p>
+            <h2>Featured fragrances</h2>
         </div>
         
         <div class="ff-grid">
@@ -80,8 +88,8 @@
                     <img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?w=400&q=80" alt="Only Yours">
                 </div>
                 <div class="ff-details">
-                    <p class="ff-brand">MAAZ SAFDER®</p>
-                    <h3 class="ff-title">Maaz Safder Only Yours for Men 35ml</h3>
+                    <p class="ff-brand">Razzaq Luxe</p>
+                    <h3 class="ff-title"><a href="product.html?slug=maaz-only-yours" style="color:inherit;text-decoration:none;">Maaz Safder Only Yours for Men 35ml</a></h3>
                     <p class="ff-price">Rs.2,300</p>
                     <div class="ff-actions">
                         <button class="ff-btn ff-btn-outline">
@@ -105,7 +113,7 @@
                     <img src="https://images.unsplash.com/photo-1595991209266-5e0428bfb0c4?w=400&q=80" alt="Only Yours Intense">
                 </div>
                 <div class="ff-details">
-                    <p class="ff-brand">MAAZ SAFDER®</p>
+                    <p class="ff-brand">Razzaq Luxe</p>
                     <h3 class="ff-title">MS Only Yours INTENSE for Men 80ml</h3>
                     <p class="ff-price">Rs.4,900</p>
                     <div class="ff-actions">
@@ -130,7 +138,7 @@
                     <img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?w=400&q=80" alt="Off-Sports">
                 </div>
                 <div class="ff-details">
-                    <p class="ff-brand">MAAZ SAFDER®</p>
+                    <p class="ff-brand">Razzaq Luxe</p>
                     <h3 class="ff-title">MS Off-Sports for Men 50ml</h3>
                     <p class="ff-price">Rs.3,800</p>
                     <div class="ff-actions">
@@ -153,7 +161,7 @@
                     <img src="https://images.unsplash.com/photo-1595991209266-5e0428bfb0c4?w=400&q=80" alt="Signature">
                 </div>
                 <div class="ff-details">
-                    <p class="ff-brand">MAAZ SAFDER®</p>
+                    <p class="ff-brand">Razzaq Luxe</p>
                     <h3 class="ff-title">Maaz Safder Signature 65ml</h3>
                     <p class="ff-price">Rs.6,000</p>
                     <div class="ff-actions">
@@ -174,53 +182,31 @@
 
     <section class="selected-clients">
         <div class="clients-header">
-            <h3>SELECTED CLIENTS</h3>
+            <h3>SIGNATURE LINE</h3>
+            <p class="clients-sub">Razzaq Luxe — boutique in Quetta, Pakistan. Hover a name for a preview; tap to explore.</p>
         </div>
 
         <div class="marquee-container">
             <div class="marquee-track track-1">
                 <div class="marquee-content">
-                    <span>ic Design</span><span class="dot">·</span><span>Baia Beach Club</span><span class="dot">·</span><span>Baia Village</span><span class="dot">·</span><span>Becco</span><span class="dot">·</span><span>Birra del Gargano</span><span class="dot">·</span><span>BlendingBox</span><span class="dot">·</span><span>Accademia</span><span class="dot">·</span>
+                    <a href="fragrances.html" class="marquee-product" data-tip="Bright, athletic energy — your everyday standout.">Sporty</a><span class="dot">·</span><a href="fragrances.html" class="marquee-product" data-tip="Warm oriental depth — familiarity in every note.">Habibi</a><span class="dot">·</span><a href="fragrances.html" class="marquee-product" data-tip="Crisp sophistication — luminous and unmistakable.">Flourine</a><span class="dot">·</span><a href="fragrances.html" class="marquee-product" data-tip="Bold prestige — commanding presence.">Khan's Aura</a><span class="dot">·</span>
                 </div>
                 <div class="marquee-content">
-                    <span>ic Design</span><span class="dot">·</span><span>Baia Beach Club</span><span class="dot">·</span><span>Baia Village</span><span class="dot">·</span><span>Becco</span><span class="dot">·</span><span>Birra del Gargano</span><span class="dot">·</span><span>BlendingBox</span><span class="dot">·</span><span>Accademia</span><span class="dot">·</span>
+                    <a href="fragrances.html" class="marquee-product" data-tip="Bright, athletic energy — your everyday standout.">Sporty</a><span class="dot">·</span><a href="fragrances.html" class="marquee-product" data-tip="Warm oriental depth — familiarity in every note.">Habibi</a><span class="dot">·</span><a href="fragrances.html" class="marquee-product" data-tip="Crisp sophistication — luminous and unmistakable.">Flourine</a><span class="dot">·</span><a href="fragrances.html" class="marquee-product" data-tip="Bold prestige — commanding presence.">Khan's Aura</a><span class="dot">·</span>
                 </div>
             </div>
             <div class="marquee-track track-2">
                 <div class="marquee-content">
-                    <span>Clap</span><span class="dot">·</span><span>ClubSoda</span><span class="dot">·</span><span>Cosmo</span><span class="dot">·</span><span>CSTQ</span><span class="dot">·</span><span>Elsilab</span><span class="dot">·</span><span>emme works</span><span class="dot">·</span><span>Bocconi University</span><span class="dot">·</span><span>Center for Sp</span><span class="dot">·</span>
+                    <a href="fragrances.html" class="marquee-product" data-tip="House fragrance — layered for Pakistan's seasons.">Habibi</a><span class="dot">·</span><a href="fragrances.html" class="marquee-product" data-tip="Fresh signature from Quetta's fragrance house.">Sporty</a><span class="dot">·</span><a href="fragrances.html" class="marquee-product" data-tip="Sharpen every entrance.">Flourine</a><span class="dot">·</span><a href="fragrances.html" class="marquee-product" data-tip="Quiet confidence, lasting trail.">Khan's Aura</a><span class="dot">·</span>
                 </div>
                 <div class="marquee-content">
-                    <span>Clap</span><span class="dot">·</span><span>ClubSoda</span><span class="dot">·</span><span>Cosmo</span><span class="dot">·</span><span>CSTQ</span><span class="dot">·</span><span>Elsilab</span><span class="dot">·</span><span>emme works</span><span class="dot">·</span><span>Bocconi University</span><span class="dot">·</span><span>Center for Sp</span><span class="dot">·</span>
-                </div>
-            </div>
-            <div class="marquee-track track-3">
-                <div class="marquee-content">
-                    <span>Manzionna Holiday Group</span><span class="dot">·</span><span>Ottaviano</span><span class="dot">·</span><span>Panini di Mare</span><span class="dot">·</span><span>Perazzeta Wines</span><span class="dot">·</span><span>FXMasters</span><span class="dot">·</span><span>Fut</span><span class="dot">·</span>
-                </div>
-                <div class="marquee-content">
-                    <span>Manzionna Holiday Group</span><span class="dot">·</span><span>Ottaviano</span><span class="dot">·</span><span>Panini di Mare</span><span class="dot">·</span><span>Perazzeta Wines</span><span class="dot">·</span><span>FXMasters</span><span class="dot">·</span><span>Fut</span><span class="dot">·</span>
-                </div>
-            </div>
-            <div class="marquee-track track-4">
-                <div class="marquee-content">
-                    <span>ie Sacco</span><span class="dot">·</span><span>SpoilerAlert</span><span class="dot">·</span><span>The Nursery</span><span class="dot">·</span><span>Unilever</span><span class="dot">·</span><span>Vietti</span><span class="dot">·</span><span>Wall's</span><span class="dot">·</span><span>WOOT</span><span class="dot">·</span><span>XPLORA</span><span class="dot">·</span><span>Quadri</span><span class="dot">·</span>
-                </div>
-                <div class="marquee-content">
-                    <span>ie Sacco</span><span class="dot">·</span><span>SpoilerAlert</span><span class="dot">·</span><span>The Nursery</span><span class="dot">·</span><span>Unilever</span><span class="dot">·</span><span>Vietti</span><span class="dot">·</span><span>Wall's</span><span class="dot">·</span><span>WOOT</span><span class="dot">·</span><span>XPLORA</span><span class="dot">·</span><span>Quadri</span><span class="dot">·</span>
+                    <a href="fragrances.html" class="marquee-product" data-tip="House fragrance — layered for Pakistan's seasons.">Habibi</a><span class="dot">·</span><a href="fragrances.html" class="marquee-product" data-tip="Fresh signature from Quetta's fragrance house.">Sporty</a><span class="dot">·</span><a href="fragrances.html" class="marquee-product" data-tip="Sharpen every entrance.">Flourine</a><span class="dot">·</span><a href="fragrances.html" class="marquee-product" data-tip="Quiet confidence, lasting trail.">Khan's Aura</a><span class="dot">·</span>
                 </div>
             </div>
         </div>
 
         <div class="trusted-brands">
-            <div class="brand-avatars">
-                <div class="avatar" style="z-index: 5;"><img src="https://ui-avatars.com/api/?name=UB&background=fff&color=000&rounded=true&font-size=0.3" alt="Brand 1"></div>
-                <div class="avatar" style="z-index: 4;"><img src="https://ui-avatars.com/api/?name=G&background=e5ffe5&color=00b050&rounded=true&font-size=0.4" alt="Brand 2"></div>
-                <div class="avatar" style="z-index: 3;"><img src="https://ui-avatars.com/api/?name=P&background=000&color=fff&rounded=true&font-size=0.4" alt="Brand 3"></div>
-                <div class="avatar" style="z-index: 2;"><img src="https://ui-avatars.com/api/?name=B&background=fff&color=d00000&rounded=true&font-size=0.4" alt="Brand 4"></div>
-                <div class="avatar" style="z-index: 1;"><img src="https://ui-avatars.com/api/?name=Futura&background=1a2035&color=fff&rounded=true&font-size=0.3" alt="Brand 5"></div>
-            </div>
-            <p>Trusted by <strong>50+ brands</strong></p>
+            <p class="trusted-brands-line">Discover the line at our <strong>Quetta flagship</strong> or <a href="fragrances.html">shop fragrances</a>.</p>
         </div>
     </section>
 
@@ -238,9 +224,12 @@
             <p class="site-footer__heading">Explore</p>
             <ul>
               <li><a href="index.html">Home</a></li>
-              <li><a href="fragrances.html">Our Fragrances</a></li>
+              <li><a href="collections.html">Collections</a></li>
+              <li><a href="fragrances.html">Shop</a></li>
               <li><a href="about.html">About</a></li>
               <li><a href="contact.html">Contact</a></li>
+              <li><a href="track-order.html">Track order</a></li>
+              <li><a href="policies.html">Policies</a></li>
             </ul>
           </nav>
           <div class="site-footer__follow">
@@ -267,8 +256,7 @@
       </div>
     </footer>
 
-    <a href="contact.html" class="footer-fab footer-fab--support" aria-label="Customer support"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a9 9 0 0118 0v6"/><path d="M21 19a2 2 0 01-2 2h-1v-8h1a2 2 0 012 2z"/><path d="M3 19a2 2 0 002 2h1v-8H5a2 2 0 00-2 2z"/></svg></a>
-    <a href="https://wa.me/923332361713" class="footer-fab footer-fab--whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.237-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.884 9.884"/></svg></a>
+<a href="https://wa.me/923332361713" class="footer-fab footer-fab--whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.237-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.884 9.884"/></svg></a>
 
     <script src="script.js"></script>
 </body>

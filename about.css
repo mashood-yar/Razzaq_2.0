@@ -76,12 +76,23 @@ body {
     margin: 32px auto 0;
     box-shadow: 0 10px 30px rgba(2, 73, 80, 0.15);
     gap: 48px;
-    border: 1px solid rgba(234, 231, 220, 0.5);
+    border: 1px solid rgba(234, 231, 220, 0.28);
 }
 .logo {
     display: flex;
     align-items: center;
     color: #024950;
+    text-decoration: none;
+}
+
+.logo-text {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 24px;
+    letter-spacing: -0.04em;
+    color: inherit;
+    line-height: 1;
 }
 .nav-links {
     display: flex;

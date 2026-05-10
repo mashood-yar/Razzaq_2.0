@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Razzaq Luxe — obsidian / charcoal / gold palette */
+    --background:         28 14% 6%;    /* #0D0C0A obsidian */
+    --foreground:         38 50% 94%;   /* #F5F0E8 ivory */
+    --card:               28 13% 9%;    /* #1A1814 charcoal */
+    --card-foreground:    38 30% 90%;   /* cream */
+    --muted:              28 10% 16%;   /* #2C2921 graphite */
+    --muted-foreground:   28 8%  65%;   /* #A09890 smoke */
+    --accent:             38 45% 26%;   /* gold-surface warm */
+    --accent-foreground:  38 50% 94%;
+    --gold:               42 55% 54%;   /* #C9A84C gold */
+    --gold-muted:         38 35% 36%;   /* #8A6E2F gold-muted */
+    --border:             28 10% 17%;   /* graphite border */
+    --ring:               42 55% 54%;   /* gold ring */
+    --radius:             0.375rem;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  ::selection {
+    background-color: hsl(42 55% 54% / 0.3);
+    color: hsl(38 50% 94%);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: hsl(28 14% 6%); }
+  ::-webkit-scrollbar-thumb { background: hsl(28 10% 22%); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(42 55% 54% / 0.6); }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+
+  .grain-overlay {
+    background-image: theme("backgroundImage.grain");
+  }
+
+  .glass-panel {
+    @apply border border-white/10 bg-black/40 backdrop-blur-xl;
+  }
+
+  .gold-border {
+    @apply border border-gold/30;
+  }
+
+  .gold-text {
+    color: hsl(var(--gold));
+  }
+}

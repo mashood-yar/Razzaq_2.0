@@ -1,24 +1,18 @@
-const PERFUMES = [
-  { name: 'Noir Essence', price: 'Rs.2,300', img: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=500&auto=format&fit=crop' },
-  { name: 'Royal Oud', price: 'Rs.4,200', img: 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=500&auto=format&fit=crop' },
-  { name: 'Elite Gold', price: 'Rs.4,900', img: 'https://images.unsplash.com/photo-1587017539504-67cfbddac569?q=80&w=500&auto=format&fit=crop' },
-  { name: 'Velvet Mist', price: 'Rs.3,600', img: 'https://images.unsplash.com/photo-1615634260167-c8cdede054de?q=80&w=500&auto=format&fit=crop' },
-  { name: 'Shadow Ice', price: 'Rs.2,950', img: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=500&auto=format&fit=crop' },
-  { name: 'Midnight Rose', price: 'Rs.3,200', img: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=500&auto=format&fit=crop' },
-  { name: 'Amber Dream', price: 'Rs.4,100', img: 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=500&auto=format&fit=crop' },
-  { name: 'Ocean Breeze', price: 'Rs.3,450', img: 'https://images.unsplash.com/photo-1595991209266-5e0428bfb0c4?w=800&q=82&fm=webp&fit=crop&crop=center' },
-  { name: 'Jasmine Joy', price: 'Rs.2,800', img: 'https://images.unsplash.com/photo-1615634260167-c8cdede054de?q=80&w=500&auto=format&fit=crop' },
-  { name: 'Vanilla Musk', price: 'Rs.2,650', img: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=500&auto=format&fit=crop' },
-];
+const PERFUMES = Array.isArray(window.RAZZAQ_CATALOG) ? window.RAZZAQ_CATALOG : [];
 
 const VISIBLE = 5;
 const CENTER_SLOT = 2;
+const CART_STORAGE_KEY = 'razzaq-cart';
 
 function mod(n, m) {
   return ((n % m) + m) % m;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  /* Legacy carousel dots removed from HTML — strip if cached / old markup */
+  document.querySelector('.frag-carousel-dots-wrap')?.remove();
+  document.getElementById('fragDots')?.remove();
+
   if (!document.getElementById('page-transition-style')) {
     const transitionStyle = document.createElement('style');
     transitionStyle.id = 'page-transition-style';
@@ -126,12 +120,14 @@ function initCarousel() {
   const track = document.getElementById('carouselTrack');
   const prevBtn = document.getElementById('carouselPrev');
   const nextBtn = document.getElementById('carouselNext');
-  const dotsWrap = document.getElementById('fragDots');
 
-  if (!track || !dotsWrap || PERFUMES.length === 0) return;
+  if (!track || PERFUMES.length === 0) return;
 
   const n = PERFUMES.length;
   let centerIndex = mod(2, n);
+  const cartBtn = document.getElementById('cartBtn');
+  const buyNowBtn = document.getElementById('buyNowBtn');
+  const navCartBtn = document.querySelector('.cart-btn');
 
   for (let s = 0; s < VISIBLE; s++) {
     const slot = document.createElement('article');
@@ -144,12 +140,23 @@ function initCarousel() {
       <div class="frag-slot-body">
         <h2></h2>
         <p class="frag-slot-price"></p>
+        <a class="frag-slot-product-link" href="product.html">View product</a>
         <button type="button" class="frag-slot-btn">BUY NOW</button>
       </div>
     `;
     track.appendChild(slot);
 
-    slot.querySelector('.frag-slot-btn')?.addEventListener('click', (e) => e.stopPropagation());
+    slot.querySelector('.frag-slot-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const s = Number(slot.dataset.slot);
+      const selected = perfumeAt(s);
+      addItemToStorage(selected, false);
+      window.location.href = 'checkout.html';
+    });
+
+    slot.querySelector('.frag-slot-product-link')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
 
     slot.addEventListener('click', () => {
       const s = Number(slot.dataset.slot);
@@ -159,22 +166,44 @@ function initCarousel() {
     });
   }
 
-  dotsWrap.innerHTML = '';
-  PERFUMES.forEach((_, i) => {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'frag-dot';
-    b.dataset.index = String(i);
-    b.setAttribute('aria-label', `Show fragrance ${i + 1}`);
-    b.addEventListener('click', () => {
-      centerIndex = i;
-      render();
-    });
-    dotsWrap.appendChild(b);
-  });
-
   function perfumeAt(slot) {
     return PERFUMES[mod(centerIndex - CENTER_SLOT + slot, n)];
+  }
+
+  function getCurrentPerfume() {
+    return PERFUMES[centerIndex];
+  }
+
+  function parsePrice(priceText) {
+    const numeric = Number(String(priceText).replace(/[^\d]/g, ''));
+    return Number.isFinite(numeric) ? numeric : 0;
+  }
+
+  function readStoredCart() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function addItemToStorage(perfume, clearBeforeAdd) {
+    const cart = clearBeforeAdd ? [] : readStoredCart();
+    const existing = cart.find((item) => item.name === perfume.name);
+    const itemData = {
+      slug: perfume.slug || '',
+      name: perfume.name,
+      priceText: perfume.price,
+      price: parsePrice(perfume.price),
+      img: perfume.img
+    };
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({ ...itemData, qty: 1 });
+    }
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
   }
 
   function render() {
@@ -197,10 +226,10 @@ function initCarousel() {
       }
       slotEl.querySelector('h2').textContent = data.name.toUpperCase();
       slotEl.querySelector('.frag-slot-price').textContent = data.price;
-    });
-
-    dotsWrap.querySelectorAll('.frag-dot').forEach((d, i) => {
-      d.classList.toggle('frag-dot--active', i === centerIndex);
+      const plink = slotEl.querySelector('.frag-slot-product-link');
+      if (plink && data.slug) {
+        plink.href = `product.html?slug=${encodeURIComponent(data.slug)}`;
+      }
     });
   }
 
@@ -213,6 +242,20 @@ function initCarousel() {
   nextBtn?.addEventListener('click', () => {
     centerIndex = mod(centerIndex + 1, n);
     render();
+  });
+
+  cartBtn?.addEventListener('click', () => {
+    addItemToStorage(getCurrentPerfume(), false);
+    window.location.href = 'cart.html';
+  });
+
+  buyNowBtn?.addEventListener('click', () => {
+    addItemToStorage(getCurrentPerfume(), false);
+    window.location.href = 'checkout.html';
+  });
+
+  navCartBtn?.addEventListener('click', () => {
+    window.location.href = 'cart.html';
   });
 
   render();

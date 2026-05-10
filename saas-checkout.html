@@ -1,0 +1,242 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout · Northbeam Pro</title>
+  <meta name="description" content="Complete your Northbeam Pro subscription — secure checkout demo for teams.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="saas-checkout.css">
+  <link rel="stylesheet" href="footer-global.css">
+</head>
+<body class="checkout-page">
+  <a class="checkout-skip" href="#checkout-main">Skip to checkout form</a>
+
+  <header class="checkout-topbar">
+    <div class="checkout-topbar__inner">
+      <a href="index.html" class="checkout-brand" aria-label="Razzaq Luxe — home">
+        <span class="checkout-brand__text">Razzaq Luxe</span>
+      </a>
+      <a href="index.html" class="checkout-back">← Back to site</a>
+    </div>
+  </header>
+
+  <div class="checkout-wrap">
+    <div class="checkout-hero">
+      <span class="checkout-hero__eyebrow">Secure checkout</span>
+      <h1>Subscribe to Northbeam Pro</h1>
+      <p>Team workspace, SSO, and observability in one plan. Demo page — no real charges.</p>
+    </div>
+
+    <div class="checkout-trust" role="list">
+      <span role="listitem">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        TLS 1.3 · encrypted checkout
+      </span>
+      <span role="listitem">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        Cancel anytime before renewal
+      </span>
+      <span role="listitem">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="3" y="11" width="18" height="11" rx="2"/>
+          <path d="M7 11V7a5 5 0 0110 0v4"/>
+        </svg>
+        SOC 2 Type II — demo badge
+      </span>
+    </div>
+
+    <div class="checkout-grid">
+      <div class="checkout-main">
+        <form id="saas-checkout-form" class="checkout-panel" novalidate>
+          <h2 class="checkout-panel__title" id="checkout-main">Payment details</h2>
+
+          <div class="field">
+            <label class="field-label" for="email">Work email</label>
+            <input class="input" type="email" id="email" name="email" autocomplete="email" placeholder="you@company.com" required>
+          </div>
+
+          <fieldset class="checkout-fieldset">
+            <legend class="fieldset-label">Billing cycle</legend>
+            <div class="plan-toggle" role="radiogroup" aria-label="Choose billing cycle">
+              <div class="plan-option">
+                <input type="radio" name="billing_cycle" id="plan-monthly" value="monthly" checked>
+                <label for="plan-monthly">
+                  <span class="plan-option__name">Monthly</span>
+                  <span class="plan-option__price">$49<span class="plan-option__price-muted">/mo</span></span>
+                  <span class="plan-option__note">Flexible</span>
+                </label>
+              </div>
+              <div class="plan-option">
+                <input type="radio" name="billing_cycle" id="plan-yearly" value="yearly">
+                <label for="plan-yearly">
+                  <span class="plan-option__name">Yearly</span>
+                  <span class="plan-option__price">$468<span class="plan-option__price-muted">/yr</span></span>
+                  <span class="plan-save">Save ~20%</span>
+                  <span class="plan-option__note">$39/mo billed annually</span>
+                </label>
+              </div>
+            </div>
+            <p class="field-hint" id="summary-cycle">Billed monthly. Cancel anytime before your next invoice.</p>
+          </fieldset>
+
+          <div class="pay-row">
+            <span>Pay with card</span>
+            <div class="pay-icons" aria-hidden="true">
+              <svg width="36" height="22" viewBox="0 0 36 22" xmlns="http://www.w3.org/2000/svg"><rect width="36" height="22" rx="4" fill="#1a1f71"/><path d="M15 8h6v6h-6z" fill="#ff5f00"/><path d="M11 11a4 4 0 016.5-3 4 4 0 00-5 5 4 4 0 01-1.5-2z" fill="#eb001b"/><path d="M25 11a4 4 0 01-6.5 3 4 4 0 005-5 4 4 0 01-1.5 2z" fill="#f79e1b"/></svg>
+              <svg width="36" height="22" viewBox="0 0 36 22" xmlns="http://www.w3.org/2000/svg"><rect width="36" height="22" rx="4" fill="#1434cb"/><text x="8" y="15" fill="#fff" font-size="9" font-family="Arial,sans-serif" font-weight="700">VISA</text></svg>
+              <svg width="36" height="22" viewBox="0 0 36 22" xmlns="http://www.w3.org/2000/svg"><rect width="36" height="22" rx="4" fill="#016fd0"/><text x="5" y="14" fill="#fff" font-size="7" font-family="Arial,sans-serif">AMEX</text></svg>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="cardname">Name on card</label>
+            <input class="input" type="text" id="cardname" name="cardname" autocomplete="cc-name" placeholder="Jane Doe" required>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="cardnumber">Card number</label>
+            <input class="input" type="text" id="cardnumber" name="cardnumber" inputmode="numeric" autocomplete="cc-number" placeholder="4242 4242 4242 4242" maxlength="19" required>
+          </div>
+
+          <div class="field-row field-row--3">
+            <div class="field">
+              <label class="field-label" for="exp">Expiry</label>
+              <input class="input" type="text" id="exp" name="exp" autocomplete="cc-exp" placeholder="MM / YY" maxlength="7" required>
+            </div>
+            <div class="field">
+              <label class="field-label" for="cvc">CVC</label>
+              <input class="input" type="text" id="cvc" name="cvc" inputmode="numeric" autocomplete="cc-csc" placeholder="123" maxlength="4" required>
+            </div>
+            <div class="field">
+              <label class="field-label" for="country">Country</label>
+              <select class="select input" id="country" name="country" autocomplete="country-name" required>
+                <option value="">Select…</option>
+                <option value="US" selected>United States</option>
+                <option value="PK">Pakistan</option>
+                <option value="GB">United Kingdom</option>
+                <option value="AE">United Arab Emirates</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row field-row--2">
+            <div class="field">
+              <label class="field-label" for="zip">Postal code</label>
+              <input class="input" type="text" id="zip" name="zip" autocomplete="postal-code" required>
+            </div>
+            <div class="field">
+              <label class="field-label" for="company">Company <span style="font-weight:400;color:var(--checkout-muted)">(optional)</span></label>
+              <input class="input" type="text" id="company" name="company" autocomplete="organization" placeholder="Acme Inc.">
+            </div>
+          </div>
+
+          <div class="checkbox-field">
+            <input type="checkbox" id="terms" name="terms" required>
+            <label for="terms">I agree to the <a href="#">Terms</a> and <a href="#">Privacy Policy</a>, and authorize recurring charges for this subscription.</label>
+          </div>
+
+          <button type="submit" class="btn-pay" id="btn-pay-submit">Pay $52.92</button>
+        </form>
+      </div>
+
+      <aside class="checkout-aside" aria-label="Order summary">
+        <div class="summary-card">
+          <div class="summary-card__product">
+            <div class="summary-icon" aria-hidden="true"></div>
+            <div>
+              <h2>Northbeam Pro</h2>
+              <p>Full platform · up to 50 seats included</p>
+            </div>
+          </div>
+
+          <ul class="summary-features">
+            <li>Unlimited projects &amp; environments</li>
+            <li>SSO (SAML) &amp; audit logs</li>
+            <li>Priority chat &amp; 4h response SLA</li>
+            <li>Regional data residency options</li>
+          </ul>
+
+          <div class="summary-lines">
+            <div class="summary-line">
+              <span>Subtotal</span>
+              <strong id="summary-subtotal">$49.00</strong>
+            </div>
+            <div class="summary-line summary-line--discount" id="summary-discount-row" hidden>
+              <span>Annual savings</span>
+              <strong id="summary-discount">− $0.00</strong>
+            </div>
+            <div class="summary-line">
+              <span>Estimated tax (8%)</span>
+              <strong id="summary-tax">$3.92</strong>
+            </div>
+          </div>
+
+          <div class="summary-total">
+            <span>Due today</span>
+            <span class="summary-total__price" id="summary-total">$52.92</span>
+          </div>
+
+          <p class="summary-note">Prices shown in USD. Your card statement will show &ldquo;NORTHBEAM SUBSCRIPTION&rdquo;. Need a PO or invoice? <a href="contact.html">Contact sales</a>.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+      <footer class="site-footer">
+      <div class="site-footer__media" aria-hidden="true">
+        <video class="site-footer__video" src="assets/footer-bg.mp4" autoplay muted loop playsinline preload="metadata"></video>
+      </div>
+      <div class="site-footer__panel">
+        <div class="site-footer__inner">
+          <div class="site-footer__brand">
+            <p class="site-footer__name">Razzaq Luxe</p>
+            <p class="site-footer__tagline">Wear the Royalty — luxury fragrances rooted in Arabian elegance.</p>
+          </div>
+          <nav class="site-footer__nav" aria-label="Explore">
+            <p class="site-footer__heading">Explore</p>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="collections.html">Collections</a></li>
+              <li><a href="fragrances.html">Shop</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="contact.html">Contact</a></li>
+              <li><a href="track-order.html">Track order</a></li>
+              <li><a href="policies.html">Policies</a></li>
+            </ul>
+          </nav>
+          <div class="site-footer__follow">
+            <p class="site-footer__heading">Follow</p>
+            <div class="site-footer__social">
+              <a class="site-footer__social-btn site-footer__social-btn--ig" href="https://www.instagram.com/razzaqluxe/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="5" ry="5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.25" fill="currentColor"/></svg>
+              </a>
+              <a class="site-footer__social-btn site-footer__social-btn--tt" href="https://www.tiktok.com/@razzaqluxe" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48.01 2.96.02 4.44-.9-.24-1.92-.29-2.77.09-1.09.47-1.87 1.42-2.18 2.55-.18.63-.15 1.31-.05 1.95.23 1.45 1.33 2.78 2.74 3.22 1.05.36 2.22.18 3.15-.38 1.04-.65 1.68-1.83 1.82-3.01.05-.39.05-.79.05-1.19V.02h-.01z"/></svg>
+              </a>
+              <a class="site-footer__social-btn site-footer__social-btn--fb" href="https://www.facebook.com/razzaqluxe" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </a>
+              <a class="site-footer__social-btn site-footer__social-btn--wa" href="https://wa.me/923332361713" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.237-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.884 9.884"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="site-footer__legal">
+          <p>© 2026 Razzaq Luxe. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+<a href="https://wa.me/923332361713" class="footer-fab footer-fab--whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.237-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.884 9.884"/></svg></a>
+
+  <script src="saas-checkout.js"></script>
+</body>
+</html>

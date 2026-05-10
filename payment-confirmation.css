@@ -1,0 +1,262 @@
+/* Payment confirmation — stacks on saas-checkout.css (shared tokens via .checkout-page) */
+
+.confirmation-main {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 28px 24px 72px;
+}
+
+.confirmation-card {
+  background: var(--checkout-card);
+  border-radius: 22px;
+  border: 1px solid var(--checkout-border);
+  box-shadow: var(--checkout-shadow);
+  padding: clamp(28px, 5vw, 40px);
+  text-align: center;
+}
+
+.confirmation-badge {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 22px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(15, 164, 175, 0.2), rgba(2, 73, 80, 0.12));
+  border: 2px solid rgba(15, 164, 175, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--checkout-deep);
+}
+
+.confirmation-badge svg {
+  width: 36px;
+  height: 36px;
+  stroke: var(--checkout-teal);
+}
+
+.confirmation-card h1 {
+  margin: 0 0 10px;
+  font-size: clamp(1.5rem, 4vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.confirmation-lead {
+  margin: 0 0 8px;
+  font-size: 15px;
+  color: var(--checkout-muted);
+  max-width: 420px;
+  margin-inline: auto;
+}
+
+.confirmation-meta {
+  margin: 0 0 20px;
+  font-size: 13px;
+  color: var(--checkout-muted);
+}
+
+.confirmation-email {
+  margin: 0 0 28px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--checkout-deep);
+  word-break: break-word;
+}
+
+.confirmation-ref {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(15, 164, 175, 0.1);
+  border: 1px solid rgba(15, 164, 175, 0.28);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--checkout-deep);
+  margin-bottom: 32px;
+}
+
+.confirmation-ref code {
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+.confirmation-details {
+  text-align: left;
+  border-top: 1px solid var(--checkout-border);
+  padding-top: 24px;
+  margin-bottom: 28px;
+}
+
+.confirmation-details h2 {
+  margin: 0 0 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--checkout-muted);
+}
+
+.confirmation-rows {
+  display: grid;
+  gap: 12px;
+}
+
+.confirmation-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  font-size: 14px;
+}
+
+.confirmation-row span:first-child {
+  color: var(--checkout-muted);
+}
+
+.confirmation-row strong {
+  font-weight: 600;
+  color: var(--checkout-deep);
+}
+
+.confirmation-row--muted strong {
+  color: #0a7a82;
+}
+
+.confirmation-row--total {
+  margin-top: 8px;
+  padding-top: 18px;
+  border-top: 2px solid rgba(2, 73, 80, 0.1);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.confirmation-row--total strong {
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.confirmation-next {
+  text-align: left;
+  background: #fafaf8;
+  border-radius: 14px;
+  padding: 18px 20px;
+  border: 1px solid var(--checkout-border);
+}
+
+.confirmation-next h3 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--checkout-deep);
+}
+
+.confirmation-next ol {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--checkout-muted);
+  line-height: 1.6;
+}
+
+.confirmation-next li {
+  margin-bottom: 8px;
+}
+
+.confirmation-next li:last-child {
+  margin-bottom: 0;
+}
+
+.confirmation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+.confirmation-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 22px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform var(--checkout-transition),
+    box-shadow var(--checkout-transition),
+    filter var(--checkout-transition);
+}
+
+.confirmation-btn--primary {
+  background: var(--checkout-teal);
+  color: var(--checkout-deep);
+  border: none;
+  box-shadow: 0 8px 24px rgba(15, 164, 175, 0.32);
+}
+
+.confirmation-btn--primary:hover {
+  filter: brightness(1.03);
+}
+
+.confirmation-btn--ghost {
+  background: transparent;
+  color: var(--checkout-deep);
+  border: 1px solid var(--checkout-border);
+}
+
+.confirmation-btn--ghost:hover {
+  border-color: rgba(15, 164, 175, 0.4);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.confirmation-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .confirmation-btn--primary:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.confirmation-empty {
+  display: none;
+  max-width: 520px;
+  margin: 0 auto 32px;
+  padding: 22px 24px;
+  border-radius: 16px;
+  background: rgba(2, 73, 80, 0.06);
+  border: 1px solid var(--checkout-border);
+  font-size: 14px;
+  color: var(--checkout-muted);
+  text-align: center;
+}
+
+.confirmation-empty.is-visible {
+  display: block;
+}
+
+.confirmation-empty a {
+  color: var(--checkout-deep);
+  font-weight: 600;
+}
+
+.confirmation-detail[hidden] {
+  display: none !important;
+}
