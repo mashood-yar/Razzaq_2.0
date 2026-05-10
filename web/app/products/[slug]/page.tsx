@@ -3,14 +3,15 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ProductDetail } from "@/components/product/product-detail";
 
-type Props = { params: { slug: string } };
+type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
   const supabase = await createClient();
   const { data } = await supabase
     .from("products")
     .select("name, seo_title, seo_desc, product_images(url, is_primary)")
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .single();
 
   return {
@@ -20,11 +21,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProductPage({ params }: Props) {
+  const { slug } = await params;
   const supabase = await createClient();
   const { data: product, error } = await supabase
     .from("products")
     .select(`*, product_images(*), product_variants(*), categories(name, slug)`)
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .eq("status", "active")
     .single();
 

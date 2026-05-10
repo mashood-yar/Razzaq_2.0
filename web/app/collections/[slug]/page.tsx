@@ -15,14 +15,18 @@ interface CollectionProduct {
   product_images: { url: string; alt_text?: string; is_primary?: boolean; sort_order?: number }[];
 }
 
-type Props = { params: { slug: string }; searchParams: { sort?: string; page?: string } };
+type Props = {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ sort?: string; page?: string }>;
+};
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
   const supabase = await createClient();
   const { data } = await supabase
     .from("collections")
     .select("name, seo_title, seo_desc")
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .single();
 
   return {
@@ -32,9 +36,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CollectionPage({ params, searchParams }: Props) {
+  const { slug } = await params;
+  const { sort: sortParam, page: pageParam } = await searchParams;
   const supabase = await createClient();
-  const sort = searchParams.sort || "newest";
-  const page = Math.max(1, parseInt(searchParams.page || "1"));
+  const sort = sortParam || "newest";
+  const page = Math.max(1, parseInt(pageParam || "1"));
   const limit = 24;
   const from = (page - 1) * limit;
   const to = from + limit - 1;
@@ -42,7 +48,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
   const { data: collection, error: colErr } = await supabase
     .from("collections")
     .select("*")
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .single();
 
   if (colErr || !collection) notFound();

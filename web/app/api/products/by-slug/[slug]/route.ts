@@ -1,14 +1,16 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
-type Params = { params: { slug: string } };
-
-export async function GET(_: Request, { params }: Params) {
+export async function GET(
+  _: Request,
+  { params }: { params: Promise<{ slug: string }> },
+) {
+  const { slug } = await params;
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")
     .select(`*, product_images(*), product_variants(*), categories(name, slug)`)
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .eq("status", "active")
     .single();
 

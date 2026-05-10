@@ -5,17 +5,19 @@ import { createClient } from "@/lib/supabase/server";
 import { formatPKR } from "@/lib/utils";
 import { SearchBar } from "@/components/search/search-bar";
 
-type Props = { searchParams: { q?: string } };
+type Props = { searchParams: Promise<{ q?: string }> };
 
-export function generateMetadata({ searchParams }: Props): Metadata {
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const { q } = await searchParams;
   return {
-    title: searchParams.q ? `Search: "${searchParams.q}"` : "Search",
+    title: q ? `Search: "${q}"` : "Search",
     description: "Search Razzaq Luxe products",
   };
 }
 
 export default async function SearchPage({ searchParams }: Props) {
-  const q = (searchParams.q ?? "").trim();
+  const { q: rawQ } = await searchParams;
+  const q = (rawQ ?? "").trim();
   const supabase = await createClient();
 
   let products: {

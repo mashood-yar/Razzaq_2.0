@@ -1,9 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
-type Params = { params: { slug: string } };
-
-export async function GET(request: Request, { params }: Params) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ slug: string }> },
+) {
+  const { slug } = await params;
   const supabase = await createClient();
   const { searchParams } = new URL(request.url);
 
@@ -16,7 +18,7 @@ export async function GET(request: Request, { params }: Params) {
   const { data: collection, error: colErr } = await supabase
     .from("collections")
     .select("*")
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .single();
 
   if (colErr) return NextResponse.json({ error: "Collection not found" }, { status: 404 });

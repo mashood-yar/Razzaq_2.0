@@ -1,21 +1,23 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
-type Params = { params: { id: string } };
+type RouteCtx = { params: Promise<{ id: string }> };
 
-export async function GET(_: Request, { params }: Params) {
+export async function GET(_: Request, { params }: RouteCtx) {
+  const { id } = await params;
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")
     .select(`*, product_images(*), product_variants(*), categories(name, slug)`)
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 404 });
   return NextResponse.json({ data });
 }
 
-export async function PUT(request: Request, { params }: Params) {
+export async function PUT(request: Request, { params }: RouteCtx) {
+  const { id } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -30,7 +32,7 @@ export async function PUT(request: Request, { params }: Params) {
   const { data, error } = await supabase
     .from("products")
     .update({ ...body, updated_at: new Date().toISOString() })
-    .eq("id", params.id)
+    .eq("id", id)
     .select()
     .single();
 
@@ -38,7 +40,8 @@ export async function PUT(request: Request, { params }: Params) {
   return NextResponse.json({ data });
 }
 
-export async function DELETE(_: Request, { params }: Params) {
+export async function DELETE(_: Request, { params }: RouteCtx) {
+  const { id } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -49,7 +52,7 @@ export async function DELETE(_: Request, { params }: Params) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { error } = await supabase.from("products").delete().eq("id", params.id);
+  const { error } = await supabase.from("products").delete().eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ success: true });
 }
