@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createLemonSqueezyCheckout } from "@/lib/lemonsqueezy/checkout";
 import { sendOrderConfirmationEmail } from "@/lib/resend/client";
-import type { CartItem } from "@/lib/types";
+import type { CartItem, Order } from "@/lib/types";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -137,11 +137,11 @@ export async function POST(request: Request) {
 
   // Send order confirmation email
   try {
-    const fullOrder = {
+    const fullOrder: Order = {
       ...order,
       order_items: orderItems.map((i, idx) => ({ ...i, id: `item-${idx}` })),
     };
-    await sendOrderConfirmationEmail(fullOrder as any);
+    await sendOrderConfirmationEmail(fullOrder);
   } catch (e) {
     console.error("[Orders] confirmation email failed:", e);
   }
@@ -170,7 +170,7 @@ export async function POST(request: Request) {
   return NextResponse.json({ order });
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   const supabase = await createClient();
   const {
     data: { user },

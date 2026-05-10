@@ -48,7 +48,7 @@ export default async function SearchPage({ searchParams }: Props) {
         <div className="mt-10">
           <p className="mb-8 text-sm text-smoke">
             {products.length} result{products.length !== 1 ? "s" : ""} for{" "}
-            <span className="text-ivory">"{q}"</span>
+            <span className="text-ivory">&quot;{q}&quot;</span>
           </p>
           {products.length === 0 ? (
             <div className="py-16 text-center">

@@ -1,7 +1,7 @@
 import { createHmac } from "crypto";
-import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendOrderConfirmationEmail } from "@/lib/resend/client";
+import type { Order } from "@/lib/types";
 
 export const runtime = "nodejs";
 
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
       }
 
       try {
-        await sendOrderConfirmationEmail(order as any);
+        await sendOrderConfirmationEmail(order as Order);
       } catch (e) {
         console.error("[LS webhook] confirmation email failed:", e);
       }

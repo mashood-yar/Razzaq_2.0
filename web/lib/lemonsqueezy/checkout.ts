@@ -4,6 +4,14 @@ import {
 } from "@lemonsqueezy/lemonsqueezy.js";
 
 let setup = false;
+type CheckoutData = {
+  data?: {
+    attributes?: {
+      url?: string;
+    };
+  };
+};
+
 function ensureSetup() {
   if (!setup) {
     lemonSqueezySetup({ apiKey: process.env.LEMONSQUEEZY_API_KEY! });
@@ -61,5 +69,6 @@ export async function createLemonSqueezyCheckout(order: {
     return null;
   }
 
-  return (response.data as any)?.data?.attributes?.url ?? null;
+  const checkoutData = response.data as CheckoutData | undefined;
+  return checkoutData?.data?.attributes?.url ?? null;
 }
