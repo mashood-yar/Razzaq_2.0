@@ -19,9 +19,16 @@ export default async function AccountOrdersPage() {
 
   if (error) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-16">
+      <div className="mx-auto max-w-3xl space-y-3 px-4 py-16">
         <p className="text-sm text-red-400">
-          Could not load orders. Ensure Supabase `orders` table and RLS exist.
+          Could not load orders. If you see{' '}
+          <span className="font-mono">permission denied</span>, run{' '}
+          <code className="rounded bg-muted px-1 py-0.5 text-xs">web/supabase/fix-orders-select-rls.sql</code>{' '}
+          in Supabase SQL Editor (adds grants + fixes orders policies), or reinstall from{' '}
+          <code className="rounded bg-muted px-1 py-0.5 text-xs">web/supabase/schema.sql</code>.
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Detail: <span className="font-mono">{error.message}</span>
         </p>
       </div>
     );

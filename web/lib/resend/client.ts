@@ -1,7 +1,22 @@
 import { Resend } from "resend";
 import type { Order } from "@/lib/types";
+import {
+  orderEmailTags,
+  RESEND_ORDER_EMAIL_KIND,
+} from "@/lib/resend/order-email-tags";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resendClient: Resend | null = null;
+
+/** Lazily construct so `next build` can load routes without RESEND_API_KEY set. */
+function getResend(): Resend {
+  const key = process.env.RESEND_API_KEY?.trim();
+  if (!key) {
+    throw new Error("RESEND_API_KEY is not set");
+  }
+  resendClient ??= new Resend(key);
+  return resendClient;
+}
+
 const FROM = process.env.RESEND_FROM_EMAIL ?? "orders@razzaqluxe.com";
 const BRAND = "Razzaq Luxe";
 
@@ -62,9 +77,10 @@ export async function sendOrderConfirmationEmail(order: Order) {
   const to = order.customer_email;
   const isCod = order.payment_method === "cod";
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to,
+    tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.CONFIRMATION),
     subject: `Order Confirmed — ${order.order_number} | ${BRAND}`,
     html: baseHtml(`
       <div class="badge">Order Confirmed</div>
@@ -85,9 +101,10 @@ export async function sendOrderConfirmationEmail(order: Order) {
 }
 
 export async function sendOrderShippedEmail(order: Order) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: order.customer_email,
+    tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.SHIPPED),
     subject: `Your Order Has Shipped — ${order.order_number} | ${BRAND}`,
     html: baseHtml(`
       <div class="badge">Shipped</div>
@@ -101,9 +118,10 @@ export async function sendOrderShippedEmail(order: Order) {
 }
 
 export async function sendOrderDeliveredEmail(order: Order) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: order.customer_email,
+    tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.DELIVERED_NOTICE),
     subject: `Order Delivered — ${order.order_number} | ${BRAND}`,
     html: baseHtml(`
       <div class="badge">Delivered</div>
@@ -116,7 +134,7 @@ export async function sendOrderDeliveredEmail(order: Order) {
 }
 
 export async function sendWelcomeEmail(email: string, name: string) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: `Welcome to ${BRAND}`,
@@ -139,7 +157,7 @@ export async function sendContactAutoReply(
   email: string,
   subject: string,
 ) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: `We received your message — ${BRAND}`,
@@ -149,4 +167,22 @@ export async function sendContactAutoReply(
       <p>In the meantime, you can explore our <a href="${process.env.NEXT_PUBLIC_SITE_URL}/policies/return-policy" style="color:#C9A84C">Return Policy</a> or browse our <a href="${process.env.NEXT_PUBLIC_SITE_URL}/shop" style="color:#C9A84C">latest collection</a>.</p>
     `),
   });
+}
+
+/** Minimal Resend SDK smoke test (same pattern as Resend docs). Requires `RESEND_API_KEY` in env. */
+export async function sendHelloWorldTestEmail(
+  to: string = "sultanshah101004@gmail.com",
+) {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not set");
+  }
+
+  const { error } = await getResend().emails.send({
+    from: "onboarding@resend.dev",
+    to,
+    subject: "Hello World",
+    html: "<p>Congrats on sending your <strong>first email</strong>!</p>",
+  });
+
+  if (error) throw new Error(error.message);
 }

@@ -17,7 +17,10 @@ import { Button } from "@/components/ui/button";
 import { useUiStore } from "@/stores/ui-store";
 import { useCartStore } from "@/stores/cart-store";
 import { useAuth } from "@/components/providers/auth-provider";
-import { oauthProfileImageUrl } from "@/lib/auth/oauth-avatar";
+import {
+  oauthProfileImageUrl,
+  userAvatarInitial,
+} from "@/lib/auth/oauth-avatar";
 
 const nav = [
   { href: "/shop", label: "Shop" },
@@ -30,6 +33,7 @@ const nav = [
 export function SiteHeader() {
   const { user } = useAuth();
   const avatarUrl = oauthProfileImageUrl(user);
+  const signedInLetter = user ? userAvatarInitial(user) : "";
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const setSearchOpen = useUiStore((s) => s.setSearchOpen);
@@ -112,6 +116,13 @@ export function SiteHeader() {
                     className="h-8 w-8 rounded-full object-cover"
                     referrerPolicy="no-referrer"
                   />
+                ) : user ? (
+                  <span
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-muted text-xs font-semibold uppercase text-gold"
+                    aria-hidden
+                  >
+                    {signedInLetter}
+                  </span>
                 ) : (
                   <User className="h-5 w-5" aria-hidden />
                 )}
@@ -197,6 +208,13 @@ export function SiteHeader() {
                       className="h-8 w-8 shrink-0 rounded-full object-cover"
                       referrerPolicy="no-referrer"
                     />
+                  ) : user ? (
+                    <span
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/15 bg-muted text-xs font-semibold uppercase text-gold"
+                      aria-hidden
+                    >
+                      {signedInLetter}
+                    </span>
                   ) : null}
                   {user ? "Account" : "Sign in"}
                 </Link>

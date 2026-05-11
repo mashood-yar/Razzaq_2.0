@@ -23,3 +23,27 @@ export function oauthProfileImageUrl(user: User | null): string | null {
 
   return null;
 }
+
+/** First character for avatar fallback — works for email/password and OAuth users without picture. */
+export function userAvatarInitial(user: User | null): string {
+  if (!user) return "";
+  const meta = user.user_metadata as Record<string, unknown> | undefined;
+  const fromMeta =
+    (typeof meta?.full_name === "string" && meta.full_name.trim()) ||
+    (typeof meta?.name === "string" && meta.name.trim()) ||
+    "";
+  const source =
+    fromMeta ||
+    (typeof meta?.display_name === "string" && meta.display_name.trim()) ||
+    "";
+  if (source) {
+    const ch = [...source][0];
+    return ch?.toUpperCase() ?? "?";
+  }
+  const email = user.email?.trim();
+  if (email) {
+    const ch = [...email.replace(/^[^A-Za-z0-9]+/, "")][0];
+    return ch?.toUpperCase() ?? "?";
+  }
+  return "?";
+}

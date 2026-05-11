@@ -234,10 +234,12 @@ create table if not exists public.orders (
                             'shipped','out_for_delivery','delivered',
                             'cancelled','refunded'
                           )),
-  payment_method        text not null check (payment_method in ('card','cod')),
+  payment_method        text not null check (payment_method in ('card','cod','safepay')),
   payment_status        text not null default 'pending'
                           check (payment_status in ('pending','paid','failed','refunded')),
   lemonsqueezy_order_id text unique,
+  safepay_tracker_token text,
+  stripe_payment_intent_id text,
   subtotal_pkr          numeric(10,2) not null,
   discount_pkr          numeric(10,2) not null default 0,
   shipping_pkr          numeric(10,2) not null default 0,
@@ -247,6 +249,13 @@ create table if not exists public.orders (
   tracking_number       text,
   tracking_url          text,
   notes                 text,
+  -- Resend transactional email tracking (see add-order-resend-tracking.sql)
+  confirmation_email_delivered_at    timestamptz,
+  shipped_notice_email_delivered_at  timestamptz,
+  delivered_notice_email_delivered_at timestamptz,
+  txn_email_bounce_at                timestamptz,
+  txn_email_bounce_kind              text,
+  txn_email_bounce_detail            text,
   -- Denormalized shipping address snapshot
   ship_first_name       text not null,
   ship_last_name        text not null,
@@ -265,6 +274,13 @@ create index if not exists orders_user_id_idx     on public.orders(user_id);
 create index if not exists orders_order_number_idx on public.orders(order_number);
 create index if not exists orders_status_idx       on public.orders(status);
 create index if not exists orders_created_at_idx   on public.orders(created_at desc);
+create unique index if not exists orders_safepay_tracker_token_uidx
+  on public.orders (safepay_tracker_token)
+  where safepay_tracker_token is not null;
+
+create unique index if not exists orders_stripe_payment_intent_id_uidx
+  on public.orders (stripe_payment_intent_id)
+  where stripe_payment_intent_id is not null;
 
 -- Auto-generate order number
 create or replace function generate_order_number() returns text as $$
@@ -448,12 +464,27 @@ drop policy if exists "pc_admin"  on public.product_collections;
 create policy "pc_public" on public.product_collections for select using (true);
 create policy "pc_admin"  on public.product_collections for all using (is_admin());
 
--- Orders: user sees own; admin sees all
+-- Orders: user sees own rows without touching profiles; guest match uses profiles.email
 alter table public.orders enable row level security;
-drop policy if exists "orders_user_select"  on public.orders;
+drop policy if exists "orders_user_select" on public.orders;
+drop policy if exists "orders_select_own_user" on public.orders;
+drop policy if exists "orders_select_guest_by_profile_email" on public.orders;
 drop policy if exists "orders_user_insert"  on public.orders;
 drop policy if exists "orders_admin_all"    on public.orders;
-create policy "orders_user_select" on public.orders for select using (user_id = auth.uid() or guest_email = (select email from auth.users where id = auth.uid()) or is_admin());
+
+-- Own orders (no profiles subquery — avoids privilege issues before GRANT runs)
+create policy "orders_select_own_user" on public.orders for select using (user_id = auth.uid());
+
+-- Guest checkout tied to email after signup
+create policy "orders_select_guest_by_profile_email" on public.orders for select using (
+  guest_email is not null
+  and exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid()
+      and lower(trim(coalesce(p.email, ''))) = lower(trim(coalesce(guest_email, '')))
+    )
+);
+
 create policy "orders_user_insert" on public.orders for insert with check (user_id = auth.uid() or user_id is null);
 create policy "orders_admin_all"   on public.orders for all using (is_admin());
 
@@ -510,3 +541,23 @@ drop policy if exists "rates_public" on public.exchange_rates;
 drop policy if exists "rates_admin"  on public.exchange_rates;
 create policy "rates_public" on public.exchange_rates for select using (true);
 create policy "rates_admin"  on public.exchange_rates for all using (is_admin());
+
+-- 20. Table privileges ------------------------------------------------------------
+-- RLS decides *which rows* apply; Postgres still requires ROLE-level GRANT on tables.
+grant usage on schema public to anon, authenticated, service_role;
+
+grant select, insert, update, delete on all tables in schema public to authenticated;
+grant select on all tables in schema public to anon;
+grant insert on public.newsletter_subscribers to anon;
+grant insert on public.contact_submissions to anon;
+grant all on all tables in schema public to service_role;
+
+grant usage, select on all sequences in schema public to anon, authenticated, service_role;
+grant all on all sequences in schema public to service_role;
+
+alter default privileges in schema public
+  grant select, insert, update, delete on tables to authenticated;
+alter default privileges in schema public
+  grant select on tables to anon;
+alter default privileges in schema public
+  grant all on tables to service_role;

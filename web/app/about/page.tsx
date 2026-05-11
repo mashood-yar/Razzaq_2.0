@@ -86,18 +86,15 @@ export default function AboutPage() {
 
         <section className="relative overflow-hidden rounded-2xl border border-white/10">
           <div className="relative aspect-video bg-muted">
-            <Image
-              src="https://images.unsplash.com/photo-1563170351-be82bc9200ba?auto=format&fit=crop&w=1600&q=80"
-              alt="Blending atelier atmosphere"
-              fill
-              className="object-cover"
-              sizes="100vw"
+            <video
+              className="absolute inset-0 h-full w-full object-cover"
+              src="/hero-bg.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-label="Razzaq Luxe brand film"
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-              <p className="max-w-md px-6 text-center text-sm text-white/90">
-                Film placeholder — embed your brand documentary or hero reel here.
-              </p>
-            </div>
           </div>
         </section>
       </div>

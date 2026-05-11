@@ -10,7 +10,7 @@ export type OrderStatus =
   | "delivered"
   | "cancelled"
   | "refunded";
-export type PaymentMethod = "card" | "cod";
+export type PaymentMethod = "card" | "cod" | "safepay";
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
 export type DiscountType = "percentage" | "fixed" | "free_shipping";
 export type UserRole = "customer" | "staff" | "admin";
@@ -158,6 +158,7 @@ export interface Order {
   payment_method: PaymentMethod;
   payment_status: PaymentStatus;
   lemonsqueezy_order_id: string | null;
+  safepay_tracker_token?: string | null;
   subtotal_pkr: number;
   discount_pkr: number;
   shipping_pkr: number;
@@ -167,6 +168,12 @@ export interface Order {
   tracking_number: string | null;
   tracking_url: string | null;
   notes: string | null;
+  confirmation_email_delivered_at?: string | null;
+  shipped_notice_email_delivered_at?: string | null;
+  delivered_notice_email_delivered_at?: string | null;
+  txn_email_bounce_at?: string | null;
+  txn_email_bounce_kind?: string | null;
+  txn_email_bounce_detail?: string | null;
   ship_first_name: string;
   ship_last_name: string;
   ship_address1: string;

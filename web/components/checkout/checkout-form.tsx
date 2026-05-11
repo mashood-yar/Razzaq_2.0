@@ -17,6 +17,7 @@ import {
   cartTotal,
   formatPKR,
 } from "@/stores/cart-store";
+import { SafepayPayButton } from "@/components/checkout/safepay-pay-button";
 import { PK_PROVINCES } from "@/lib/utils";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
@@ -37,7 +38,7 @@ type DetailsInput = z.input<typeof detailsSchema>;
 type DetailsData  = z.output<typeof detailsSchema>;
 
 type ShippingMethod = "standard" | "express";
-type PaymentMethod = "card" | "cod";
+type PaymentMethod = "card" | "cod" | "safepay";
 
 export function CheckoutForm() {
   const router = useRouter();
@@ -127,7 +128,63 @@ export function CheckoutForm() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Order failed");
 
+      /*
+       * Safepay hosted checkout — Visa/MC + Pakistani wallets on Safepay’s page.
+       * Session is billed from DB total (never trust client `amount`).
+       */
+      if (paymentMethod === "safepay" && data.order?.id && shippingDetails) {
+        const payRes = await fetch("/api/payment/create-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: data.order.id,
+            customerEmail: shippingDetails.email,
+            amount: total,
+          }),
+        });
+        const payJson = await payRes.json();
+        if (!payRes.ok) {
+          throw new Error(payJson.error ?? "Could not start Safepay checkout");
+        }
+        if (payJson.redirectUrl) {
+          clearCart();
+          window.location.href = payJson.redirectUrl as string;
+        } else {
+          throw new Error("Safepay did not return a redirect URL");
+        }
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (paymentMethod === "card" && data.stripe === true && data.order?.id) {
+        const stripeRes = await fetch(
+          "/api/payment/stripe/create-checkout-session",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              orderId: data.order.id as string,
+              customerEmail: shippingDetails.email,
+            }),
+          },
+        );
+        const stripeJson = (await stripeRes.json()) as { url?: string; error?: string };
+        if (!stripeRes.ok) {
+          throw new Error(stripeJson.error ?? "Could not start Stripe checkout");
+        }
+        if (stripeJson.url) {
+          clearCart();
+          window.location.href = stripeJson.url;
+        } else {
+          throw new Error("Stripe did not return a checkout URL");
+        }
+        setIsSubmitting(false);
+        return;
+      }
+
       clearCart();
+
+      setIsSubmitting(false);
 
       if (paymentMethod === "card" && data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
@@ -376,7 +433,14 @@ export function CheckoutForm() {
                   {
                     value: "card" as const,
                     label: "Pay by Card",
-                    sub: "Secure card payment via LemonSqueezy. You will be redirected.",
+                    sub: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+                      ? "International cards via Stripe Checkout (hosted)."
+                      : "Secure card checkout — hosted payment page.",
+                  },
+                  {
+                    value: "safepay" as const,
+                    label: "Pay with Safepay (Pakistan)",
+                    sub: "Visa, Mastercard, Easypaisa, NayaPay, SadaPay & more — hosted checkout by Safepay.",
                   },
                   {
                     value: "cod" as const,
@@ -415,20 +479,29 @@ export function CheckoutForm() {
                 </p>
               )}
 
-              <div className="flex gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
                 <Button variant="outline" onClick={() => setStep(2)}>
                   Back
                 </Button>
-                <Button
-                  size="lg"
-                  className="flex-1"
-                  onClick={placeOrder}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting
-                    ? "Placing order…"
-                    : `Place Order · ${formatPKR(total)}`}
-                </Button>
+                {paymentMethod === "safepay" ? (
+                  <SafepayPayButton
+                    className="flex-1"
+                    totalLabel={formatPKR(total)}
+                    loading={isSubmitting}
+                    onPay={() => placeOrder()}
+                  />
+                ) : (
+                  <Button
+                    size="lg"
+                    className="flex-1"
+                    onClick={placeOrder}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting
+                      ? "Placing order…"
+                      : `Place Order · ${formatPKR(total)}`}
+                  </Button>
+                )}
               </div>
             </motion.div>
           )}
@@ -483,3 +556,6 @@ export function CheckoutForm() {
     </div>
   );
 }
+
+/** Alias for pages that prefer a generic `CheckoutPage` name. */
+export { CheckoutForm as CheckoutPage };

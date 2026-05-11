@@ -4,6 +4,13 @@ import { createLemonSqueezyCheckout } from "@/lib/lemonsqueezy/checkout";
 import { sendOrderConfirmationEmail } from "@/lib/resend/client";
 import type { CartItem, Order } from "@/lib/types";
 
+function isStripeCheckoutEnabled(): boolean {
+  return !!(
+    process.env.STRIPE_SECRET_KEY?.trim() &&
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim()
+  );
+}
+
 export async function POST(request: Request) {
   const supabase = await createClient();
   const body = await request.json();
@@ -31,7 +38,7 @@ export async function POST(request: Request) {
       country: string;
     };
     shippingMethod: string;
-    paymentMethod: "card" | "cod";
+    paymentMethod: "card" | "cod" | "safepay";
     promoCode?: string;
     discountAmount?: number;
     guestEmail?: string;
@@ -135,18 +142,42 @@ export async function POST(request: Request) {
     }
   }
 
-  // Send order confirmation email
-  try {
-    const fullOrder: Order = {
-      ...order,
-      order_items: orderItems.map((i, idx) => ({ ...i, id: `item-${idx}` })),
-    };
-    await sendOrderConfirmationEmail(fullOrder);
-  } catch (e) {
-    console.error("[Orders] confirmation email failed:", e);
+  // Email: COD + Lemon Squeezy get immediate confirmation. Stripe / Safepay confirm after webhook.
+  const sendNow =
+    paymentMethod === "cod" ||
+    (paymentMethod === "card" && !isStripeCheckoutEnabled());
+
+  if (sendNow) {
+    try {
+      const fullOrder: Order = {
+        ...order,
+        order_items: orderItems.map((i, idx) => ({ ...i, id: `item-${idx}` })),
+      };
+      await sendOrderConfirmationEmail(fullOrder);
+    } catch (e) {
+      console.error("[Orders] confirmation email failed:", e);
+    }
   }
 
-  // If card payment → create LemonSqueezy checkout
+  if (paymentMethod === "safepay") {
+    if (!process.env.SAFEPAY_API_KEY?.trim()) {
+      return NextResponse.json(
+        {
+          error:
+            "Safepay is not configured. Set SAFEPAY_API_KEY or choose another payment method.",
+        },
+        { status: 500 },
+      );
+    }
+    return NextResponse.json({ order, safepay: true });
+  }
+
+  // Stripe — hosted Checkout; frontend POST /api/payment/stripe/create-checkout-session then redirects.
+  if (paymentMethod === "card" && isStripeCheckoutEnabled()) {
+    return NextResponse.json({ order, stripe: true });
+  }
+
+  // Card via Lemon Squeezy (legacy) when Stripe env is not configured
   if (paymentMethod === "card") {
     const checkoutUrl = await createLemonSqueezyCheckout({
       id: order.id,
@@ -158,7 +189,7 @@ export async function POST(request: Request) {
 
     if (!checkoutUrl) {
       return NextResponse.json(
-        { error: "Failed to create payment session. Please try COD or contact support." },
+        { error: "Failed to create payment session. Try COD or contact support." },
         { status: 500 },
       );
     }
@@ -166,7 +197,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ order, checkoutUrl });
   }
 
-  // COD — return order directly
   return NextResponse.json({ order });
 }
 
