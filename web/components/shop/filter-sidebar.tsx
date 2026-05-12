@@ -4,7 +4,9 @@ import type { MainNoteCategory, Gender } from "@/lib/types";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+import { cn, formatPKR } from "@/lib/utils";
+
+const PRICE_SLIDER_MAX = 100_000;
 
 const NOTE_OPTIONS: MainNoteCategory[] = [
   "Woody",
@@ -52,8 +54,8 @@ export function FilterSidebar({
         <div className="mt-4 space-y-4">
           <Slider
             min={0}
-            max={400}
-            step={5}
+            max={PRICE_SLIDER_MAX}
+            step={500}
             value={value.priceRange}
             onValueChange={(v) =>
               onChange({
@@ -63,7 +65,7 @@ export function FilterSidebar({
             }
           />
           <p className="text-xs text-muted-foreground">
-            ${value.priceRange[0]} — ${value.priceRange[1]}
+            {formatPKR(value.priceRange[0])} — {formatPKR(value.priceRange[1])}
           </p>
         </div>
       </div>

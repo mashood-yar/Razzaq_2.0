@@ -7,7 +7,7 @@ import { ShoppingBag, Eye } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 import type { LegacyProduct as Product } from "@/lib/products";
-import { cn } from "@/lib/utils";
+import { cn, formatPKR } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { StarRating } from "@/components/product/star-rating";
@@ -123,10 +123,10 @@ export function ProductCard({
           <span className="text-xs text-muted-foreground">({product.reviewCount})</span>
         </div>
         <p className="mt-3 font-medium text-gold">
-          ${defaultSize?.price ?? product.price}
+          {formatPKR(defaultSize?.price ?? product.price)}
           {product.compareAtPrice && (
             <span className="ml-2 text-sm text-muted-foreground line-through">
-              ${product.compareAtPrice}
+              {formatPKR(product.compareAtPrice)}
             </span>
           )}
         </p>

@@ -15,6 +15,7 @@ import { NotePyramid } from "@/components/product/note-pyramid";
 import type { LegacyProduct as Product } from "@/lib/products";
 import { useCartStore } from "@/stores/cart-store";
 import { useFlyToCart } from "@/components/motion/fly-to-cart";
+import { formatPKR } from "@/lib/utils";
 
 export function QuickViewModal({
   product,
@@ -55,7 +56,7 @@ export function QuickViewModal({
               </span>
             </div>
             <p className="mt-6 text-2xl font-medium text-gold">
-              ${defaultSize?.price ?? product.price}{" "}
+              {formatPKR(defaultSize?.price ?? product.price)}{" "}
               <span className="text-sm font-normal text-muted-foreground">
                 · {defaultSize?.label ?? "100 ml"}
               </span>

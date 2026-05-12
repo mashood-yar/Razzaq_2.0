@@ -15,3 +15,4 @@ alter table public.orders
   check (payment_method in ('card', 'cod', 'safepay'));
 
 comment on column public.orders.safepay_tracker_token is 'Safepay tracker token (track_xxx) from POST /order/v1/init';
+ 

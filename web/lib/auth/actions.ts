@@ -43,6 +43,15 @@ export async function signUp(
   const password = String(formData.get("password") ?? "");
   const password2 = String(formData.get("password2") ?? "");
   const fullName = String(formData.get("full_name") ?? "").trim();
+  const genderRaw = String(formData.get("gender") ?? "").trim();
+  const gender =
+    genderRaw === "male" || genderRaw === "female" || genderRaw === "other"
+      ? genderRaw
+      : null;
+
+  if (!gender) {
+    return { error: "Please select Male, Female, or Prefer not to say." };
+  }
 
   if (password !== password2) {
     return { error: "Passwords do not match." };
@@ -52,7 +61,7 @@ export async function signUp(
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { full_name: fullName } },
+    options: { data: { full_name: fullName, gender } },
   });
   if (error) return { error: error.message };
 
@@ -62,6 +71,7 @@ export async function signUp(
         id: data.user.id,
         email,
         full_name: fullName,
+        gender,
         role: "customer",
       },
       { onConflict: "id" },

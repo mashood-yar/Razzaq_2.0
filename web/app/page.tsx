@@ -100,19 +100,10 @@ export default function HomePage() {
             muted
             loop
             playsInline
-            preload="none"
-            poster="https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1920&q=80"
+            preload="auto"
             aria-hidden
           >
-            {/* HD first (~1080p); 4K fallback if CDN path changes */}
-            <source
-              src="https://videos.pexels.com/video-files/3195394/3195394-hd_1920_1080_25fps.mp4"
-              type="video/mp4"
-            />
-            <source
-              src="https://videos.pexels.com/video-files/3195394/3195394-uhd_3840_2160_25fps.mp4"
-              type="video/mp4"
-            />
+            <source src="/hero-bg.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
         </div>

@@ -42,6 +42,44 @@ export function RegisterForm() {
             required
           />
         </div>
+        <fieldset className="space-y-2">
+          <legend className="text-sm font-medium leading-none text-foreground">
+            Gender
+          </legend>
+          <p className="text-xs text-muted-foreground">
+            Used only for your default profile avatar when you don&apos;t use a Google photo.
+          </p>
+          <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:flex-wrap sm:gap-4">
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-foreground">
+              <input
+                type="radio"
+                name="gender"
+                value="male"
+                required
+                className="h-4 w-4 accent-gold"
+              />
+              Male
+            </label>
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-foreground">
+              <input
+                type="radio"
+                name="gender"
+                value="female"
+                className="h-4 w-4 accent-gold"
+              />
+              Female
+            </label>
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-foreground">
+              <input
+                type="radio"
+                name="gender"
+                value="other"
+                className="h-4 w-4 accent-gold"
+              />
+              Prefer not to say
+            </label>
+          </div>
+        </fieldset>
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input

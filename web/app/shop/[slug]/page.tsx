@@ -15,6 +15,7 @@ import { StarRating } from "@/components/product/star-rating";
 import { ProductReviews } from "@/components/product/product-reviews";
 import { ProductCard } from "@/components/product/product-card";
 import { Separator } from "@/components/ui/separator";
+import { formatPKR } from "@/lib/utils";
 
 function Meter({ label, value }: { label: string; value: number }) {
   return (
@@ -81,8 +82,8 @@ export default async function ProductPage({
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
       <div className="mb-8 rounded-xl border border-gold/20 bg-brand-mist/25 px-4 py-3 text-center text-sm text-muted-foreground backdrop-blur-sm">
         <Truck className="mr-2 inline-block h-4 w-4 text-gold" aria-hidden />
-        Complimentary shipping on orders over{" "}
-        <span className="font-medium text-foreground">$150</span>
+        Complimentary standard shipping on Pakistan orders over{" "}
+        <span className="font-medium text-foreground">{formatPKR(5000)}</span>
       </div>
 
       <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
@@ -102,10 +103,10 @@ export default async function ProductPage({
             </span>
           </div>
           <p className="mt-8 text-3xl font-medium text-gold">
-            ${product.price}
+            {formatPKR(product.price)}
             {product.compareAtPrice && (
               <span className="ml-3 text-lg text-muted-foreground line-through">
-                ${product.compareAtPrice}
+                {formatPKR(product.compareAtPrice)}
               </span>
             )}
           </p>

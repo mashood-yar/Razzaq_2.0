@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { formatPKR } from "@/lib/utils";
 import Image from "next/image";
 import { Heart } from "lucide-react";
 import { PRODUCTS } from "@/lib/products";
@@ -47,7 +48,7 @@ export function WishlistView() {
                 <Link href={`/shop/${p.slug}`} className="font-serif text-lg hover:text-gold">
                   {p.name}
                 </Link>
-                <p className="mt-2 text-sm text-gold">${p.price}</p>
+                <p className="mt-2 text-sm text-gold">{formatPKR(p.price)}</p>
                 <Button
                   variant="outline"
                   size="sm"

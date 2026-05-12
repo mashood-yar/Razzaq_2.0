@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useUiStore } from "@/stores/ui-store";
 import { PRODUCTS } from "@/lib/products";
+import { formatPKR } from "@/lib/utils";
 
 export function SearchModal() {
   const open = useUiStore((s) => s.searchOpen);
@@ -76,7 +77,7 @@ export function SearchModal() {
                     {p.tagline}
                   </p>
                   <p className="mt-1 text-sm text-gold">
-                    From ${p.sizes[0]?.price ?? p.price}
+                    From {formatPKR(p.sizes[0]?.price ?? p.price)}
                   </p>
                 </div>
               </Link>

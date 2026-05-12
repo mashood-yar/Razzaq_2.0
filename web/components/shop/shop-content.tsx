@@ -74,7 +74,7 @@ function sortProducts(products: Product[], sort: SortKey): Product[] {
 }
 
 const defaultFilters = (): ShopFiltersState => ({
-  priceRange: [0, 400],
+  priceRange: [0, 100_000],
   gender: "all",
   notes: [],
   longevityMin: 1,

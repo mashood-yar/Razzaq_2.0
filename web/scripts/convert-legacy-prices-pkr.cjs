@@ -1,0 +1,12 @@
+const fs = require("fs");
+const path = require("path");
+const file = path.join(__dirname, "..", "lib", "products.ts");
+let s = fs.readFileSync(file, "utf8");
+const PKR_PER_USD = 285;
+const toPkr = (n) => Math.round((n * PKR_PER_USD) / 50) * 50;
+const before = s;
+s = s.replace(/\bprice:\s*(\d+)/g, (_, n) => `price: ${toPkr(+n)}`);
+s = s.replace(/\bcompareAtPrice:\s*(\d+)/g, (_, n) => `compareAtPrice: ${toPkr(+n)}`);
+if (s === before) process.exit(1);
+fs.writeFileSync(file, s);
+console.log("OK", file);

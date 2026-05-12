@@ -8,7 +8,6 @@ import {
   Menu,
   Search,
   ShoppingCart,
-  User,
   Heart,
   X,
 } from "lucide-react";
@@ -16,11 +15,12 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useUiStore } from "@/stores/ui-store";
 import { useCartStore } from "@/stores/cart-store";
-import { useAuth } from "@/components/providers/auth-provider";
+import { useSession } from "@/lib/auth/use-session";
 import {
-  oauthProfileImageUrl,
-  userAvatarInitial,
-} from "@/lib/auth/oauth-avatar";
+  AccountAvatarGlyph,
+  NavPersonOutlineIcon,
+} from "@/components/layout/account-avatar-glyph";
+import { HeaderAccountDropdown } from "@/components/layout/header-account-dropdown";
 
 const nav = [
   { href: "/shop", label: "Shop" },
@@ -31,9 +31,7 @@ const nav = [
 ];
 
 export function SiteHeader() {
-  const { user } = useAuth();
-  const avatarUrl = oauthProfileImageUrl(user);
-  const signedInLetter = user ? userAvatarInitial(user) : "";
+  const { status, user } = useSession();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const setSearchOpen = useUiStore((s) => s.setSearchOpen);
@@ -92,42 +90,12 @@ export function SiteHeader() {
             >
               <Search className="h-5 w-5" />
             </Button>
-            <Link href="/wishlist" aria-label="Wishlist">
-              <Button variant="ghost" size="icon" className="text-foreground">
-                <Heart className="h-5 w-5" />
-              </Button>
-            </Link>
-            <Link
-              href={user ? "/account" : "/login"}
-              aria-label={user ? "Account" : "Sign in"}
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative overflow-hidden text-foreground"
-              >
-                {avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- OAuth URLs vary by host (Google CDN, etc.)
-                  <img
-                    src={avatarUrl}
-                    alt=""
-                    width={32}
-                    height={32}
-                    className="h-8 w-8 rounded-full object-cover"
-                    referrerPolicy="no-referrer"
-                  />
-                ) : user ? (
-                  <span
-                    className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-muted text-xs font-semibold uppercase text-gold"
-                    aria-hidden
-                  >
-                    {signedInLetter}
-                  </span>
-                ) : (
-                  <User className="h-5 w-5" aria-hidden />
-                )}
-              </Button>
-            </Link>
+            <Button variant="ghost" size="icon" className="text-foreground" asChild>
+              <Link href="/wishlist" aria-label="Wishlist">
+                <Heart className="h-5 w-5" aria-hidden />
+              </Link>
+            </Button>
+            <HeaderAccountDropdown />
             <Button
               id="cart-fly-anchor"
               variant="ghost"
@@ -199,24 +167,15 @@ export function SiteHeader() {
                   className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium uppercase tracking-[0.15em] text-foreground hover:bg-white/5"
                   onClick={() => setMobileOpen(false)}
                 >
-                  {avatarUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={avatarUrl}
-                      alt=""
-                      width={32}
-                      height={32}
-                      className="h-8 w-8 shrink-0 rounded-full object-cover"
-                      referrerPolicy="no-referrer"
-                    />
+                  {status === "loading" ? (
+                    <span className="flex h-9 w-9 shrink-0 animate-pulse rounded-full bg-white/10" />
                   ) : user ? (
-                    <span
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/15 bg-muted text-xs font-semibold uppercase text-gold"
-                      aria-hidden
-                    >
-                      {signedInLetter}
+                    <AccountAvatarGlyph user={user} />
+                  ) : (
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center">
+                      <NavPersonOutlineIcon />
                     </span>
-                  ) : null}
+                  )}
                   {user ? "Account" : "Sign in"}
                 </Link>
               </nav>

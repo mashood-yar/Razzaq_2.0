@@ -9,9 +9,13 @@ interface Message {
   content: string;
 }
 
+/** Launcher art (`/public/chat/assistant-mascot.png`) — use `<img>` so animated GIFs keep motion if you swap in a `.gif`. */
+const CHAT_MASCOT_SRC = "/chat/assistant-mascot.png";
+
 const WELCOME: Message = {
   role: "assistant",
-  content: "Welcome to Razzaq Luxe. How can I assist you today? I can help with orders, sizing, products, and returns.",
+  content:
+    "Hi — I’m here to help with Razzaq Luxe: orders, sizing, products, and returns. What would you like to know?",
 };
 
 export function AIBot() {
@@ -81,13 +85,22 @@ export function AIBot() {
         <div className="flex h-[500px] w-80 flex-col overflow-hidden rounded-2xl border border-graphite bg-charcoal shadow-[0_32px_80px_rgba(0,0,0,0.7)]">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-graphite px-4 py-3">
-            <div>
-              <p className="font-body text-sm font-medium text-ivory">
-                <span className="text-luxe-gold">Razzaq Luxe</span> Support
-              </p>
-              <p className="font-body text-xs text-gold">
-                AI-powered · 24/7
-              </p>
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={CHAT_MASCOT_SRC}
+                alt=""
+                width={40}
+                height={40}
+                className="h-10 w-10 shrink-0 rounded-full object-cover ring-1 ring-white/10"
+                draggable={false}
+              />
+              <div className="min-w-0">
+                <p className="font-body text-sm font-medium text-ivory">
+                  <span className="text-luxe-gold">Razzaq Luxe</span> Support
+                </p>
+                <p className="font-body text-xs text-gold">AI-powered · 24/7</p>
+              </div>
             </div>
             <div className="flex items-center gap-1">
               <button
@@ -167,32 +180,30 @@ export function AIBot() {
         </div>
       )}
 
-      {/* Toggle — circular badge: dark rim, white ring, blue fill, stacked “Need help?” */}
+      {/* Toggle — mascot art fills the circle; X overlay when open */}
       <button
         type="button"
         onClick={() => setIsOpen((o) => !o)}
-        className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-obsidian bg-white p-[3px] shadow-lg transition-all hover:scale-105 active:scale-95"
+        className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-graphite bg-black shadow-[0_12px_40px_rgba(0,0,0,0.55)] ring-2 ring-white/15 transition-all hover:scale-105 hover:ring-white/25 active:scale-95"
         aria-label={
           isOpen ? "Close customer support chat" : "Open customer support chat"
         }
       >
-        <span
-          className="flex size-full items-center justify-center rounded-full"
-          style={{ backgroundColor: "#4F7C82" }}
-        >
-          {isOpen ? (
-            <X size={22} weight="bold" className="text-white" aria-hidden />
-          ) : (
-            <span className="flex select-none flex-col items-center justify-center gap-0 leading-none">
-              <span className="text-[9px] font-bold tracking-tight text-white">
-                Need
-              </span>
-              <span className="text-[9px] font-bold tracking-tight text-white">
-                help?
-              </span>
-            </span>
-          )}
-        </span>
+        {isOpen ? (
+          <span className="flex size-full items-center justify-center bg-graphite/95">
+            <X size={22} weight="bold" className="text-ivory" aria-hidden />
+          </span>
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element -- mascot may be animated GIF; avoids Next/Image optimization quirks
+          <img
+            src={CHAT_MASCOT_SRC}
+            alt=""
+            width={64}
+            height={64}
+            className="size-full object-cover object-center"
+            draggable={false}
+          />
+        )}
       </button>
     </div>
   );

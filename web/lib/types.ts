@@ -15,12 +15,15 @@ export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
 export type DiscountType = "percentage" | "fixed" | "free_shipping";
 export type UserRole = "customer" | "staff" | "admin";
 
+export type ProfileGender = "male" | "female" | "other";
+
 export interface Profile {
   id: string;
   email: string | null;
   full_name: string | null;
   phone: string | null;
   avatar_url: string | null;
+  gender: ProfileGender | null;
   role: UserRole;
   is_banned: boolean;
   created_at: string;

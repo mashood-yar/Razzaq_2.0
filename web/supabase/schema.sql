@@ -21,6 +21,7 @@ create table if not exists public.profiles (
   full_name   text,
   phone       text,
   avatar_url  text,
+  gender      text check (gender is null or gender in ('male', 'female', 'other')),
   role        text not null default 'customer'
                 check (role in ('customer', 'staff', 'admin')),
   is_banned   boolean not null default false,
@@ -31,17 +32,23 @@ create table if not exists public.profiles (
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
-  insert into public.profiles (id, email, full_name, avatar_url)
+  insert into public.profiles (id, email, full_name, avatar_url, gender)
   values (
     new.id,
     new.email,
     coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', ''),
-    new.raw_user_meta_data->>'avatar_url'
+    new.raw_user_meta_data->>'avatar_url',
+    case
+      when (new.raw_user_meta_data->>'gender') in ('male', 'female', 'other')
+      then new.raw_user_meta_data->>'gender'
+      else null
+    end
   )
   on conflict (id) do update
     set email      = excluded.email,
         full_name  = coalesce(excluded.full_name, public.profiles.full_name),
         avatar_url = coalesce(excluded.avatar_url, public.profiles.avatar_url),
+        gender     = coalesce(excluded.gender, public.profiles.gender),
         updated_at = now();
   return new;
 end;

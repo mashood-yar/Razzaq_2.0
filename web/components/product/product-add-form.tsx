@@ -7,7 +7,7 @@ import type { LegacyProduct as Product } from "@/lib/products";
 import { useCartStore } from "@/stores/cart-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { useFlyToCart } from "@/components/motion/fly-to-cart";
-import { cn } from "@/lib/utils";
+import { cn, formatPKR } from "@/lib/utils";
 
 export function ProductAddForm({ product }: { product: Product }) {
   const addItem = useCartStore((s) => s.addItem);
@@ -42,7 +42,7 @@ export function ProductAddForm({ product }: { product: Product }) {
                   : "border-white/15 text-muted-foreground hover:border-white/40",
               )}
             >
-              {s.label} · ${s.price}
+              {s.label} · {formatPKR(s.price)}
             </button>
           ))}
         </div>
@@ -93,7 +93,7 @@ export function ProductAddForm({ product }: { product: Product }) {
               });
             }}
           >
-            Add to bag · ${sel.price * qty}
+            Add to bag · {formatPKR(sel.price * qty)}
           </Button>
           <Button
             size="lg"
