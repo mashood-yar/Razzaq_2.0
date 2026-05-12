@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { sendContactAutoReply } from "@/lib/resend/client";
 
 export async function POST(request: Request) {
   const { name, email, subject, message } = await request.json();
@@ -21,8 +20,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  // Send auto-reply (don't fail if email fails)
+  // Send auto-reply (don't fail if email fails). Dynamic import keeps Resend off the
+  // critical path during `next build` / Collecting page data when env may be unset.
   try {
+    const { sendContactAutoReply } = await import("@/lib/resend/client");
     await sendContactAutoReply(name, email, subject);
   } catch (e) {
     console.error("[Contact] auto-reply failed:", e);
