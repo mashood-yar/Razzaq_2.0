@@ -6,6 +6,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   outputFileTracingRoot: path.join(__dirname),
+  /** Avoid Windows webpack pack rename races when multiple dev servers touch the same `.next`. */
+  webpack: (config, { dev }) => {
+    if (dev) config.cache = false;
+    return config;
+  },
   experimental: {
     optimizePackageImports: [
       "lucide-react",

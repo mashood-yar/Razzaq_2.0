@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -6,11 +6,14 @@ function Chip({
   label,
   children,
   className,
+  style,
 }: {
   label: string;
   children: ReactNode;
   /** Fixed frame; artwork uses `h-full w-full` inside so there is no inner padding. */
   className?: string;
+  /** Inline fallbacks so `next/image` fill layout survives missing Tailwind/CSS. */
+  style?: CSSProperties;
 }) {
   return (
     <span
@@ -18,6 +21,7 @@ function Chip({
         "inline-flex overflow-hidden rounded border border-graphite p-0",
         className,
       )}
+      style={{ position: "relative", ...style }}
       aria-label={label}
       title={label}
     >
@@ -71,7 +75,11 @@ function UpaisaSvg({ className }: { className?: string }) {
 export function FooterPaymentMethods() {
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <Chip label="Visa accepted" className="relative h-9 aspect-[780/500] shrink-0">
+      <Chip
+        label="Visa accepted"
+        className="relative h-9 aspect-[780/500] shrink-0"
+        style={{ height: 36, width: 56 }}
+      >
         <Image
           src="/payments/visa.png"
           alt=""
@@ -81,10 +89,18 @@ export function FooterPaymentMethods() {
           draggable={false}
         />
       </Chip>
-      <Chip label="Mastercard accepted" className="h-9 aspect-[48/32] shrink-0">
+      <Chip
+        label="Mastercard accepted"
+        className="h-9 aspect-[48/32] shrink-0"
+        style={{ height: 36, width: 48 }}
+      >
         <MastercardSvg className="block h-full w-full" />
       </Chip>
-      <Chip label="Upaisa accepted" className="h-9 aspect-[88/28] shrink-0">
+      <Chip
+        label="Upaisa accepted"
+        className="h-9 aspect-[88/28] shrink-0"
+        style={{ height: 36, width: 113 }}
+      >
         <UpaisaSvg className="block h-full w-full" />
       </Chip>
     </div>
