@@ -12,7 +12,10 @@ export async function signIn(
   formData: FormData,
 ): Promise<AuthActionState> {
   if (!isSupabaseConfigured()) {
-    return { error: "Authentication is not configured (missing Supabase env)." };
+    return {
+      error:
+        "Authentication is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to web/.env.local, then restart the dev server.",
+    };
   }
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
@@ -31,7 +34,10 @@ export async function signUp(
   formData: FormData,
 ): Promise<AuthActionState> {
   if (!isSupabaseConfigured()) {
-    return { error: "Authentication is not configured (missing Supabase env)." };
+    return {
+      error:
+        "Authentication is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to web/.env.local, then restart the dev server.",
+    };
   }
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
