@@ -4,6 +4,9 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getUser } from "@/lib/auth/session";
 import { formatPKR, formatDate, STATUS_LABELS } from "@/lib/utils";
+import { isSupabaseConfigured } from "@/utils/supabase/public-env";
+
+export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -29,6 +32,7 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
   const { success } = await searchParams;
   const user = await getUser();
 
+  if (!isSupabaseConfigured()) notFound();
   const supabase = await createClient();
 
   const { data: order, error } = await supabase

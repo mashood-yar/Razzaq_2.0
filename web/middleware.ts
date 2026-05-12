@@ -1,6 +1,34 @@
+import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/middleware";
-import { isSupabaseConfigured } from "@/utils/supabase/public-env";
+
+/** Inline env check — middleware runs on Edge; avoid `@/` imports (Vercel bundler). */
+function isSupabaseConfigured(): boolean {
+  return !!(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+  );
+}
+
+function createMiddlewareSupabase(
+  request: NextRequest,
+  response: NextResponse,
+  supabaseUrl: string,
+  supabaseKey: string,
+) {
+  return createServerClient(supabaseUrl, supabaseKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options),
+        );
+      },
+    },
+  });
+}
 
 const AUTH_ROUTES = [
   "/login",
@@ -30,7 +58,7 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
   let response = NextResponse.next({ request: { headers: request.headers } });
-  const supabase = createClient(request, response, url, key);
+  const supabase = createMiddlewareSupabase(request, response, url, key);
 
   const {
     data: { user },

@@ -4,6 +4,9 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { formatPKR } from "@/lib/utils";
 import { SearchBar } from "@/components/search/search-bar";
+import { isSupabaseConfigured } from "@/utils/supabase/public-env";
+
+export const dynamic = "force-dynamic";
 
 type Props = { searchParams: Promise<{ q?: string }> };
 
@@ -18,7 +21,6 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 export default async function SearchPage({ searchParams }: Props) {
   const { q: rawQ } = await searchParams;
   const q = (rawQ ?? "").trim();
-  const supabase = await createClient();
 
   let products: {
     id: string;
@@ -29,7 +31,8 @@ export default async function SearchPage({ searchParams }: Props) {
     product_images: { url: string; is_primary?: boolean; sort_order?: number }[];
   }[] = [];
 
-  if (q) {
+  if (q && isSupabaseConfigured()) {
+    const supabase = await createClient();
     const { data } = await supabase
       .from("products")
       .select("id, name, slug, price_pkr, compare_at_price, product_images(url, is_primary, sort_order)")

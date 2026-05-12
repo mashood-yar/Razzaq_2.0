@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/utils/supabase/public-env";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Collections",
@@ -37,14 +40,18 @@ const FALLBACK_COLLECTIONS: CollectionItem[] = [
 ];
 
 export default async function CollectionsPage() {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("collections")
-    .select("slug, name, description, banner_url")
-    .eq("is_active", true)
-    .order("sort_order");
+  let cols: CollectionItem[] = FALLBACK_COLLECTIONS;
 
-  const cols: CollectionItem[] = (data && data.length > 0) ? data : FALLBACK_COLLECTIONS;
+  if (isSupabaseConfigured()) {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("collections")
+      .select("slug, name, description, banner_url")
+      .eq("is_active", true)
+      .order("sort_order");
+
+    if (data && data.length > 0) cols = data;
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">

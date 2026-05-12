@@ -2,11 +2,17 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ProductDetail } from "@/components/product/product-detail";
+import { isSupabaseConfigured } from "@/utils/supabase/public-env";
+
+export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  if (!isSupabaseConfigured()) {
+    return { title: slug };
+  }
   const supabase = await createClient();
   const { data } = await supabase
     .from("products")
@@ -22,6 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
+  if (!isSupabaseConfigured()) notFound();
   const supabase = await createClient();
   const { data: product, error } = await supabase
     .from("products")

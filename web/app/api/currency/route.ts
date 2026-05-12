@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export const revalidate = 3600; // cache for 1 hour
+/** Avoid build-time prerender (would run without Supabase env on some CI/deploy setups). */
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   const supabase = await createClient();

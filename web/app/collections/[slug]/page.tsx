@@ -4,6 +4,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { formatPKR } from "@/lib/utils";
+import { isSupabaseConfigured } from "@/utils/supabase/public-env";
+
+export const dynamic = "force-dynamic";
 
 interface CollectionProduct {
   id: string;
@@ -22,6 +25,9 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  if (!isSupabaseConfigured()) {
+    return { title: slug };
+  }
   const supabase = await createClient();
   const { data } = await supabase
     .from("collections")
@@ -38,6 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CollectionPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const { sort: sortParam, page: pageParam } = await searchParams;
+  if (!isSupabaseConfigured()) notFound();
   const supabase = await createClient();
   const sort = sortParam || "newest";
   const page = Math.max(1, parseInt(pageParam || "1"));
