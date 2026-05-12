@@ -1,16 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Heart, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { LegacyProduct as Product } from "@/lib/products";
 import { useCartStore } from "@/stores/cart-store";
 import { useWishlistStore } from "@/stores/wishlist-store";
+import { useFlyToCart } from "@/components/motion/fly-to-cart";
 import { cn } from "@/lib/utils";
 
 export function ProductAddForm({ product }: { product: Product }) {
   const addItem = useCartStore((s) => s.addItem);
   const toggle = useWishlistStore((s) => s.toggle);
+  const fly = useFlyToCart();
+  const addRef = useRef<HTMLButtonElement>(null);
   const wished = useWishlistStore((s) => s.ids.includes(product.id));
   const [sizeIdx, setSizeIdx] = useState(
     Math.min(1, product.sizes.length - 1),
@@ -74,9 +77,11 @@ export function ProductAddForm({ product }: { product: Product }) {
 
         <div className="flex flex-1 flex-wrap gap-3">
           <Button
+            ref={addRef}
             size="lg"
             className="min-w-[200px] flex-1"
-            onClick={() =>
+            onClick={() => {
+              fly(product.images[0], addRef.current);
               addItem({
                 id: `${product.id}::${sel.label}`,
                 productId: product.id,
@@ -85,8 +90,8 @@ export function ProductAddForm({ product }: { product: Product }) {
                 price: sel.price,
                 quantity: qty,
                 variantLabel: sel.label,
-              })
-            }
+              });
+            }}
           >
             Add to bag · ${sel.price * qty}
           </Button>

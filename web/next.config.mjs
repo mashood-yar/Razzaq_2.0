@@ -6,6 +6,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   outputFileTracingRoot: path.join(__dirname),
+  experimental: {
+    optimizePackageImports: [
+      "lucide-react",
+      "@phosphor-icons/react",
+      "framer-motion",
+      "recharts",
+    ],
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },

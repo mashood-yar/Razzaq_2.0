@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { GoldBrandText } from "@/components/brand/gold-brand-text";
 
 const items = [
   {
@@ -50,7 +51,7 @@ export function TestimonialCarousel() {
           className="relative px-4 pt-8 text-center sm:px-12"
         >
           <blockquote className="font-serif text-xl italic leading-relaxed text-foreground sm:text-2xl">
-            “{cur.quote}”
+            “<GoldBrandText text={cur.quote} />”
           </blockquote>
           <figcaption className="mt-10 flex flex-col items-center gap-3">
             <div className="relative h-14 w-14 overflow-hidden rounded-full ring-2 ring-gold/40">

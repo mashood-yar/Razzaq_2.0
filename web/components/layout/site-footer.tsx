@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FooterPaymentMethods } from "@/components/layout/footer-payment-methods";
 import { siteConfig } from "@/lib/site";
 
 const footerNav = {
@@ -33,7 +34,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
-            <p className="font-display text-2xl italic tracking-wide text-ivory">
+            <p className="font-display text-2xl italic tracking-wide text-luxe-gold">
               {siteConfig.name}
             </p>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-smoke">
@@ -72,7 +73,9 @@ export function SiteFooter() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-6 border-t border-graphite pt-8 md:flex-row">
           <p className="text-xs text-ash">
-            © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
+            © {new Date().getFullYear()}{" "}
+            <span className="text-luxe-gold">{siteConfig.name}</span>. All rights
+            reserved.
           </p>
           <div className="flex flex-wrap items-center gap-4">
             {footerNav.legal.map((l) => (
@@ -85,16 +88,7 @@ export function SiteFooter() {
               </Link>
             ))}
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-            {["Visa", "Mastercard", "COD"].map((method) => (
-              <span
-                key={method}
-                className="rounded border border-graphite px-2 py-0.5 text-[10px] uppercase tracking-wider text-ash"
-              >
-                {method}
-              </span>
-            ))}
-          </div>
+          <FooterPaymentMethods />
         </div>
       </div>
     </footer>

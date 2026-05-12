@@ -32,12 +32,12 @@ export function LoginForm({ defaultNext = "/account/orders" }: Props) {
   return (
     <div className="space-y-8">
       {authError === "auth_failed" ? (
-        <p className="text-sm text-red-400" role="alert">
+        <p className="text-center text-sm text-red-400" role="alert">
           Sign-in failed. Try again or use another method.
         </p>
       ) : null}
 
-      <form action={formAction} className="space-y-4">
+      <form action={formAction} className="space-y-4 text-left">
         <input type="hidden" name="next" value={next} />
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
@@ -64,12 +64,18 @@ export function LoginForm({ defaultNext = "/account/orders" }: Props) {
             {state.error}
           </p>
         ) : null}
-        <Button type="submit" className="w-full gap-2" disabled={pending}>
-          {pending ? (
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-          ) : null}
-          Sign in
-        </Button>
+        <div className="flex w-full justify-center">
+          <Button
+            type="submit"
+            className="!h-auto min-h-11 w-auto px-8 py-3 gap-2"
+            disabled={pending}
+          >
+            {pending ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+            ) : null}
+            Sign in
+          </Button>
+        </div>
       </form>
 
       <div className="relative">
@@ -81,18 +87,23 @@ export function LoginForm({ defaultNext = "/account/orders" }: Props) {
         </div>
       </div>
 
-      <Button
-        type="button"
-        variant="secondary"
-        className="flex w-full items-center justify-center gap-3"
-        disabled={pending || magicPending}
-        onClick={() => signInWithGoogle(next).catch(console.error)}
-      >
-        <GoogleGlyph />
-        Continue with Google
-      </Button>
+      <div className="flex w-full justify-center">
+        <Button
+          type="button"
+          variant="secondary"
+          className="flex !h-auto min-h-11 w-auto items-center justify-center gap-3 px-8 py-3"
+          disabled={pending || magicPending}
+          onClick={() => signInWithGoogle(next).catch(console.error)}
+        >
+          <GoogleGlyph />
+          Continue with Google
+        </Button>
+      </div>
 
-      <form action={magicAction} className="space-y-3 rounded-lg border border-white/10 p-4">
+      <form
+        action={magicAction}
+        className="space-y-3 rounded-lg border border-white/10 p-4 text-left"
+      >
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
           Magic link
         </p>

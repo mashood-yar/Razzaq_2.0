@@ -59,7 +59,7 @@ export function SiteHeader() {
             </button>
             <Link
               href="/"
-              className="font-serif text-xl italic tracking-tight text-foreground sm:text-2xl"
+              className="font-serif text-xl italic tracking-tight text-luxe-gold transition-colors hover:text-luxe-gold-bright sm:text-2xl"
               aria-label="Razzaq Luxe — home"
             >
               Razzaq Luxe
@@ -129,6 +129,7 @@ export function SiteHeader() {
               </Button>
             </Link>
             <Button
+              id="cart-fly-anchor"
               variant="ghost"
               size="icon"
               className="relative text-foreground"
@@ -168,7 +169,7 @@ export function SiteHeader() {
               <div className="flex items-center justify-between border-b border-white/10 p-4">
                 <Link
                   href="/"
-                  className="font-serif text-lg italic tracking-tight text-foreground"
+                  className="font-serif text-lg italic tracking-tight text-luxe-gold transition-colors hover:text-luxe-gold-bright"
                   aria-label="Razzaq Luxe — home"
                 >
                   Razzaq Luxe

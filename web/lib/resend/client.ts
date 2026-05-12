@@ -19,6 +19,7 @@ function getResend(): Resend {
 
 const FROM = process.env.RESEND_FROM_EMAIL ?? "orders@razzaqluxe.com";
 const BRAND = "Razzaq Luxe";
+const BRAND_GOLD_HTML = `<span style="color:#C9A84C">${BRAND}</span>`;
 
 function baseHtml(content: string): string {
   return `<!DOCTYPE html>
@@ -27,27 +28,27 @@ function baseHtml(content: string): string {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-  body { margin:0; padding:0; background:#0D0C0A; font-family:'Gill Sans','Gill Sans MT',Optima,sans-serif; color:#F5F0E8; }
+  body { margin:0; padding:0; background:#0B2E33; font-family:'Gill Sans','Gill Sans MT',Optima,sans-serif; color:#B8E3E9; }
   .wrap { max-width:600px; margin:0 auto; padding:40px 24px; }
-  .logo { font-family:Georgia,serif; font-size:28px; font-style:italic; color:#C9A84C; letter-spacing:2px; text-align:center; margin-bottom:32px; }
-  .divider { border:none; border-top:1px solid #2C2921; margin:24px 0; }
-  h1 { font-family:Georgia,serif; font-size:24px; font-weight:400; color:#F5F0E8; margin:0 0 16px; }
-  p { font-size:15px; line-height:1.7; color:#EDE8DF; margin:0 0 16px; }
-  .badge { display:inline-block; background:#1E1A0F; border:1px solid #C9A84C; color:#C9A84C; font-size:12px; letter-spacing:2px; text-transform:uppercase; padding:6px 16px; border-radius:4px; margin-bottom:24px; }
+  .logo { font-family:Georgia,serif; font-size:28px; font-style:italic; letter-spacing:2px; text-align:center; margin-bottom:32px; }
+  .divider { border:none; border-top:1px solid #2d5560; margin:24px 0; }
+  h1 { font-family:Georgia,serif; font-size:24px; font-weight:400; color:#B8E3E9; margin:0 0 16px; }
+  p { font-size:15px; line-height:1.7; color:#C8ECF1; margin:0 0 16px; }
+  .badge { display:inline-block; background:#08292E; border:1px solid #B8E3E9; color:#B8E3E9; font-size:12px; letter-spacing:2px; text-transform:uppercase; padding:6px 16px; border-radius:4px; margin-bottom:24px; }
   table.items { width:100%; border-collapse:collapse; margin:16px 0; }
-  table.items td { padding:10px 0; border-bottom:1px solid #2C2921; font-size:14px; color:#EDE8DF; }
-  .total-row td { padding:14px 0 0; font-weight:600; font-size:16px; color:#C9A84C; border:none; }
-  .btn { display:inline-block; background:#C9A84C; color:#0D0C0A; font-size:13px; font-weight:600; letter-spacing:2px; text-transform:uppercase; padding:14px 32px; border-radius:4px; text-decoration:none; margin:16px 0; }
-  .footer { text-align:center; font-size:12px; color:#6B6560; margin-top:40px; }
+  table.items td { padding:10px 0; border-bottom:1px solid #2d5560; font-size:14px; color:#C8ECF1; }
+  .total-row td { padding:14px 0 0; font-weight:600; font-size:16px; color:#B8E3E9; border:none; }
+  .btn { display:inline-block; background:#B8E3E9; color:#0B2E33; font-size:13px; font-weight:600; letter-spacing:2px; text-transform:uppercase; padding:14px 32px; border-radius:4px; text-decoration:none; margin:16px 0; }
+  .footer { text-align:center; font-size:12px; color:#93B1B5; margin-top:40px; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="logo">${BRAND}</div>
+  <div class="logo">${BRAND_GOLD_HTML}</div>
   ${content}
   <div class="footer">
-    <p>© ${new Date().getFullYear()} ${BRAND} · Lahore, Pakistan</p>
-    <p>Questions? <a href="mailto:sultanbarak77@gmail.com" style="color:#C9A84C">sultanbarak77@gmail.com</a></p>
+    <p>© ${new Date().getFullYear()} ${BRAND_GOLD_HTML} · Lahore, Pakistan</p>
+    <p>Questions? <a href="mailto:sultanbarak77@gmail.com" style="color:#B8E3E9">sultanbarak77@gmail.com</a></p>
   </div>
 </div>
 </body>
@@ -58,7 +59,7 @@ function orderItemsTable(order: Order): string {
   const rows = (order.order_items ?? [])
     .map(
       (i) => `<tr>
-    <td>${i.product_name}${i.variant_label ? ` <span style="color:#6B6560">(${i.variant_label})</span>` : ""} × ${i.quantity}</td>
+    <td>${i.product_name}${i.variant_label ? ` <span style="color:#93B1B5">(${i.variant_label})</span>` : ""} × ${i.quantity}</td>
     <td style="text-align:right">PKR ${Number(i.total_price).toLocaleString()}</td>
   </tr>`,
     )
@@ -94,7 +95,7 @@ export async function sendOrderConfirmationEmail(order: Order) {
         ${order.ship_city}, ${order.ship_province}${order.ship_postal_code ? " " + order.ship_postal_code : ""}<br>
         ${order.ship_phone}
       </p>
-      ${isCod ? '<p style="background:#1E1A0F;border:1px solid #8B6A2A;color:#E0C47A;padding:12px 16px;border-radius:4px;font-size:14px;">Payment method: <strong>Cash on Delivery</strong>. Please keep the exact amount ready at the time of delivery.</p>' : ""}
+      ${isCod ? '<p style="background:#08292E;border:1px solid #4F7C82;color:#D4F1F5;padding:12px 16px;border-radius:4px;font-size:14px;">Payment method: <strong>Cash on Delivery</strong>. Please keep the exact amount ready at the time of delivery.</p>' : ""}
       <a href="${process.env.NEXT_PUBLIC_SITE_URL}/order/${order.id}" class="btn">Track Your Order</a>
     `),
   });
@@ -110,7 +111,7 @@ export async function sendOrderShippedEmail(order: Order) {
       <div class="badge">Shipped</div>
       <h1>Your order is on its way.</h1>
       <p>Order <strong>${order.order_number}</strong> has been dispatched and is heading to you.</p>
-      ${order.tracking_number ? `<p>Tracking number: <strong>${order.tracking_number}</strong>${order.tracking_url ? ` — <a href="${order.tracking_url}" style="color:#C9A84C">Track package</a>` : ""}</p>` : ""}
+      ${order.tracking_number ? `<p>Tracking number: <strong>${order.tracking_number}</strong>${order.tracking_url ? ` — <a href="${order.tracking_url}" style="color:#B8E3E9">Track package</a>` : ""}</p>` : ""}
       <p>Estimated delivery: 3–5 business days for standard, 1–2 days for express.</p>
       <a href="${process.env.NEXT_PUBLIC_SITE_URL}/order/${order.id}" class="btn">View Order</a>
     `),
@@ -126,7 +127,7 @@ export async function sendOrderDeliveredEmail(order: Order) {
     html: baseHtml(`
       <div class="badge">Delivered</div>
       <h1>Your order has arrived.</h1>
-      <p>We hope you love your ${BRAND} purchase. Your order <strong>${order.order_number}</strong> has been delivered.</p>
+      <p>We hope you love your ${BRAND_GOLD_HTML} purchase. Your order <strong>${order.order_number}</strong> has been delivered.</p>
       <p>If there's anything wrong with your order, please contact us within 7 days for returns or exchanges.</p>
       <a href="${process.env.NEXT_PUBLIC_SITE_URL}/shop" class="btn">Continue Shopping</a>
     `),
@@ -140,7 +141,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
     subject: `Welcome to ${BRAND}`,
     html: baseHtml(`
       <h1>Welcome, ${name || "friend"}.</h1>
-      <p>You've joined the ${BRAND} family — a world of premium fashion, exquisite fragrances, and timeless luxury.</p>
+      <p>You've joined the ${BRAND_GOLD_HTML} family — a world of premium fashion, exquisite fragrances, and timeless luxury.</p>
       <p>Explore our latest collections and discover pieces crafted for those who wear intention.</p>
       <a href="${process.env.NEXT_PUBLIC_SITE_URL}/shop" class="btn">Explore the Collection</a>
     `),
@@ -163,8 +164,8 @@ export async function sendContactAutoReply(
     subject: `We received your message — ${BRAND}`,
     html: baseHtml(`
       <h1>Hello, ${name}.</h1>
-      <p>Thank you for reaching out to ${BRAND}. We've received your message regarding "<strong>${subject}</strong>" and will get back to you within 24 hours.</p>
-      <p>In the meantime, you can explore our <a href="${process.env.NEXT_PUBLIC_SITE_URL}/policies/return-policy" style="color:#C9A84C">Return Policy</a> or browse our <a href="${process.env.NEXT_PUBLIC_SITE_URL}/shop" style="color:#C9A84C">latest collection</a>.</p>
+      <p>Thank you for reaching out to ${BRAND_GOLD_HTML}. We've received your message regarding "<strong>${subject}</strong>" and will get back to you within 24 hours.</p>
+      <p>In the meantime, you can explore our <a href="${process.env.NEXT_PUBLIC_SITE_URL}/policies/return-policy" style="color:#B8E3E9">Return Policy</a> or browse our <a href="${process.env.NEXT_PUBLIC_SITE_URL}/shop" style="color:#B8E3E9">latest collection</a>.</p>
     `),
   });
 }

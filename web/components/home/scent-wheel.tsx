@@ -16,7 +16,7 @@ export function ScentWheel() {
   return (
     <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-12 lg:flex-row lg:justify-between">
       <div className="relative aspect-square w-full max-w-[320px]">
-        <div className="absolute inset-0 rounded-full border border-gold/30 bg-gradient-to-br from-emerald-deep/60 via-black/40 to-gold/10 shadow-[inset_0_0_60px_rgba(212,175,55,0.08)]" />
+        <div className="absolute inset-0 rounded-full border border-gold/30 bg-gradient-to-br from-brand-mist/60 via-brand-slate/50 to-gold/10 shadow-[inset_0_0_60px_rgba(184,227,233,0.14)]" />
         <motion.div
           className="absolute inset-8 rounded-full border border-white/10"
           animate={{ rotate: 360 }}

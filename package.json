@@ -1,15 +1,11 @@
 {
   "name": "razzaq-luxe",
   "private": true,
-  "description": "Monorepo root: use npm run dev/build from here. Vercel Git builds use Root Directory . with root vercel.json.",
+  "description": "Delegate scripts to web/. On Vercel: Project Root Directory = web",
   "scripts": {
-    "postinstall": "npm ci --prefix web",
     "dev": "npm run dev --prefix web",
-    "build": "npm run build --prefix web && node scripts/copy-next-build.mjs",
+    "build": "npm run build --prefix web",
     "start": "npm run start --prefix web",
     "lint": "npm run lint --prefix web"
-  },
-  "devDependencies": {
-    "next": "15.5.18"
   }
 }

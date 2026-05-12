@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { GoldBrandText } from "@/components/brand/gold-brand-text";
 
 export const metadata: Metadata = {
   title: "About",
@@ -41,9 +42,7 @@ export default function AboutPage() {
         <section>
           <h2 className="font-serif text-3xl">Brand story</h2>
           <p className="mt-6 leading-relaxed text-muted-foreground">
-            Razzaq Luxe is a Pakistan fragrance house built around four signatures — Sporty, Habibi,
-            Flourine, and Khan&apos;s Aura. We blend for presence and longevity, with a physical boutique
-            in Quetta and the same care whether you walk in or order online.
+            <GoldBrandText text={"Razzaq Luxe is a Pakistan fragrance house built around four signatures — Sporty, Habibi, Flourine, and Khan\u2019s Aura. We blend for presence and longevity, with a physical boutique in Quetta and the same care whether you walk in or order online."} />
           </p>
         </section>
 
@@ -56,7 +55,9 @@ export default function AboutPage() {
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
                   {m.year}
                 </p>
-                <p className="mt-2 text-muted-foreground">{m.text}</p>
+                <p className="mt-2 text-muted-foreground">
+                  <GoldBrandText text={m.text} />
+                </p>
               </li>
             ))}
           </ol>

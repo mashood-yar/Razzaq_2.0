@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
+import { Gem } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useUiStore } from "@/stores/ui-store";
@@ -13,7 +13,7 @@ export function QuizTeaser() {
       <CardContent className="flex flex-col items-start gap-4 p-8 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex gap-4">
           <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gold/15 text-gold">
-            <Sparkles className="h-7 w-7" aria-hidden />
+            <Gem className="h-7 w-7" aria-hidden />
           </div>
           <div>
             <h3 className="font-serif text-2xl text-foreground">

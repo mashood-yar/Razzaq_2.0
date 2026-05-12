@@ -1,16 +1,49 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { PRODUCTS, type LegacyProduct } from "@/lib/products";
 import { siteConfig } from "@/lib/site";
+import { GoldBrandText } from "@/components/brand/gold-brand-text";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product/product-card";
-import { QuizTeaser } from "@/components/home/quiz-teaser";
-import { NewsletterSection } from "@/components/home/newsletter-section";
-import { TestimonialCarousel } from "@/components/home/testimonial-carousel";
-import { ScentWheel } from "@/components/home/scent-wheel";
-import { SignatureScentsMarquee } from "@/components/home/signature-scents-marquee";
+import { HomeMarqueeSkeleton } from "@/components/home/home-marquee-skeleton";
+import { SectionCardSkeleton } from "@/components/home/section-card-skeleton";
+
+const SignatureScentsMarquee = dynamic(
+  () =>
+    import("@/components/home/signature-scents-marquee").then((m) => ({
+      default: m.SignatureScentsMarquee,
+    })),
+  { loading: () => <HomeMarqueeSkeleton /> },
+);
+
+const QuizTeaser = dynamic(
+  () => import("@/components/home/quiz-teaser").then((m) => ({ default: m.QuizTeaser })),
+  { loading: () => <SectionCardSkeleton height={200} /> },
+);
+
+const ScentWheel = dynamic(
+  () => import("@/components/home/scent-wheel").then((m) => ({ default: m.ScentWheel })),
+  { loading: () => <SectionCardSkeleton height={340} /> },
+);
+
+const TestimonialCarousel = dynamic(
+  () =>
+    import("@/components/home/testimonial-carousel").then((m) => ({
+      default: m.TestimonialCarousel,
+    })),
+  { loading: () => <SectionCardSkeleton height={260} /> },
+);
+
+const NewsletterSection = dynamic(
+  () =>
+    import("@/components/home/newsletter-section").then((m) => ({
+      default: m.NewsletterSection,
+    })),
+  { loading: () => <SectionCardSkeleton height={220} /> },
+);
 
 export const metadata: Metadata = {
   title: "Luxury Fashion & Lifestyle",
@@ -67,10 +100,15 @@ export default function HomePage() {
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="none"
             poster="https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1920&q=80"
             aria-hidden
           >
+            {/* HD first (~1080p); 4K fallback if CDN path changes */}
+            <source
+              src="https://videos.pexels.com/video-files/3195394/3195394-hd_1920_1080_25fps.mp4"
+              type="video/mp4"
+            />
             <source
               src="https://videos.pexels.com/video-files/3195394/3195394-uhd_3840_2160_25fps.mp4"
               type="video/mp4"
@@ -83,7 +121,7 @@ export default function HomePage() {
           <p className="text-xs font-semibold uppercase tracking-[0.35em] text-gold">
             Quetta · Fragrance house
           </p>
-          <h1 className="max-w-4xl font-serif text-5xl leading-[1.05] tracking-tight text-foreground sm:text-6xl lg:text-7xl">
+          <h1 className="max-w-4xl font-serif text-5xl leading-[1.05] tracking-tight text-luxe-gold sm:text-6xl lg:text-7xl">
             Razzaq Luxe
           </h1>
           <p className="max-w-xl text-lg text-muted-foreground">
@@ -119,7 +157,7 @@ export default function HomePage() {
             <div>
               <h2 className="font-serif text-3xl sm:text-4xl">Featured collections</h2>
               <p className="mt-2 max-w-lg text-muted-foreground">
-                Four doors into the Razzaq Luxe universe — each curated with obsessive precision.
+                <GoldBrandText text="Four doors into the Razzaq Luxe universe — each curated with obsessive precision." />
               </p>
             </div>
             <Button asChild variant="outline">
@@ -178,7 +216,9 @@ export default function HomePage() {
         {/* Testimonials */}
         <section>
           <div className="mb-12 text-center">
-            <h2 className="font-serif text-3xl sm:text-4xl">Voices of Razzaq Luxe</h2>
+            <h2 className="font-serif text-3xl sm:text-4xl">
+              Voices of <span className="text-luxe-gold">Razzaq Luxe</span>
+            </h2>
             <p className="mt-3 text-muted-foreground">Trusted by fashion enthusiasts worldwide.</p>
           </div>
           <TestimonialCarousel />
@@ -190,7 +230,7 @@ export default function HomePage() {
             <div>
               <h2 className="font-serif text-3xl sm:text-4xl">As seen on you</h2>
               <p className="mt-2 text-muted-foreground">
-                Tag <span className="text-gold">#RazzaqLuxe</span> — we feature our community weekly.
+                Tag <span className="text-luxe-gold">#RazzaqLuxe</span> — we feature our community weekly.
               </p>
             </div>
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, Heart, ChevronDown } from "lucide-react";
@@ -8,6 +8,7 @@ import { useCartStore } from "@/stores/cart-store";
 import { useUiStore } from "@/stores/ui-store";
 import { formatPKR } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useFlyToCart } from "@/components/motion/fly-to-cart";
 
 interface ProductImage {
   id: string;
@@ -73,6 +74,8 @@ function AccordionSection({ title, children }: { title: string; children: React.
 export function ProductDetail({ product, related }: { product: DbProduct; related: RelatedProduct[] }) {
   const addItem = useCartStore((s) => s.addItem);
   const setCartOpen = useUiStore((s) => s.setCartOpen);
+  const fly = useFlyToCart();
+  const galleryRef = useRef<HTMLDivElement>(null);
 
   const images = [...product.product_images].sort(
     (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
@@ -101,6 +104,8 @@ export function ProductDetail({ product, related }: { product: DbProduct; relate
   const handleAdd = () => {
     if (!inStock) return;
     const variantLabel = [selectedColor, selectedSize].filter(Boolean).join(" / ") || undefined;
+    const thumb = images[selectedImage]?.url ?? images[0]?.url ?? "";
+    if (thumb) fly(thumb, galleryRef.current);
     addItem({
       id: currentVariant?.id ?? product.id,
       productId: product.id,
@@ -119,7 +124,7 @@ export function ProductDetail({ product, related }: { product: DbProduct; relate
       <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
         {/* Gallery */}
         <div className="space-y-4">
-          <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-charcoal">
+          <div ref={galleryRef} className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-charcoal">
             {images[selectedImage]?.url && (
               <Image
                 src={images[selectedImage].url}

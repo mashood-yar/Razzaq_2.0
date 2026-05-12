@@ -127,6 +127,13 @@ legal@razzaqluxe.com
   },
 };
 
+function policyBodyHtml(body: string): string {
+  return body
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/Razzaq Luxe/g, '<span style="color:#C9A84C">Razzaq Luxe</span>')
+    .replace(/\n/g, "<br />");
+}
+
 type Props = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
@@ -157,7 +164,7 @@ export default async function PolicyPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-24">
-      <p className="text-xs uppercase tracking-widest text-smoke">Razzaq Luxe</p>
+      <p className="text-xs uppercase tracking-widest text-luxe-gold">Razzaq Luxe</p>
       <h1 className="mt-3 font-display text-5xl text-ivory">{policy.title}</h1>
       <p className="mt-3 text-sm text-ash">Last updated: May 2026</p>
 
@@ -187,9 +194,7 @@ export default async function PolicyPage({ params }: Props) {
             <div
               className="prose prose-sm prose-invert max-w-none prose-headings:font-display prose-a:text-gold prose-strong:text-ivory"
               dangerouslySetInnerHTML={{
-                __html: s.body
-                  .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-                  .replace(/\n/g, "<br />"),
+                __html: policyBodyHtml(s.body),
               }}
             />
           </section>

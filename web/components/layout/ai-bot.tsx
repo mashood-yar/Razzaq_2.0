@@ -1,12 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import {
-  ChatCircle,
-  X,
-  PaperPlaneRight,
-  ArrowsClockwise,
-} from "@phosphor-icons/react";
+import { X, PaperPlaneRight, ArrowsClockwise } from "@phosphor-icons/react";
+import { GoldBrandText } from "@/components/brand/gold-brand-text";
 
 interface Message {
   role: "user" | "assistant";
@@ -87,9 +83,9 @@ export function AIBot() {
           <div className="flex items-center justify-between border-b border-graphite px-4 py-3">
             <div>
               <p className="font-body text-sm font-medium text-ivory">
-                Razzaq Luxe Support
+                <span className="text-luxe-gold">Razzaq Luxe</span> Support
               </p>
-              <p className="font-body text-xs" style={{ color: "#C9A84C" }}>
+              <p className="font-body text-xs text-gold">
                 AI-powered · 24/7
               </p>
             </div>
@@ -126,11 +122,11 @@ export function AIBot() {
                   }`}
                   style={
                     msg.role === "user"
-                      ? { backgroundColor: "#C9A84C", color: "#0D0C0A" }
+                      ? { backgroundColor: "#B8E3E9", color: "#0B2E33" }
                       : undefined
                   }
                 >
-                  {msg.content}
+                  <GoldBrandText text={msg.content} />
                 </div>
               </div>
             ))}
@@ -158,31 +154,45 @@ export function AIBot() {
               onClick={sendMessage}
               disabled={isLoading || !input.trim()}
               className="flex h-9 w-9 items-center justify-center rounded-lg transition-colors disabled:opacity-40"
-              style={{ backgroundColor: "#C9A84C" }}
+              style={{ backgroundColor: "#B8E3E9" }}
               aria-label="Send message"
             >
               <PaperPlaneRight
                 size={16}
                 weight="fill"
-                style={{ color: "#0D0C0A" }}
+                style={{ color: "#0B2E33" }}
               />
             </button>
           </div>
         </div>
       )}
 
-      {/* Toggle button */}
+      {/* Toggle — circular badge: dark rim, white ring, blue fill, stacked “Need help?” */}
       <button
+        type="button"
         onClick={() => setIsOpen((o) => !o)}
-        className="flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-all hover:scale-105 active:scale-95"
-        style={{ backgroundColor: "#C9A84C" }}
-        aria-label="Open customer support chat"
+        className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-obsidian bg-white p-[3px] shadow-lg transition-all hover:scale-105 active:scale-95"
+        aria-label={
+          isOpen ? "Close customer support chat" : "Open customer support chat"
+        }
       >
-        {isOpen ? (
-          <X size={22} style={{ color: "#0D0C0A" }} />
-        ) : (
-          <ChatCircle size={26} weight="fill" style={{ color: "#0D0C0A" }} />
-        )}
+        <span
+          className="flex size-full items-center justify-center rounded-full"
+          style={{ backgroundColor: "#4F7C82" }}
+        >
+          {isOpen ? (
+            <X size={22} weight="bold" className="text-white" aria-hidden />
+          ) : (
+            <span className="flex select-none flex-col items-center justify-center gap-0 leading-none">
+              <span className="text-[9px] font-bold tracking-tight text-white">
+                Need
+              </span>
+              <span className="text-[9px] font-bold tracking-tight text-white">
+                help?
+              </span>
+            </span>
+          )}
+        </span>
       </button>
     </div>
   );

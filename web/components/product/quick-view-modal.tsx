@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -13,6 +14,7 @@ import { StarRating } from "@/components/product/star-rating";
 import { NotePyramid } from "@/components/product/note-pyramid";
 import type { LegacyProduct as Product } from "@/lib/products";
 import { useCartStore } from "@/stores/cart-store";
+import { useFlyToCart } from "@/components/motion/fly-to-cart";
 
 export function QuickViewModal({
   product,
@@ -24,6 +26,8 @@ export function QuickViewModal({
   onOpenChange: (open: boolean) => void;
 }) {
   const addItem = useCartStore((s) => s.addItem);
+  const fly = useFlyToCart();
+  const addBtnRef = useRef<HTMLButtonElement>(null);
   const defaultSize = product.sizes[1] ?? product.sizes[0];
 
   return (
@@ -58,8 +62,10 @@ export function QuickViewModal({
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button
+                ref={addBtnRef}
                 onClick={() => {
                   if (!defaultSize) return;
+                  fly(product.images[0], addBtnRef.current);
                   addItem({
                     id: `${product.id}::${defaultSize.label}`,
                     productId: product.id,

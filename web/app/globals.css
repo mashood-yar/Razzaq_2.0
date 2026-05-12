@@ -4,19 +4,19 @@
 
 @layer base {
   :root {
-    /* Razzaq Luxe — obsidian / charcoal / gold palette */
-    --background:         28 14% 6%;    /* #0D0C0A obsidian */
-    --foreground:         38 50% 94%;   /* #F5F0E8 ivory */
-    --card:               28 13% 9%;    /* #1A1814 charcoal */
-    --card-foreground:    38 30% 90%;   /* cream */
-    --muted:              28 10% 16%;   /* #2C2921 graphite */
-    --muted-foreground:   28 8%  65%;   /* #A09890 smoke */
-    --accent:             38 45% 26%;   /* gold-surface warm */
-    --accent-foreground:  38 50% 94%;
-    --gold:               42 55% 54%;   /* #C9A84C gold */
-    --gold-muted:         38 35% 36%;   /* #8A6E2F gold-muted */
-    --border:             28 10% 17%;   /* graphite border */
-    --ring:               42 55% 54%;   /* gold ring */
+    /* Winter Chill — #0B2E33 · #4F7C82 · #93B1B5 · #B8E3E9 */
+    --background:         187 64% 12%;   /* #0B2E33 midnight teal */
+    --foreground:         189 58% 82%;   /* #B8E3E9 pale icy blue */
+    --card:               187 38% 14%;   /* elevated panels */
+    --card-foreground:    189 55% 88%;
+    --muted:              187 28% 18%;   /* inset / secondary surfaces */
+    --muted-foreground:   188 19% 65%;   /* #93B1B5 blue-grey */
+    --accent:             186 24% 41%;   /* #4F7C82 slate teal */
+    --accent-foreground:  189 58% 92%;
+    --gold:               189 58% 82%;   /* primary accent (icy); keeps `gold-*` utilities) */
+    --gold-muted:         188 19% 58%;   /* muted accent #93B1B5 */
+    --border:             186 22% 28%;   /* graphite border */
+    --ring:               189 58% 78%;
     --radius:             0.375rem;
   }
 
@@ -30,15 +30,15 @@
   }
 
   ::selection {
-    background-color: hsl(42 55% 54% / 0.3);
-    color: hsl(38 50% 94%);
+    background-color: hsl(189 58% 82% / 0.28);
+    color: hsl(189 65% 94%);
   }
 
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: hsl(28 14% 6%); }
-  ::-webkit-scrollbar-thumb { background: hsl(28 10% 22%); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: hsl(42 55% 54% / 0.6); }
+  ::-webkit-scrollbar-track { background: hsl(187 64% 12%); }
+  ::-webkit-scrollbar-thumb { background: hsl(186 24% 32%); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(189 58% 82% / 0.45); }
 }
 
 @layer utilities {

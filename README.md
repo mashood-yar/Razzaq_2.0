@@ -4,23 +4,21 @@
 
 ## Deploy on Vercel (GitHub)
 
-The Next.js app lives in **`web/`**, but Git checks out the **repository root**. This repo ships:
+The Next.js app is **`web/`**. Vercel must use that folder as the project root.
 
-- **`vercel.json`** at the repo root — `installCommand: npm ci`, `buildCommand: npm run build`, Next.js framework, `outputDirectory` unset (not `public`).
-- **`package.json`** at the repo root — `postinstall` runs `npm ci --prefix web`; **`build`** runs `next build` in `web` then copies **`web/.next` → `.next`** via **`scripts/copy-next-build.mjs`** so Vercel’s Next preset sees the output at the root.
-- **`next`** as a root **devDependency** so Vercel can detect the Next.js version when the root `package.json` is the install context.
+1. **Vercel → Project → Settings → Build & Deployment → Root Directory** → set **`web`** (browse and select the folder), then **Save**.
+2. **Framework preset:** Next.js (auto-detected from `web/package.json`).
+3. **Install Command:** leave default (`npm install` / `npm ci` in `web`).
+4. **Build Command:** leave default (`npm run build` in `web`).
+5. **Output Directory:** leave empty for Next.js.
 
-In **Vercel → Project → Settings → Build & Deployment**:
+Repo root `package.json` only helps **local** workflows (`npm run dev` / `npm run build` from the monorepo root). It is **not** used when Root Directory is `web`.
 
-- **Root Directory:** leave **empty** or **`.`** (repository root). Do **not** set it to `web` unless you remove the root `vercel.json` workflow and build only inside `web`.
-- **Framework preset:** Next.js (usually auto-detected).
-- **Output Directory:** leave empty for Next.js.
+CLI deploy from the linked project:
 
-Push to GitHub; Production should build with the same commands as local:
-
-```bash
-npm ci
-npm run build
+```powershell
+cd web
+npx vercel deploy --prod --yes
 ```
 
-(Local development can stay `npm run dev` / `npm run build` from the repo root — those delegate to `web/`.)
+Or link once with Root Directory `web` in the dashboard and rely on **Git push** to deploy.

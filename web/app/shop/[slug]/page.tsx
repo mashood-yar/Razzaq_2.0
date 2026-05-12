@@ -79,7 +79,7 @@ export default async function ProductPage({
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-      <div className="mb-8 rounded-xl border border-gold/20 bg-emerald-deep/30 px-4 py-3 text-center text-sm text-muted-foreground backdrop-blur-sm">
+      <div className="mb-8 rounded-xl border border-gold/20 bg-brand-mist/25 px-4 py-3 text-center text-sm text-muted-foreground backdrop-blur-sm">
         <Truck className="mr-2 inline-block h-4 w-4 text-gold" aria-hidden />
         Complimentary shipping on orders over{" "}
         <span className="font-medium text-foreground">$150</span>

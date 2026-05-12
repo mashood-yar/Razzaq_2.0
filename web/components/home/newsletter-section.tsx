@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { GoldBrandText } from "@/components/brand/gold-brand-text";
 
 export function NewsletterSection() {
   const [email, setEmail] = useState("");
@@ -21,7 +22,7 @@ export function NewsletterSection() {
       });
       if (res.ok) {
         setStatus("success");
-        setMessage("You're on the list. Welcome to Razzaq Luxe.");
+        setMessage("");
         setEmail("");
       } else {
         const data = await res.json();
@@ -45,7 +46,9 @@ export function NewsletterSection() {
       </p>
 
       {status === "success" ? (
-        <p className="mt-8 font-display text-xl italic text-gold">{message}</p>
+        <p className="mt-8 font-display text-xl italic text-ivory">
+          <GoldBrandText text={"You're on the list. Welcome to Razzaq Luxe."} />
+        </p>
       ) : (
         <form
           onSubmit={handleSubmit}

@@ -1,18 +1,18 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Jost } from "next/font/google";
 import "./globals.css";
+import "react-loading-skeleton/dist/skeleton.css";
 import { siteConfig } from "@/lib/site";
 import { StoreHydration } from "@/components/providers";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
-import { CartDrawer } from "@/components/cart/cart-drawer";
-import { SearchModal } from "@/components/search/search-modal";
-import { AIBot } from "@/components/layout/ai-bot";
+import { DeferredChrome } from "@/components/layout/deferred-chrome";
+import { FlyToCartProvider } from "@/components/motion/fly-to-cart";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-cormorant",
   display: "swap",
 });
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0D0C0A",
+  themeColor: "#0B2E33",
   colorScheme: "dark",
 };
 
@@ -75,16 +75,19 @@ export default function RootLayout({
       >
         <AuthProvider>
           <StoreHydration />
-          <div
-            className="grain-overlay pointer-events-none fixed inset-0 z-[1] opacity-[0.25] mix-blend-overlay"
-            aria-hidden
-          />
-          <SiteHeader />
-          <main className="min-h-screen pt-16">{children}</main>
-          <SiteFooter />
-          <CartDrawer />
-          <SearchModal />
-          <AIBot />
+          <FlyToCartProvider>
+            {/* Grain sits below page UI so it never composites over sharp SVG/text (Visa, etc.). */}
+            <div
+              className="grain-overlay pointer-events-none fixed inset-0 z-0 opacity-[0.22]"
+              aria-hidden
+            />
+            <div className="relative z-10">
+              <SiteHeader />
+              <main className="min-h-screen pt-16">{children}</main>
+              <SiteFooter />
+              <DeferredChrome />
+            </div>
+          </FlyToCartProvider>
         </AuthProvider>
       </body>
     </html>

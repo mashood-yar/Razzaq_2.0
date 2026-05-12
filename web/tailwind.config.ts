@@ -10,23 +10,36 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Brand palette (DESIGN.md)
-        obsidian:      "#0D0C0A",
-        charcoal:      "#1A1814",
-        graphite:      "#2C2921",
-        ash:           "#6B6560",
-        smoke:         "#A09890",
-        ivory:         "#F5F0E8",
-        cream:         "#EDE8DF",
+        /* Winter Chill palette */
+        obsidian:      "#0B2E33",
+        charcoal:      "#0F383F",
+        graphite:      "#4F7C82",
+        ash:           "#93B1B5",
+        smoke:         "#A3C2C6",
+        ivory:         "#B8E3E9",
+        cream:         "#C8ECF1",
         gold: {
-          DEFAULT:     "#C9A84C",
-          light:       "#E0C47A",
-          muted:       "#8A6E2F",
-          surface:     "#1E1A0F",
+          DEFAULT:     "#B8E3E9",
+          light:       "#D4F1F5",
+          muted:       "#93B1B5",
+          surface:     "#08292E",
         },
         success:       "#3A7D5B",
         error:         "#8B3A3A",
         warning:       "#8B6A2A",
+
+        brand: {
+          slate: "#4F7C82",
+          mist:  "#93B1B5",
+          sky:   "#B8E3E9",
+          frost: "#D4F1F5",
+        },
+        "emerald-deep": "#0B2E33",
+        "emerald-brand": "#4F7C82",
+
+        /* Metallic logo gold — distinct from Winter Chill `gold.*` icy accents */
+        "luxe-gold": "#C9A84C",
+        "luxe-gold-bright": "#d8c470",
 
         // Semantic aliases (used by shadcn-style components)
         background:    "hsl(var(--background))",

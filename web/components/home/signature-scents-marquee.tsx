@@ -15,7 +15,7 @@ function MarqueeTrack({ reverse }: { reverse?: boolean }) {
         cell.type === "dot" ? (
           <span
             key={`d-${idx}`}
-            className="mx-6 shrink-0 align-middle text-2xl text-[#8E8D8A] sm:mx-10 sm:text-[1.65rem]"
+            className="mx-6 shrink-0 align-middle text-2xl text-ash sm:mx-10 sm:text-[1.65rem]"
             aria-hidden
           >
             ·
@@ -51,12 +51,12 @@ function ProductLink({
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group relative shrink-0 align-middle font-body text-[clamp(1.65rem,4.8vw,2.75rem)] font-normal tracking-tight text-[#024950] outline-none transition-[transform,color] duration-300 ease-out hover:z-10 hover:text-[#0fa4af] focus-visible:z-10 motion-safe:hover:scale-105 motion-reduce:hover:scale-100"
+      className="group relative shrink-0 align-middle font-body text-[clamp(1.65rem,4.8vw,2.75rem)] font-normal tracking-tight text-ivory outline-none transition-[transform,color] duration-300 ease-out hover:z-10 hover:text-gold focus-visible:z-10 focus-visible:text-gold motion-safe:hover:scale-105 motion-reduce:hover:scale-100"
     >
       <span>{product.name}</span>
       <span
         role="tooltip"
-        className="pointer-events-none invisible absolute bottom-[calc(100%+12px)] left-1/2 z-30 w-max max-w-[min(272px,calc(100vw-28px))] -translate-x-1/2 rounded-xl border border-[#024950]/14 bg-[#FAF8F4] px-4 py-2.5 text-xs font-normal normal-case tracking-normal text-[#024950] opacity-0 shadow-xl ring-1 ring-black/[0.04] transition-opacity duration-200 ease-out group-hover:visible group-hover:opacity-100 motion-safe:translate-y-2 motion-safe:transition-[opacity,transform] motion-safe:duration-200 motion-safe:group-hover:translate-y-0 md:text-sm md:leading-snug"
+        className="pointer-events-none invisible absolute bottom-[calc(100%+12px)] left-1/2 z-30 w-max max-w-[min(272px,calc(100vw-28px))] -translate-x-1/2 rounded-xl border border-brand-mist/35 bg-charcoal px-4 py-2.5 text-xs font-normal normal-case tracking-normal text-cream opacity-0 shadow-2xl shadow-black/50 ring-1 ring-gold/25 transition-opacity duration-200 ease-out group-hover:visible group-hover:opacity-100 motion-safe:translate-y-2 motion-safe:transition-[opacity,transform] motion-safe:duration-200 motion-safe:group-hover:translate-y-0 md:text-sm md:leading-snug"
       >
         {product.tagline}
       </span>
@@ -68,18 +68,18 @@ export function SignatureScentsMarquee() {
   return (
     <section
       aria-labelledby="signature-scents-heading"
-      className="w-full overflow-hidden rounded-2xl border border-[#024950]/10 bg-[#EDE8DF] md:rounded-3xl"
+      className="w-full overflow-hidden rounded-2xl border border-brand-mist/30 bg-graphite md:rounded-3xl"
     >
       <div className="px-6 pb-6 pt-10 md:px-12 md:pb-8 md:pt-14">
         <h2
           id="signature-scents-heading"
-          className="font-body text-[11px] font-medium uppercase tracking-[0.35em] text-[#024950]"
+          className="font-body text-[11px] font-medium uppercase tracking-[0.35em] text-gold-muted"
         >
           Signature line
         </h2>
-        <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#024950]/85">
+        <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
           Our house fragrances — Sporty, Habibi, Flourine, and Khan&apos;s Aura. Boutique in{" "}
-          <strong className="font-medium text-[#024950]">Quetta, Pakistan</strong>. Hover for a preview; click to shop.
+          <strong className="font-medium text-foreground">Quetta, Pakistan</strong>. Hover for a preview; click to shop.
         </p>
       </div>
 
@@ -93,7 +93,7 @@ export function SignatureScentsMarquee() {
           {HOUSE_PRODUCTS.map((p, i) => (
             <span key={p.slug} className="flex items-center gap-x-3 md:gap-x-6">
               {i > 0 ? (
-                <span className="select-none text-[#8E8D8A]" aria-hidden>
+                <span className="select-none text-ash" aria-hidden>
                   ·
                 </span>
               ) : null}
