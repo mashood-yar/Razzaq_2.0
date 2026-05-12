@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createLemonSqueezyCheckout } from "@/lib/lemonsqueezy/checkout";
 import { sendOrderConfirmationEmail } from "@/lib/resend/client";
+import { payfastConfig } from "@/lib/payfast/config";
 import type { CartItem, Order } from "@/lib/types";
 
 function isStripeCheckoutEnabled(): boolean {
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
       country: string;
     };
     shippingMethod: string;
-    paymentMethod: "card" | "cod" | "safepay";
+    paymentMethod: "card" | "cod" | "safepay" | "jazzcash" | "payfast";
     promoCode?: string;
     discountAmount?: number;
     guestEmail?: string;
@@ -170,6 +171,37 @@ export async function POST(request: Request) {
       );
     }
     return NextResponse.json({ order, safepay: true });
+  }
+
+  if (paymentMethod === "jazzcash") {
+    const jc =
+      process.env.JAZZCASH_MERCHANT_ID?.trim() &&
+      process.env.JAZZCASH_PASSWORD?.trim() &&
+      process.env.JAZZCASH_INTEGRITY_SALT?.trim();
+    if (!jc) {
+      return NextResponse.json(
+        {
+          error:
+            "JazzCash is not configured. Set JAZZCASH_MERCHANT_ID, JAZZCASH_PASSWORD, and JAZZCASH_INTEGRITY_SALT or choose another payment method.",
+        },
+        { status: 500 },
+      );
+    }
+    return NextResponse.json({ order, jazzcash: true });
+  }
+
+  if (paymentMethod === "payfast") {
+    const pf = payfastConfig();
+    if (!pf) {
+      return NextResponse.json(
+        {
+          error:
+            "PayFast is not configured. Set PAYFAST_MERCHANT_ID, PAYFAST_SECURED_KEY, and PAYFAST_API_URL or choose another payment method.",
+        },
+        { status: 500 },
+      );
+    }
+    return NextResponse.json({ order, payfast: true });
   }
 
   // Stripe — hosted Checkout; frontend POST /api/payment/stripe/create-checkout-session then redirects.

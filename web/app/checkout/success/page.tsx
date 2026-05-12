@@ -2,7 +2,7 @@ import Link from "next/link";
 
 type Props = { searchParams: Promise<{ order_id?: string }> };
 
-/** Return URL after Safepay — payment is confirmed asynchronously via webhook. */
+/** Return URL after hosted wallets / wallets — some gateways confirm asynchronously via webhook. */
 export default async function CheckoutSuccessPage(props: Props) {
   const { order_id: orderId } = await props.searchParams;
 
@@ -10,8 +10,8 @@ export default async function CheckoutSuccessPage(props: Props) {
     <div className="mx-auto max-w-lg px-4 py-24 text-center">
       <h1 className="font-display text-3xl text-ivory">Thank you</h1>
       <p className="mt-4 text-sm leading-relaxed text-smoke">
-        If you paid with Safepay, your confirmation email usually arrives within a minute
-        after our server receives Safepay&apos;s webhook. You can track this order anytime
+        If you paid with Safepay, PayFast, or JazzCash, your confirmation email usually arrives within a
+        minute once our server confirms payment (webhook or return URL). You can track this order anytime
         from your account or the link in your email.
       </p>
       {orderId && (

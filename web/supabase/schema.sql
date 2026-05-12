@@ -234,12 +234,13 @@ create table if not exists public.orders (
                             'shipped','out_for_delivery','delivered',
                             'cancelled','refunded'
                           )),
-  payment_method        text not null check (payment_method in ('card','cod','safepay')),
+  payment_method        text not null check (payment_method in ('card','cod','safepay','jazzcash','payfast')),
   payment_status        text not null default 'pending'
                           check (payment_status in ('pending','paid','failed','refunded')),
   lemonsqueezy_order_id text unique,
   safepay_tracker_token text,
   stripe_payment_intent_id text,
+  jazzcash_txn_ref_no       text,
   subtotal_pkr          numeric(10,2) not null,
   discount_pkr          numeric(10,2) not null default 0,
   shipping_pkr          numeric(10,2) not null default 0,
@@ -281,6 +282,10 @@ create unique index if not exists orders_safepay_tracker_token_uidx
 create unique index if not exists orders_stripe_payment_intent_id_uidx
   on public.orders (stripe_payment_intent_id)
   where stripe_payment_intent_id is not null;
+
+create unique index if not exists orders_jazzcash_txn_ref_no_uidx
+  on public.orders (jazzcash_txn_ref_no)
+  where jazzcash_txn_ref_no is not null;
 
 -- Auto-generate order number
 create or replace function generate_order_number() returns text as $$

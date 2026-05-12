@@ -1,14 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getStripe } from "@/lib/stripe/server";
+import { getStripe, stripeAmountFromPkr } from "@/lib/stripe/server";
 import { getServerSiteOrigin } from "@/lib/site";
 
 export const runtime = "nodejs";
-
-/** PKR line item amount — Stripe expects smallest currency unit (1 PKR = 100 paisa). */
-export function stripeAmountFromPkr(totalPkr: number): number {
-  return Math.max(1, Math.round(Number(totalPkr) * 100));
-}
 
 /**
  * POST /api/payment/stripe/create-checkout-session

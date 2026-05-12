@@ -10,7 +10,7 @@ export type OrderStatus =
   | "delivered"
   | "cancelled"
   | "refunded";
-export type PaymentMethod = "card" | "cod" | "safepay";
+export type PaymentMethod = "card" | "cod" | "safepay" | "jazzcash" | "payfast";
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
 export type DiscountType = "percentage" | "fixed" | "free_shipping";
 export type UserRole = "customer" | "staff" | "admin";
@@ -159,6 +159,8 @@ export interface Order {
   payment_status: PaymentStatus;
   lemonsqueezy_order_id: string | null;
   safepay_tracker_token?: string | null;
+  stripe_payment_intent_id?: string | null;
+  jazzcash_txn_ref_no?: string | null;
   subtotal_pkr: number;
   discount_pkr: number;
   shipping_pkr: number;

@@ -38,7 +38,14 @@ type DetailsInput = z.input<typeof detailsSchema>;
 type DetailsData  = z.output<typeof detailsSchema>;
 
 type ShippingMethod = "standard" | "express";
-type PaymentMethod = "card" | "cod" | "safepay";
+type PaymentMethod = "card" | "cod" | "safepay" | "payfast" | "jazzcash";
+
+function normalizePkWalletMobile(input: string): string {
+  let d = input.replace(/\D/g, "");
+  if (d.startsWith("92")) d = d.slice(2);
+  if (!d.startsWith("0")) d = `0${d}`;
+  return d.slice(0, 11);
+}
 
 export function CheckoutForm() {
   const router = useRouter();
@@ -53,6 +60,8 @@ export function CheckoutForm() {
   const [shippingDetails, setShippingDetails] = useState<DetailsData | null>(null);
   const [shippingMethod, setShippingMethod] = useState<ShippingMethod>("standard");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
+  const [jazzMobile, setJazzMobile] = useState("");
+  const [jazzCnic, setJazzCnic] = useState("");
   const [promoInput, setPromoInput] = useState("");
   const [promoError, setPromoError] = useState("");
   const [promoLoading, setPromoLoading] = useState(false);
@@ -110,6 +119,21 @@ export function CheckoutForm() {
     setIsSubmitting(true);
     setSubmitError("");
 
+    if (paymentMethod === "jazzcash") {
+      const mob = normalizePkWalletMobile(jazzMobile || shippingDetails.phone);
+      const cnic = jazzCnic.replace(/\D/g, "");
+      if (!/^03\d{9}$/.test(mob)) {
+        setSubmitError("Enter a valid JazzCash mobile number (03XXXXXXXXX).");
+        setIsSubmitting(false);
+        return;
+      }
+      if (cnic.length !== 6) {
+        setSubmitError("Enter the last 6 digits of the CNIC linked to this JazzCash wallet.");
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
     try {
       const res = await fetch("/api/orders", {
         method: "POST",
@@ -152,6 +176,81 @@ export function CheckoutForm() {
         } else {
           throw new Error("Safepay did not return a redirect URL");
         }
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (paymentMethod === "jazzcash" && data.order?.id && shippingDetails) {
+        const payRes = await fetch("/api/payment/jazzcash/initiate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: data.order.id,
+            customerEmail: shippingDetails.email,
+            mobileNumber: normalizePkWalletMobile(jazzMobile || shippingDetails.phone),
+            cnicLast6: jazzCnic.replace(/\D/g, "").slice(-6),
+          }),
+        });
+        const payJson = (await payRes.json()) as {
+          paid?: boolean;
+          error?: string;
+          message?: string;
+          gateway?: { pp_ResponseMessage?: string };
+        };
+        if (!payRes.ok) {
+          throw new Error(payJson.error ?? "Could not start JazzCash payment");
+        }
+        clearCart();
+        setIsSubmitting(false);
+        if (payJson.paid) {
+          router.push(
+            `/checkout/success?order_id=${encodeURIComponent(data.order.id)}`,
+          );
+        } else {
+          throw new Error(
+            payJson.message ||
+              payJson.gateway?.pp_ResponseMessage ||
+              "JazzCash did not confirm payment. If money was debited, wait for the return page or contact support.",
+          );
+        }
+        return;
+      }
+
+      if (paymentMethod === "payfast" && data.order?.id && shippingDetails) {
+        const payRes = await fetch("/api/payment/payfast/initiate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: data.order.id,
+            customerEmail: shippingDetails.email,
+            customerMobile: shippingDetails.phone,
+          }),
+        });
+        const payJson = (await payRes.json()) as {
+          actionUrl?: string;
+          fields?: Record<string, string>;
+          error?: string;
+        };
+        if (!payRes.ok) {
+          throw new Error(payJson.error ?? "Could not start PayFast checkout");
+        }
+        if (!payJson.actionUrl || !payJson.fields) {
+          throw new Error("PayFast did not return checkout fields");
+        }
+        clearCart();
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = payJson.actionUrl;
+        form.style.display = "none";
+        for (const [name, value] of Object.entries(payJson.fields)) {
+          const inp = document.createElement("input");
+          inp.type = "hidden";
+          inp.name = name;
+          inp.value = value;
+          form.appendChild(inp);
+        }
+        document.body.appendChild(form);
+        form.submit();
         setIsSubmitting(false);
         return;
       }
@@ -443,6 +542,16 @@ export function CheckoutForm() {
                     sub: "Visa, Mastercard, Easypaisa, NayaPay, SadaPay & more — hosted checkout by Safepay.",
                   },
                   {
+                    value: "payfast" as const,
+                    label: "Pay with PayFast (Pakistan)",
+                    sub: "Sandbox: sandbox.payfast.pk — hosted cards & wallets (incl. Easypaisa-style wallet rails where enabled).",
+                  },
+                  {
+                    value: "jazzcash" as const,
+                    label: "Pay with JazzCash Mobile Account",
+                    sub: "Mobile wallet — enter JazzCash number & CNIC last 6 digits (sandbox/live credentials required).",
+                  },
+                  {
                     value: "cod" as const,
                     label: "Cash on Delivery",
                     sub: "Pay in cash when your order arrives. Available across Pakistan.",
@@ -451,7 +560,12 @@ export function CheckoutForm() {
                   <button
                     key={opt.value}
                     type="button"
-                    onClick={() => setPaymentMethod(opt.value)}
+                    onClick={() => {
+                      setPaymentMethod(opt.value);
+                      if (opt.value === "jazzcash" && shippingDetails?.phone && !jazzMobile) {
+                        setJazzMobile(shippingDetails.phone);
+                      }
+                    }}
                     className={`flex w-full items-center gap-4 rounded-xl border p-4 text-left transition-colors ${
                       paymentMethod === opt.value
                         ? "border-gold/60 bg-gold/5"
@@ -479,6 +593,36 @@ export function CheckoutForm() {
                 </p>
               )}
 
+              {paymentMethod === "jazzcash" && (
+                <div className="space-y-4 rounded-xl border border-graphite p-4">
+                  <div>
+                    <Label htmlFor="jazzMobile">JazzCash mobile number</Label>
+                    <Input
+                      id="jazzMobile"
+                      type="tel"
+                      className="mt-1.5"
+                      placeholder="03XXXXXXXXX"
+                      value={jazzMobile}
+                      onChange={(e) => setJazzMobile(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="jazzCnic">CNIC — last 6 digits</Label>
+                    <Input
+                      id="jazzCnic"
+                      inputMode="numeric"
+                      maxLength={6}
+                      className="mt-1.5 tracking-widest"
+                      placeholder="••••••"
+                      value={jazzCnic}
+                      onChange={(e) =>
+                        setJazzCnic(e.target.value.replace(/\D/g, "").slice(0, 6))
+                      }
+                    />
+                  </div>
+                </div>
+              )}
+
               <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
                 <Button variant="outline" onClick={() => setStep(2)}>
                   Back
@@ -490,6 +634,28 @@ export function CheckoutForm() {
                     loading={isSubmitting}
                     onPay={() => placeOrder()}
                   />
+                ) : paymentMethod === "payfast" ? (
+                  <Button
+                    size="lg"
+                    className="flex-1"
+                    onClick={placeOrder}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting
+                      ? "Redirecting to PayFast…"
+                      : `Pay with PayFast · ${formatPKR(total)}`}
+                  </Button>
+                ) : paymentMethod === "jazzcash" ? (
+                  <Button
+                    size="lg"
+                    className="flex-1"
+                    onClick={placeOrder}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting
+                      ? "Contacting JazzCash…"
+                      : `Pay with JazzCash · ${formatPKR(total)}`}
+                  </Button>
                 ) : (
                   <Button
                     size="lg"

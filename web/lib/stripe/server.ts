@@ -12,3 +12,8 @@ export function getStripe(): Stripe {
   }
   return stripeSingleton;
 }
+
+/** PKR line item amount — Stripe expects smallest currency unit (1 PKR = 100 paisa). */
+export function stripeAmountFromPkr(totalPkr: number): number {
+  return Math.max(1, Math.round(Number(totalPkr) * 100));
+}
