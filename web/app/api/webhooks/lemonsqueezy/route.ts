@@ -1,5 +1,5 @@
 import { createHmac } from "crypto";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient } from "@/lib/supabase/service";
 import { sendOrderConfirmationEmail } from "@/lib/resend/client";
 import type { Order } from "@/lib/types";
 
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       return new Response("No order_id in custom_data", { status: 400 });
     }
 
-    const supabase = await createClient();
+    const supabase = createServiceRoleClient();
 
     const { data: order } = await supabase
       .from("orders")
@@ -45,21 +45,21 @@ export async function POST(request: Request) {
       .single();
 
     if (order) {
-      await supabase.from("order_status_history").insert({
-        order_id: orderId,
-        status: "confirmed",
-        note: `Payment confirmed via LemonSqueezy${lsOrderId ? ` (${lsOrderId})` : ""}`,
-      });
-
-      if (order.discount_code) {
-        try {
-          await supabase.rpc("increment_discount_usage", {
-            p_code: order.discount_code,
-          });
-        } catch {
-          // non-fatal
-        }
+      const { error: histErr } = await supabase
+        .from("order_status_history")
+        .insert({
+          order_id: orderId,
+          status: "confirmed",
+          note: `Payment confirmed via LemonSqueezy${lsOrderId ? ` (${lsOrderId})` : ""}`,
+        });
+      if (histErr) {
+        console.error("[LS webhook] order_status_history:", histErr.message);
       }
+
+      /*
+       * Discount usage_count is incremented atomically in POST /api/orders
+       * via validate_and_lock_discount — do not increment again here.
+       */
 
       try {
         await sendOrderConfirmationEmail(order as Order);

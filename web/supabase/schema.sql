@@ -218,11 +218,82 @@ create table if not exists public.discounts (
 );
 
 create or replace function increment_discount_usage(p_code text)
-returns void language sql as $$
+returns void
+language sql
+security definer
+set search_path = public
+as $$
   update public.discounts
   set usage_count = usage_count + 1
+  where code = upper(p_code)
+    and (usage_limit is null or usage_count < usage_limit);
+$$;
+
+create or replace function rollback_discount_reservation(p_code text)
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  update public.discounts
+  set usage_count = greatest(0, usage_count - 1)
   where code = upper(p_code);
 $$;
+
+create or replace function validate_and_lock_discount(p_code text, p_order_amount numeric)
+returns numeric
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_discount public.discounts%rowtype;
+  v_discount_amount numeric := 0;
+begin
+  select * into v_discount
+  from public.discounts
+  where code = upper(trim(p_code))
+    and is_active = true
+    and (expires_at is null or expires_at > now())
+    and (usage_limit is null or usage_count < usage_limit)
+    and (min_order_amount is null or p_order_amount >= min_order_amount)
+  for update;
+
+  if not found then
+    return -1;
+  end if;
+
+  update public.discounts
+  set usage_count = usage_count + 1
+  where id = v_discount.id;
+
+  if v_discount.type = 'percentage' then
+    v_discount_amount :=
+      least(
+        round(p_order_amount * (v_discount.value / 100.0), 2),
+        p_order_amount
+      );
+  elsif v_discount.type = 'fixed' then
+    v_discount_amount := least(round(v_discount.value, 2), p_order_amount);
+  elsif v_discount.type = 'free_shipping' then
+    v_discount_amount := 0;
+  end if;
+
+  return coalesce(v_discount_amount, 0);
+end;
+$$;
+
+revoke all on function public.increment_discount_usage(text) from public;
+revoke execute on function public.increment_discount_usage(text) from anon, authenticated;
+grant execute on function public.increment_discount_usage(text) to service_role;
+
+revoke all on function public.validate_and_lock_discount(text, numeric) from public;
+revoke execute on function public.validate_and_lock_discount(text, numeric) from anon, authenticated;
+grant execute on function public.validate_and_lock_discount(text, numeric) to service_role;
+
+revoke all on function public.rollback_discount_reservation(text) from public;
+revoke execute on function public.rollback_discount_reservation(text) from anon, authenticated;
+grant execute on function public.rollback_discount_reservation(text) to service_role;
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 10. Orders
@@ -294,14 +365,14 @@ create unique index if not exists orders_jazzcash_txn_ref_no_uidx
   on public.orders (jazzcash_txn_ref_no)
   where jazzcash_txn_ref_no is not null;
 
--- Auto-generate order number
-create or replace function generate_order_number() returns text as $$
-declare seq int;
-begin
-  select count(*) + 1 into seq from public.orders;
-  return 'RL-' || to_char(now(), 'YYYY') || '-' || lpad(seq::text, 6, '0');
-end;
-$$ language plpgsql;
+create sequence if not exists order_number_seq start with 10000;
+
+-- Auto-generate order number (monotonic suffix — no collisions)
+create or replace function generate_order_number() returns text
+language sql as $$
+  select 'ORD-' || to_char(now(), 'YYYYMMDD') || '-' ||
+    lpad(nextval('order_number_seq'::regclass)::text, 5, '0');
+$$;
 
 create or replace function set_order_number() returns trigger as $$
 begin
