@@ -38,6 +38,7 @@ const AUTH_ROUTES = [
 ];
 const ACCOUNT_PREFIX = "/account";
 const STUDIO_PREFIX = "/studio";
+const ADMIN_PREFIX = "/admin";
 
 function copyCookies(from: NextResponse, to: NextResponse) {
   from.cookies.getAll().forEach((c) => {
@@ -110,6 +111,32 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  const isAdminRoute =
+    pathname === ADMIN_PREFIX || pathname.startsWith(`${ADMIN_PREFIX}/`);
+  const isAdminLoginRoute = pathname === "/admin/login";
+
+  if (isAdminRoute && !isAdminLoginRoute) {
+    if (!user) {
+      const adminLogin = new URL("/admin/login", request.url);
+      const redirect = NextResponse.redirect(adminLogin);
+      copyCookies(response, redirect);
+      return redirect;
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const role = profile?.role as string | undefined;
+    if (role !== "admin") {
+      const redirect = NextResponse.redirect(new URL("/?error=unauthorized", request.url));
+      copyCookies(response, redirect);
+      return redirect;
+    }
+  }
+
   return response;
 }
 
@@ -130,5 +157,7 @@ export const config = {
     "/reset-password",
     "/studio/:path*",
     "/studio",
+    "/admin/:path*",
+    "/admin",
   ],
 };

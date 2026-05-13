@@ -32,6 +32,12 @@ const nextConfig = {
         hostname: "*.googleusercontent.com",
         pathname: "/**",
       },
+      /* Cloudinary for admin image uploads */
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/**",
+      },
     ],
   },
   transpilePackages: ["next-sanity", "sanity"],
