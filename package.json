@@ -4,7 +4,7 @@
   "description": "Delegate scripts to web/. On Vercel: Project Root Directory = web",
   "scripts": {
     "dev": "npm run dev --prefix web",
-    "build": "npm run build --prefix web",
+    "build": "npm install --prefix web && npm run build --prefix web",
     "start": "npm run start --prefix web",
     "lint": "npm run lint --prefix web"
   }
