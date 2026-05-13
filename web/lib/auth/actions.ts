@@ -7,14 +7,23 @@ import { isSupabaseConfigured } from "@/utils/supabase/public-env";
 
 export type AuthActionState = { error?: string; success?: string } | null;
 
+function supabaseSetupHint(): string {
+  if (process.env.VERCEL === "1") {
+    return "In Vercel: Project → Settings → Environment Variables, add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY). Apply to Production and Preview, then redeploy.";
+  }
+  if (process.env.NODE_ENV === "production") {
+    return "Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) in your host’s environment and restart.";
+  }
+  return "Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to web/.env.local or web/.env.development.local, then restart the dev server.";
+}
+
 export async function signIn(
   _prev: AuthActionState,
   formData: FormData,
 ): Promise<AuthActionState> {
   if (!isSupabaseConfigured()) {
     return {
-      error:
-        "Authentication is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to web/.env.development.local (or web/.env.local), then restart the dev server.",
+      error: `Authentication is not configured. ${supabaseSetupHint()}`,
     };
   }
   const email = String(formData.get("email") ?? "").trim();
@@ -35,8 +44,7 @@ export async function signUp(
 ): Promise<AuthActionState> {
   if (!isSupabaseConfigured()) {
     return {
-      error:
-        "Authentication is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to web/.env.development.local (or web/.env.local), then restart the dev server.",
+      error: `Authentication is not configured. ${supabaseSetupHint()}`,
     };
   }
   const email = String(formData.get("email") ?? "").trim();
@@ -104,7 +112,7 @@ export async function sendMagicLink(
   formData: FormData,
 ): Promise<AuthActionState> {
   if (!isSupabaseConfigured()) {
-    return { error: "Authentication is not configured." };
+    return { error: `Authentication is not configured. ${supabaseSetupHint()}` };
   }
   const email = String(formData.get("email") ?? "").trim();
   const site =
@@ -127,7 +135,7 @@ export async function sendPasswordReset(
   formData: FormData,
 ): Promise<AuthActionState> {
   if (!isSupabaseConfigured()) {
-    return { error: "Authentication is not configured." };
+    return { error: `Authentication is not configured. ${supabaseSetupHint()}` };
   }
   const email = String(formData.get("email") ?? "").trim();
   const site =
@@ -154,7 +162,7 @@ export async function updatePassword(
   formData: FormData,
 ): Promise<AuthActionState> {
   if (!isSupabaseConfigured()) {
-    return { error: "Authentication is not configured." };
+    return { error: `Authentication is not configured. ${supabaseSetupHint()}` };
   }
   const password = String(formData.get("password") ?? "");
   const supabase = await createClient();

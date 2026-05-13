@@ -226,10 +226,10 @@ export default function HomePage() {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            {ugcTiles.map((tile, idx) => (
+            {ugcTiles.map((tile) => (
               <div
                 key={tile.id}
-                className={`relative aspect-square overflow-hidden rounded-xl bg-muted ${idx === 1 ? "md:translate-y-8" : ""}`}
+                className="relative aspect-square overflow-hidden rounded-xl bg-muted"
               >
                 <Image src={tile.src} alt="Community wearing Razzaq Luxe" fill className="object-cover" sizes="(max-width:768px) 50vw, 25vw" />
               </div>
