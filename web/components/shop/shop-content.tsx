@@ -3,7 +3,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, SlidersHorizontal } from "lucide-react";
-import { PRODUCTS } from "@/lib/products";
 import type { LegacyProduct as Product } from "@/lib/products";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -65,11 +64,26 @@ function sortProducts(products: Product[], sort: SortKey): Product[] {
     case "price-desc":
       return copy.sort((a, b) => b.price - a.price);
     case "bestselling":
-      return copy.sort((a, b) => b.reviewCount - a.reviewCount);
+      return copy.sort((a, b) => {
+        if (b.reviewCount !== a.reviewCount) return b.reviewCount - a.reviewCount;
+        const bb = b.badge === "bestseller" ? 1 : 0;
+        const ab = a.badge === "bestseller" ? 1 : 0;
+        if (bb !== ab) return bb - ab;
+        return b.price - a.price;
+      });
     case "newest":
-      return [...products].reverse();
+      return copy.sort((a, b) => {
+        const ta = a.created_at ? Date.parse(a.created_at) : 0;
+        const tb = b.created_at ? Date.parse(b.created_at) : 0;
+        return tb - ta;
+      });
     default:
-      return copy;
+      return copy.sort((a, b) => {
+        const bb = b.badge === "bestseller" ? 1 : 0;
+        const ab = a.badge === "bestseller" ? 1 : 0;
+        if (bb !== ab) return bb - ab;
+        return 0;
+      });
   }
 }
 
@@ -82,7 +96,7 @@ const defaultFilters = (): ShopFiltersState => ({
   sizeMlRange: [30, 100],
 });
 
-export function ShopContent() {
+export function ShopContent({ initialProducts }: { initialProducts: Product[] }) {
   const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortKey>("featured");
@@ -103,9 +117,9 @@ export function ShopContent() {
   }, [filters, query, sort]);
 
   const filtered = useMemo(() => {
-    const f = applyFilters(PRODUCTS, query, filters);
+    const f = applyFilters(initialProducts, query, filters);
     return sortProducts(f, sort);
-  }, [query, filters, sort]);
+  }, [initialProducts, query, filters, sort]);
 
   const slice = filtered.slice(0, visible);
   const hasMore = visible < filtered.length;

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ShopLoadingSkeleton } from "@/components/loading/shop-loading";
 import { ShopContent } from "@/components/shop/shop-content";
+import { fetchActiveLegacyProducts } from "@/lib/catalog/fetch-catalog";
 
 export const metadata: Metadata = {
   title: "Shop",
@@ -9,10 +10,11 @@ export const metadata: Metadata = {
     "Browse all LUMINA niche fragrances — filter by notes, longevity, gender, and bottle size.",
 };
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  const catalog = await fetchActiveLegacyProducts();
   return (
     <Suspense fallback={<ShopLoadingSkeleton />}>
-      <ShopContent />
+      <ShopContent initialProducts={catalog} />
     </Suspense>
   );
 }

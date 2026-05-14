@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { formatPKR } from "@/lib/utils";
 import { SearchBar } from "@/components/search/search-bar";
+import { ListingCardImages } from "@/components/product/listing-card-images";
+import { PLACEHOLDER_PRODUCT_IMAGE } from "@/lib/catalog/map-db-product";
 import { isSupabaseConfigured } from "@/utils/supabase/public-env";
 
 export const dynamic = "force-dynamic";
@@ -70,23 +71,21 @@ export default async function SearchPage({ searchParams }: Props) {
             <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {products.map((p) => {
                 const imgs = [...p.product_images].sort(
-                  (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
+                  (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0),
                 );
-                const img = imgs.find((i) => i.is_primary)?.url ?? imgs[0]?.url;
+                const urls = imgs.map((i) => i.url).filter(Boolean);
+                const primarySrc = urls[0] ?? PLACEHOLDER_PRODUCT_IMAGE;
+                const secondarySrc = urls[1];
                 return (
                   <Link key={p.id} href={`/products/${p.slug}`} className="group flex flex-col">
                     <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-charcoal">
-                      {img ? (
-                        <Image
-                          src={img}
-                          alt={p.name}
-                          fill
-                          sizes="(max-width:640px) 50vw, 25vw"
-                          className="object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-ash text-xs">No image</div>
-                      )}
+                      <ListingCardImages
+                        primarySrc={primarySrc}
+                        secondarySrc={secondarySrc}
+                        alt={p.name}
+                        sizes="(max-width:640px) 50vw, 25vw"
+                        className="absolute inset-0"
+                      />
                     </div>
                     <h3 className="mt-3 font-body text-sm text-ivory group-hover:text-gold transition-colors">
                       {p.name}
@@ -94,7 +93,9 @@ export default async function SearchPage({ searchParams }: Props) {
                     <div className="mt-1 flex items-center gap-2">
                       <span className="text-gold text-sm">{formatPKR(p.price_pkr)}</span>
                       {p.compare_at_price && p.compare_at_price > p.price_pkr && (
-                        <span className="text-xs text-smoke line-through">{formatPKR(p.compare_at_price)}</span>
+                        <span className="text-xs text-smoke line-through">
+                          {formatPKR(p.compare_at_price)}
+                        </span>
                       )}
                     </div>
                   </Link>
