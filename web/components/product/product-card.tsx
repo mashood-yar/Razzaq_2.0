@@ -1,12 +1,12 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { ShoppingBag, Eye } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 import type { LegacyProduct as Product } from "@/lib/products";
+import { ListingCardImages } from "@/components/product/listing-card-images";
 import { cn, formatPKR } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -65,17 +65,18 @@ export function ProductCard({
       transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
     >
       <Link
-        href={`/shop/${product.slug}`}
-        className="relative aspect-[3/4] overflow-hidden rounded-xl bg-muted"
+        href={`/products/${product.slug}`}
+        className="relative block aspect-[3/4] overflow-hidden rounded-xl bg-muted"
       >
-        <Image
-          src={product.images[0]}
-          alt={product.name}
-          fill
-          sizes="(max-width: 768px) 50vw, 25vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
+        <div className="absolute inset-0">
+          <ListingCardImages
+            primarySrc={product.images[0]}
+            secondarySrc={product.images[1]}
+            alt={product.name}
+            sizes="(max-width: 768px) 50vw, 25vw"
+          />
+        </div>
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
         {product.badge && (
           <Badge className="absolute left-3 top-3 border-gold/30 bg-black/50 text-[10px]">
             {badgeLabel(product.badge)}
@@ -101,7 +102,7 @@ export function ProductCard({
 
       <div className="mt-4 flex flex-1 flex-col">
         <div className="flex items-start justify-between gap-2">
-          <Link href={`/shop/${product.slug}`}>
+          <Link href={`/products/${product.slug}`}>
             <h3 className="font-serif text-lg leading-tight transition-colors hover:text-gold">
               {product.name}
             </h3>

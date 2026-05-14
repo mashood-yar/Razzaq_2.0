@@ -23,7 +23,10 @@ export async function POST(req: NextRequest) {
   switch (type) {
     case "product":
       revalidatePath("/shop");
-      if (slug) revalidatePath(`/shop/${slug}`);
+      if (slug) {
+        revalidatePath(`/shop/${slug}`);
+        revalidatePath(`/products/${slug}`);
+      }
       break;
     case "collection":
       revalidatePath("/collections");

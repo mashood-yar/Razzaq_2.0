@@ -9,6 +9,8 @@ import { useUiStore } from "@/stores/ui-store";
 import { formatPKR } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useFlyToCart } from "@/components/motion/fly-to-cart";
+import { ListingCardImages } from "@/components/product/listing-card-images";
+import { PLACEHOLDER_PRODUCT_IMAGE } from "@/lib/catalog/map-db-product";
 
 interface ProductImage {
   id: string;
@@ -290,19 +292,19 @@ export function ProductDetail({ product, related }: { product: DbProduct; relate
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {related.map((rp) => {
               const imgs = [...rp.product_images].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
-              const img = imgs.find((i) => i.is_primary)?.url ?? imgs[0]?.url;
+              const urls = imgs.map((i) => i.url).filter(Boolean);
+              const primarySrc = urls[0] ?? PLACEHOLDER_PRODUCT_IMAGE;
+              const secondarySrc = urls[1];
               return (
                 <Link key={rp.id} href={`/products/${rp.slug}`} className="group flex flex-col">
                   <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-charcoal">
-                    {img && (
-                      <Image
-                        src={img}
-                        alt={rp.name}
-                        fill
-                        sizes="(max-width:640px) 50vw, 25vw"
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                    )}
+                    <ListingCardImages
+                      primarySrc={primarySrc}
+                      secondarySrc={secondarySrc}
+                      alt={rp.name}
+                      sizes="(max-width:640px) 50vw, 25vw"
+                      className="absolute inset-0"
+                    />
                   </div>
                   <h3 className="mt-3 font-body text-sm text-ivory group-hover:text-gold transition-colors">
                     {rp.name}

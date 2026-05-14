@@ -1,17 +1,46 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { formatPKR } from "@/lib/utils";
 import Image from "next/image";
 import { Heart } from "lucide-react";
-import { PRODUCTS } from "@/lib/products";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { Button } from "@/components/ui/button";
+import { tryCreateBrowserClient } from "@/utils/supabase/client";
+import type { LegacyProduct } from "@/lib/products";
+import type { Product as DbProduct } from "@/lib/types";
+import { ACTIVE_PRODUCT_SELECT } from "@/lib/catalog/active-product-select";
+import { mapDbProductToLegacy } from "@/lib/catalog/map-db-product";
 
 export function WishlistView() {
   const ids = useWishlistStore((s) => s.ids);
   const toggle = useWishlistStore((s) => s.toggle);
-  const saved = PRODUCTS.filter((p) => ids.includes(p.id));
+  const [saved, setSaved] = useState<LegacyProduct[]>([]);
+
+  useEffect(() => {
+    const client = tryCreateBrowserClient();
+    if (!client || ids.length === 0) {
+      setSaved([]);
+      return;
+    }
+    let cancelled = false;
+    void client
+      .from("products")
+      .select(ACTIVE_PRODUCT_SELECT)
+      .eq("status", "active")
+      .in("id", ids)
+      .then(({ data, error }) => {
+        if (cancelled || error || !Array.isArray(data)) return;
+        const mapped = (data as DbProduct[]).map(mapDbProductToLegacy);
+        const rank = new Map(ids.map((id, i) => [id, i]));
+        mapped.sort((a, b) => (rank.get(a.id) ?? 0) - (rank.get(b.id) ?? 0));
+        setSaved(mapped);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [ids]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
@@ -35,7 +64,7 @@ export function WishlistView() {
               key={p.id}
               className="overflow-hidden rounded-2xl border border-white/10 bg-card/40 backdrop-blur-md"
             >
-              <Link href={`/shop/${p.slug}`} className="relative block aspect-[3/4] bg-muted">
+              <Link href={`/products/${p.slug}`} className="relative block aspect-[3/4] bg-muted">
                 <Image
                   src={p.images[0]}
                   alt={p.name}
@@ -45,7 +74,7 @@ export function WishlistView() {
                 />
               </Link>
               <div className="p-4">
-                <Link href={`/shop/${p.slug}`} className="font-serif text-lg hover:text-gold">
+                <Link href={`/products/${p.slug}`} className="font-serif text-lg hover:text-gold">
                   {p.name}
                 </Link>
                 <p className="mt-2 text-sm text-gold">{formatPKR(p.price)}</p>

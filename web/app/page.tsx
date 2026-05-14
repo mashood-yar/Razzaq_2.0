@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { PRODUCTS, type LegacyProduct } from "@/lib/products";
+import { fetchLegacyProductsForHomeBestSellers } from "@/lib/catalog/fetch-catalog";
 import { siteConfig } from "@/lib/site";
 import { GoldBrandText } from "@/components/brand/gold-brand-text";
 import { Button } from "@/components/ui/button";
@@ -84,10 +84,8 @@ const ugcTiles = [
   { id: "ugc-d", src: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80" },
 ];
 
-export default function HomePage() {
-  const fallbackBest = [...PRODUCTS]
-    .sort((a: LegacyProduct, b: LegacyProduct) => b.reviewCount - a.reviewCount)
-    .slice(0, 4);
+export default async function HomePage() {
+  const bestSellers = await fetchLegacyProductsForHomeBestSellers(4);
 
   return (
     <>
@@ -187,7 +185,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-            {fallbackBest.map((p) => (
+            {bestSellers.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>
