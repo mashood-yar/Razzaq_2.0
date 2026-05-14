@@ -9,7 +9,21 @@ import { markPayfastOrderPaid } from "@/lib/payfast/mark-paid";
 
 export const runtime = "nodejs";
 
-function basketIdFromPayload(flat: Record<string, string>): string | null {
+/**
+ * PayFast IPN/Webhook endpoint — disabled with the checkout integration.
+ * Responds OK so callers do not spin retries; performs no mutations.
+ */
+export async function POST() {
+  return NextResponse.json({
+    ok: true,
+    received: true,
+    disabled: true,
+    message:
+      "PayFast webhooks ignored — checkout no longer integrates with PayFast for this storefront.",
+  });
+}
+
+function basketIdFromPayload_DISABLED(flat: Record<string, string>): string | null {
   const raw =
     flat.BASKET_ID ||
     flat.basket_id ||
@@ -20,13 +34,13 @@ function basketIdFromPayload(flat: Record<string, string>): string | null {
   return id || null;
 }
 
-function txAmount(flat: Record<string, string>): number | null {
+function txAmount_DISABLED(flat: Record<string, string>): number | null {
   const raw = flat.TXNAMT || flat.txnamt || flat.amount || flat.AMOUNT || "";
   const n = Number(raw);
   return Number.isFinite(n) ? n : null;
 }
 
-function indicatesPayfastSuccess(flat: Record<string, string>): boolean {
+function indicatesPayfastSuccess_DISABLED(flat: Record<string, string>): boolean {
   const code = (
     flat.code ||
     flat.response_code ||
@@ -55,7 +69,7 @@ function indicatesPayfastSuccess(flat: Record<string, string>): boolean {
   return false;
 }
 
-async function parseFlat(request: Request): Promise<Record<string, string>> {
+async function parseFlat_DISABLED(request: Request): Promise<Record<string, string>> {
   const ct = request.headers.get("content-type") ?? "";
   if (ct.includes("application/json")) {
     const j = (await request.json()) as Record<string, unknown>;
@@ -69,25 +83,21 @@ async function parseFlat(request: Request): Promise<Record<string, string>> {
   return out;
 }
 
-/**
- * Server-to-server / return POST from PayFast (CHECKOUT_URL / IPN).
- * Verifies HMAC-SHA256 over alphabetically sorted body parameters.
- */
-export async function POST(request: Request) {
+async function legacyPayfastWebhook_DISABLED_POST(request: Request): Promise<NextResponse> {
   const cfg = payfastConfig();
   if (!cfg) {
     return NextResponse.json({ error: "Not configured" }, { status: 500 });
   }
 
   try {
-    const flat = await parseFlat(request);
+    const flat = await parseFlat_DISABLED(request);
 
     if (!payfastVerifySortedParamHash(flat, cfg.securedKey)) {
       console.warn("[PayFast webhook] Invalid SIGNATURE / secured_hash");
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
-    const basketId = basketIdFromPayload(flat);
+    const basketId = basketIdFromPayload_DISABLED(flat);
     if (!basketId) {
       return NextResponse.json({ error: "Missing basket reference" }, { status: 400 });
     }
@@ -104,7 +114,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ received: true });
     }
 
-    const postedAmt = txAmount(flat);
+    const postedAmt = txAmount_DISABLED(flat);
     if (
       postedAmt !== null &&
       Math.abs(postedAmt - Number(order.total_pkr)) > 0.05
@@ -113,7 +123,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Amount mismatch" }, { status: 400 });
     }
 
-    const ok = indicatesPayfastSuccess(flat);
+    const ok = indicatesPayfastSuccess_DISABLED(flat);
 
     if (ok && order.payment_status === "pending") {
       await markPayfastOrderPaid(
@@ -128,3 +138,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Handler failed" }, { status: 500 });
   }
 }
+
+void legacyPayfastWebhook_DISABLED_POST;

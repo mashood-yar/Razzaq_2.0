@@ -32,7 +32,7 @@ create table if not exists public.profiles (
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
-  insert into public.profiles (id, email, full_name, avatar_url, gender)
+  insert into public.profiles (id, email, full_name, avatar_url, gender, role)
   values (
     new.id,
     new.email,
@@ -42,13 +42,18 @@ begin
       when (new.raw_user_meta_data->>'gender') in ('male', 'female', 'other')
       then new.raw_user_meta_data->>'gender'
       else null
-    end
+    end,
+    'customer'
   )
   on conflict (id) do update
     set email      = excluded.email,
         full_name  = coalesce(excluded.full_name, public.profiles.full_name),
         avatar_url = coalesce(excluded.avatar_url, public.profiles.avatar_url),
         gender     = coalesce(excluded.gender, public.profiles.gender),
+        role       = case
+          when public.profiles.role in ('admin', 'staff') then public.profiles.role
+          else coalesce(public.profiles.role, 'customer')
+        end,
         updated_at = now();
   return new;
 end;
@@ -110,6 +115,7 @@ create table if not exists public.products (
   compare_at_price numeric(10,2),
   sku              text unique,
   stock_quantity   int not null default 0,
+  liter_ml         numeric(12,4),
   status           text not null default 'draft'
                      check (status in ('draft', 'active', 'archived')),
   tags             text[] default '{}',
@@ -218,82 +224,11 @@ create table if not exists public.discounts (
 );
 
 create or replace function increment_discount_usage(p_code text)
-returns void
-language sql
-security definer
-set search_path = public
-as $$
+returns void language sql as $$
   update public.discounts
   set usage_count = usage_count + 1
-  where code = upper(p_code)
-    and (usage_limit is null or usage_count < usage_limit);
-$$;
-
-create or replace function rollback_discount_reservation(p_code text)
-returns void
-language sql
-security definer
-set search_path = public
-as $$
-  update public.discounts
-  set usage_count = greatest(0, usage_count - 1)
   where code = upper(p_code);
 $$;
-
-create or replace function validate_and_lock_discount(p_code text, p_order_amount numeric)
-returns numeric
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  v_discount public.discounts%rowtype;
-  v_discount_amount numeric := 0;
-begin
-  select * into v_discount
-  from public.discounts
-  where code = upper(trim(p_code))
-    and is_active = true
-    and (expires_at is null or expires_at > now())
-    and (usage_limit is null or usage_count < usage_limit)
-    and (min_order_amount is null or p_order_amount >= min_order_amount)
-  for update;
-
-  if not found then
-    return -1;
-  end if;
-
-  update public.discounts
-  set usage_count = usage_count + 1
-  where id = v_discount.id;
-
-  if v_discount.type = 'percentage' then
-    v_discount_amount :=
-      least(
-        round(p_order_amount * (v_discount.value / 100.0), 2),
-        p_order_amount
-      );
-  elsif v_discount.type = 'fixed' then
-    v_discount_amount := least(round(v_discount.value, 2), p_order_amount);
-  elsif v_discount.type = 'free_shipping' then
-    v_discount_amount := 0;
-  end if;
-
-  return coalesce(v_discount_amount, 0);
-end;
-$$;
-
-revoke all on function public.increment_discount_usage(text) from public;
-revoke execute on function public.increment_discount_usage(text) from anon, authenticated;
-grant execute on function public.increment_discount_usage(text) to service_role;
-
-revoke all on function public.validate_and_lock_discount(text, numeric) from public;
-revoke execute on function public.validate_and_lock_discount(text, numeric) from anon, authenticated;
-grant execute on function public.validate_and_lock_discount(text, numeric) to service_role;
-
-revoke all on function public.rollback_discount_reservation(text) from public;
-revoke execute on function public.rollback_discount_reservation(text) from anon, authenticated;
-grant execute on function public.rollback_discount_reservation(text) to service_role;
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 10. Orders
@@ -312,9 +247,11 @@ create table if not exists public.orders (
                             'shipped','out_for_delivery','delivered',
                             'cancelled','refunded'
                           )),
-  payment_method        text not null check (payment_method in ('card','cod','safepay','jazzcash','payfast')),
+  payment_method        text not null default 'cod'
+                          check (payment_method in ('card','cod','safepay','jazzcash','payfast','bank_transfer')),
   payment_status        text not null default 'pending'
-                          check (payment_status in ('pending','paid','failed','refunded')),
+                          check (payment_status in ('pending','paid','failed','refunded','verified')),
+  transaction_id        text,
   lemonsqueezy_order_id text unique,
   safepay_tracker_token text,
   stripe_payment_intent_id text,
@@ -365,14 +302,14 @@ create unique index if not exists orders_jazzcash_txn_ref_no_uidx
   on public.orders (jazzcash_txn_ref_no)
   where jazzcash_txn_ref_no is not null;
 
-create sequence if not exists order_number_seq start with 10000;
-
--- Auto-generate order number (monotonic suffix — no collisions)
-create or replace function generate_order_number() returns text
-language sql as $$
-  select 'ORD-' || to_char(now(), 'YYYYMMDD') || '-' ||
-    lpad(nextval('order_number_seq'::regclass)::text, 5, '0');
-$$;
+-- Auto-generate order number
+create or replace function generate_order_number() returns text as $$
+declare seq int;
+begin
+  select count(*) + 1 into seq from public.orders;
+  return 'RL-' || to_char(now(), 'YYYY') || '-' || lpad(seq::text, 6, '0');
+end;
+$$ language plpgsql;
 
 create or replace function set_order_number() returns trigger as $$
 begin
@@ -513,7 +450,7 @@ alter table public.products enable row level security;
 drop policy if exists "products_public_read"  on public.products;
 drop policy if exists "products_admin_write"  on public.products;
 create policy "products_public_read"  on public.products for select using (status = 'active' or is_admin());
-create policy "products_admin_write"  on public.products for all using (is_admin());
+create policy "products_admin_write"  on public.products for all using (is_admin()) with check (is_admin());
 
 -- Product images + variants: public read; admin write
 alter table public.product_images enable row level security;
