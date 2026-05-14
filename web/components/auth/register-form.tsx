@@ -5,9 +5,11 @@ import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { signUp, type AuthActionState } from "@/lib/auth/actions";
 import { signInWithGoogle } from "@/lib/auth/google";
+import { friendlyAuthMessage } from "@/lib/auth/auth-errors";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import toast from "react-hot-toast";
 
 function strengthLabel(pw: string): { label: string; width: number } {
   let score = 0;
@@ -154,7 +156,11 @@ export function RegisterForm() {
         variant="secondary"
         className="flex w-full items-center justify-center gap-3"
         disabled={pending}
-        onClick={() => signInWithGoogle("/account/orders").catch(console.error)}
+        onClick={() =>
+          signInWithGoogle("/account/orders").catch((e) =>
+            toast.error(friendlyAuthMessage(e, "sign_up")),
+          )
+        }
       >
         <GoogleGlyph />
         Continue with Google

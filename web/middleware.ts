@@ -1,14 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
-/** Inline env check — middleware runs on Edge; avoid `@/` imports (Vercel bundler). */
-function isSupabaseConfigured(): boolean {
-  return !!(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
-  );
-}
+import {
+  getSupabaseAnonPublishableKey,
+  getSupabaseUrl,
+  isSupabaseConfigured,
+} from "./utils/supabase/public-env";
+import { ADMIN_LOGIN_PATH } from "./lib/admin/paths";
 
 function createMiddlewareSupabase(
   request: NextRequest,
@@ -53,10 +51,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const key =
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  const url = getSupabaseUrl();
+  const key = getSupabaseAnonPublishableKey();
 
   let response = NextResponse.next({ request: { headers: request.headers } });
   const supabase = createMiddlewareSupabase(request, response, url, key);
@@ -113,12 +109,15 @@ export async function middleware(request: NextRequest) {
 
   const isAdminRoute =
     pathname === ADMIN_PREFIX || pathname.startsWith(`${ADMIN_PREFIX}/`);
-  const isAdminLoginRoute = pathname === "/admin/login";
+  const isAdminLoginRoute =
+    pathname === ADMIN_LOGIN_PATH ||
+    pathname.startsWith(`${ADMIN_LOGIN_PATH}/`);
 
   if (isAdminRoute && !isAdminLoginRoute) {
     if (!user) {
-      const adminLogin = new URL("/admin/login", request.url);
-      const redirect = NextResponse.redirect(adminLogin);
+      const redirect = NextResponse.redirect(
+        new URL(ADMIN_LOGIN_PATH, request.url),
+      );
       copyCookies(response, redirect);
       return redirect;
     }
@@ -131,7 +130,9 @@ export async function middleware(request: NextRequest) {
 
     const role = profile?.role as string | undefined;
     if (role !== "admin") {
-      const redirect = NextResponse.redirect(new URL("/?error=unauthorized", request.url));
+      const redirect = NextResponse.redirect(
+        new URL("/?error=access_denied", request.url),
+      );
       copyCookies(response, redirect);
       return redirect;
     }

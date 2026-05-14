@@ -10,8 +10,19 @@ export type OrderStatus =
   | "delivered"
   | "cancelled"
   | "refunded";
-export type PaymentMethod = "card" | "cod" | "safepay" | "jazzcash" | "payfast";
-export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
+export type PaymentMethod =
+  | "card"
+  | "cod"
+  | "safepay"
+  | "jazzcash"
+  | "payfast"
+  | "bank_transfer";
+export type PaymentStatus =
+  | "pending"
+  | "paid"
+  | "failed"
+  | "refunded"
+  | "verified";
 export type DiscountType = "percentage" | "fixed" | "free_shipping";
 export type UserRole = "customer" | "staff" | "admin";
 
@@ -85,6 +96,8 @@ export interface Product {
   compare_at_price: number | null;
   sku: string | null;
   stock_quantity: number;
+  /** Optional migration column — not used by admin inserts for all environments */
+  liter_ml?: number | null;
   status: ProductStatus;
   tags: string[];
   seo_title: string | null;
@@ -160,6 +173,7 @@ export interface Order {
   status: OrderStatus;
   payment_method: PaymentMethod;
   payment_status: PaymentStatus;
+  transaction_id?: string | null;
   lemonsqueezy_order_id: string | null;
   safepay_tracker_token?: string | null;
   stripe_payment_intent_id?: string | null;

@@ -1,5 +1,6 @@
-function envTrim(key: string): string | undefined {
-  const v = process.env[key];
+/** Plain trim helper — avoids dynamic `process.env[key]` lookups (those are not inlined for the browser bundle). */
+
+function trimDefined(v: string | undefined): string | undefined {
   if (typeof v !== "string") return undefined;
   const t = v.trim();
   return t.length ? t : undefined;
@@ -7,15 +8,15 @@ function envTrim(key: string): string | undefined {
 
 /** Public Supabase credentials for browser + cookie-based server clients */
 export function isSupabaseConfigured(): boolean {
-  const url = envTrim("NEXT_PUBLIC_SUPABASE_URL");
+  const url = trimDefined(process.env.NEXT_PUBLIC_SUPABASE_URL);
   const key =
-    envTrim("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY") ||
-    envTrim("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    trimDefined(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) ||
+    trimDefined(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
   return !!(url && key);
 }
 
 export function getSupabaseUrl(): string {
-  const url = envTrim("NEXT_PUBLIC_SUPABASE_URL");
+  const url = trimDefined(process.env.NEXT_PUBLIC_SUPABASE_URL);
   if (!url) {
     throw new Error("Missing env NEXT_PUBLIC_SUPABASE_URL");
   }
@@ -25,8 +26,8 @@ export function getSupabaseUrl(): string {
 /** Prefer publishable key; fall back to classic JWT anon key from the dashboard */
 export function getSupabaseAnonPublishableKey(): string {
   const key =
-    envTrim("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY") ||
-    envTrim("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    trimDefined(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) ||
+    trimDefined(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
   if (!key) {
     throw new Error(
       "Missing env NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY",
