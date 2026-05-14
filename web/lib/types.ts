@@ -96,6 +96,8 @@ export interface Product {
   compare_at_price: number | null;
   sku: string | null;
   stock_quantity: number;
+  /** Optional migration column — not used by admin inserts for all environments */
+  liter_ml?: number | null;
   status: ProductStatus;
   tags: string[];
   seo_title: string | null;

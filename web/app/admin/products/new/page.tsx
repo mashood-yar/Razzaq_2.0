@@ -14,17 +14,15 @@ import { X, Upload } from "lucide-react";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import type { Category } from "@/lib/types";
-import { slugify } from "@/lib/utils";
 
 const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
-  sku: z.string().min(1, "SKU is required"),
+  sku: z.string().optional(),
   price_pkr: z.string().min(1, "Price is required"),
   stock_quantity: z.string().min(1, "Stock is required"),
-  category_id: z.string().min(1, "Category is required"),
-  weight_kg: z.string().optional(),
-  is_active: z.boolean(),
+  category_id: z.string().uuid("Select a category"),
+  status: z.enum(["draft", "active", "archived"]),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -41,8 +39,7 @@ export default function AddProductPage() {
     price_pkr: "",
     stock_quantity: "0",
     category_id: "",
-    weight_kg: "",
-    is_active: true,
+    status: "draft",
   });
   const [images, setImages] = useState<{ file: File; preview: string; url: string }[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -78,15 +75,26 @@ export default function AddProductPage() {
             method: "POST",
             body: formData,
           });
-          if (!res.ok) throw new Error("Upload failed");
-          const data = await res.json();
+          const payload = (await res.json().catch(() => ({}))) as {
+            url?: string;
+            error?: string;
+          };
+          if (!res.ok || !payload.url) {
+            const msg =
+              typeof payload.error === "string"
+                ? payload.error
+                : "Upload failed";
+            throw new Error(msg);
+          }
           setImages((prev) =>
             prev.map((i) =>
-              i.preview === img.preview ? { ...i, url: data.url } : i
+              i.preview === img.preview ? { ...i, url: payload.url! } : i
             )
           );
-        } catch {
-          toast.error(`Failed to upload ${img.file.name}`);
+        } catch (e) {
+          const message =
+            e instanceof Error ? e.message : `Failed to upload ${img.file.name}`;
+          toast.error(`${img.file.name}: ${message}`);
         }
       }
     },
@@ -106,38 +114,39 @@ export default function AddProductPage() {
     try {
       const validated = productSchema.parse(formData);
       const categoryId = validated.category_id;
-      const slug = `${slugify(validated.name)}-${crypto.randomUUID().slice(0, 8)}`;
 
-      const { data: product, error: productError } = await supabase
-        .from("products")
-        .insert({
+      const imagePayload = images
+        .filter((img) => typeof img.url === "string" && img.url.trim().length > 0)
+        .map((img) => ({ url: img.url.trim() }));
+
+      const skuTrimmed = validated.sku?.trim() ?? "";
+
+      const res = await fetch("/api/admin/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           name: validated.name,
-          slug,
           description: validated.description,
-          sku: validated.sku,
+          ...(skuTrimmed.length > 0 ? { sku: skuTrimmed } : {}),
           price_pkr: parseFloat(validated.price_pkr),
           stock_quantity: parseInt(validated.stock_quantity, 10),
           category_id: categoryId,
-          weight_kg: validated.weight_kg ? parseFloat(validated.weight_kg) : null,
-          status: validated.is_active ? "active" : "draft",
-        })
-        .select()
-        .single();
+          status: validated.status,
+          images: imagePayload,
+        }),
+      });
 
-      if (productError) throw productError;
+      const payload = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        id?: string;
+      };
 
-      // Insert images
-      if (images.length > 0 && product) {
-        const imageInserts = images.map((img, idx) => ({
-          product_id: product.id,
-          url: img.url,
-          is_primary: idx === 0,
-          sort_order: idx,
-        }));
-        const { error: imagesError } = await supabase
-          .from("product_images")
-          .insert(imageInserts);
-        if (imagesError) throw imagesError;
+      if (!res.ok) {
+        const msg =
+          typeof payload.error === "string"
+            ? payload.error
+            : "Failed to create product";
+        throw new Error(msg);
       }
 
       toast.success("Product created successfully");
@@ -183,10 +192,11 @@ export default function AddProductPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="sku">SKU *</Label>
+              <Label htmlFor="sku">SKU (optional)</Label>
               <Input
                 id="sku"
-                value={formData.sku}
+                placeholder="Leave blank to auto-generate"
+                value={formData.sku ?? ""}
                 onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
                 disabled={loading}
               />
@@ -238,17 +248,6 @@ export default function AddProductPage() {
               {errors.category_id && <p className="text-sm text-destructive">{errors.category_id}</p>}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="weight_kg">Weight (KG)</Label>
-              <Input
-                id="weight_kg"
-                type="number"
-                step="0.1"
-                value={formData.weight_kg}
-                onChange={(e) => setFormData({ ...formData, weight_kg: e.target.value })}
-                disabled={loading}
-              />
-            </div>
           </div>
 
           <div className="space-y-2">
@@ -264,18 +263,27 @@ export default function AddProductPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="is_active">Status</Label>
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="is_active"
-                checked={formData.is_active}
-                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                disabled={loading}
-                className="w-4 h-4"
-              />
-              <label htmlFor="is_active" className="text-sm">Active (visible on store)</label>
-            </div>
+            <Label htmlFor="status">Status</Label>
+            <Select
+              value={formData.status}
+              onValueChange={(value) =>
+                setFormData({
+                  ...formData,
+                  status: value as ProductFormData["status"],
+                })
+              }
+              disabled={loading}
+            >
+              <SelectTrigger id="status">
+                <SelectValue placeholder="Draft" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="draft">Draft (not on storefront)</SelectItem>
+                <SelectItem value="active">Active (visible on store)</SelectItem>
+                <SelectItem value="archived">Archived</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.status && <p className="text-sm text-destructive">{errors.status}</p>}
           </div>
 
           <div className="space-y-2">

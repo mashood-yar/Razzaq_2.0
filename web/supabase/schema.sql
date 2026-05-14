@@ -115,6 +115,7 @@ create table if not exists public.products (
   compare_at_price numeric(10,2),
   sku              text unique,
   stock_quantity   int not null default 0,
+  liter_ml         numeric(12,4),
   status           text not null default 'draft'
                      check (status in ('draft', 'active', 'archived')),
   tags             text[] default '{}',
@@ -449,7 +450,7 @@ alter table public.products enable row level security;
 drop policy if exists "products_public_read"  on public.products;
 drop policy if exists "products_admin_write"  on public.products;
 create policy "products_public_read"  on public.products for select using (status = 'active' or is_admin());
-create policy "products_admin_write"  on public.products for all using (is_admin());
+create policy "products_admin_write"  on public.products for all using (is_admin()) with check (is_admin());
 
 -- Product images + variants: public read; admin write
 alter table public.product_images enable row level security;

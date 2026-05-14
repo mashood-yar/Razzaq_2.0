@@ -15,15 +15,15 @@ import toast from "react-hot-toast";
 import { z } from "zod";
 import type { Product, ProductImage, Category } from "@/lib/types";
 
+
 const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
-  sku: z.string().min(1, "SKU is required"),
+  sku: z.string().optional(),
   price_pkr: z.string().min(1, "Price is required"),
   stock_quantity: z.string().min(1, "Stock is required"),
-  category_id: z.string().min(1, "Category is required"),
-  weight_kg: z.string().optional(),
-  is_active: z.boolean(),
+  category_id: z.string().uuid("Select a category"),
+  status: z.enum(["draft", "active", "archived"]),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -43,8 +43,7 @@ export default function EditProductPage() {
     price_pkr: "",
     stock_quantity: "0",
     category_id: "",
-    weight_kg: "",
-    is_active: true,
+    status: "draft",
   });
   const [images, setImages] = useState<{ id?: string; file?: File; preview: string; url: string; is_primary: boolean }[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -65,16 +64,17 @@ export default function EditProductPage() {
       ]);
 
       if (productRes.data) {
-        setProduct(productRes.data);
+        const p = productRes.data;
+        const st = p.status === "active" || p.status === "archived" ? p.status : "draft";
+        setProduct(p);
         setFormData({
-          name: productRes.data.name,
-          description: productRes.data.description || "",
-          sku: productRes.data.sku || "",
-          price_pkr: productRes.data.price_pkr.toString(),
-          stock_quantity: productRes.data.stock_quantity.toString(),
-          category_id: productRes.data.category_id || "",
-          weight_kg: productRes.data.weight_kg != null ? String(productRes.data.weight_kg) : "",
-          is_active: productRes.data.status === "active",
+          name: p.name,
+          description: p.description || "",
+          sku: p.sku || "",
+          price_pkr: p.price_pkr.toString(),
+          stock_quantity: p.stock_quantity.toString(),
+          category_id: p.category_id || "",
+          status: st,
         });
         setImages(
           productRes.data.product_images?.map((img: ProductImage) => ({
@@ -110,21 +110,32 @@ export default function EditProductPage() {
 
       for (const img of newImages) {
         const formData = new FormData();
-        formData.append("file", img.file);
+        formData.append("file", img.file!);
         try {
           const res = await fetch("/api/admin/upload-image", {
             method: "POST",
             body: formData,
           });
-          if (!res.ok) throw new Error("Upload failed");
-          const data = await res.json();
+          const payload = (await res.json().catch(() => ({}))) as {
+            url?: string;
+            error?: string;
+          };
+          if (!res.ok || !payload.url) {
+            const msg =
+              typeof payload.error === "string"
+                ? payload.error
+                : "Upload failed";
+            throw new Error(msg);
+          }
           setImages((prev) =>
             prev.map((i) =>
-              i.preview === img.preview ? { ...i, url: data.url } : i
+              i.preview === img.preview ? { ...i, url: payload.url! } : i
             )
           );
-        } catch {
-          toast.error(`Failed to upload ${img.file.name}`);
+        } catch (e) {
+          const message =
+            e instanceof Error ? e.message : `Failed to upload ${img.file!.name}`;
+          toast.error(`${img.file!.name}: ${message}`);
         }
       }
     },
@@ -145,17 +156,23 @@ export default function EditProductPage() {
       const validated = productSchema.parse(formData);
       const categoryId = validated.category_id;
 
+      const skuTrimmed = validated.sku?.trim() ?? "";
+      const skuFinal =
+        skuTrimmed.length > 0
+          ? skuTrimmed
+          : product?.sku ??
+            `SKU-${crypto.randomUUID().replace(/-/g, "").slice(0, 14)}`;
+
       const { error: productError } = await supabase
         .from("products")
         .update({
           name: validated.name,
           description: validated.description,
-          sku: validated.sku,
+          sku: skuFinal,
           price_pkr: parseFloat(validated.price_pkr),
           stock_quantity: parseInt(validated.stock_quantity, 10),
           category_id: categoryId,
-          weight_kg: validated.weight_kg ? parseFloat(validated.weight_kg) : null,
-          status: validated.is_active ? "active" : "draft",
+          status: validated.status,
         })
         .eq("id", params.id);
 
@@ -263,10 +280,11 @@ export default function EditProductPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="sku">SKU *</Label>
+              <Label htmlFor="sku">SKU</Label>
               <Input
                 id="sku"
-                value={formData.sku}
+                placeholder="Leave blank to keep current or auto-generate"
+                value={formData.sku ?? ""}
                 onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
                 disabled={saving}
               />
@@ -318,17 +336,6 @@ export default function EditProductPage() {
               {errors.category_id && <p className="text-sm text-destructive">{errors.category_id}</p>}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="weight_kg">Weight (KG)</Label>
-              <Input
-                id="weight_kg"
-                type="number"
-                step="0.1"
-                value={formData.weight_kg}
-                onChange={(e) => setFormData({ ...formData, weight_kg: e.target.value })}
-                disabled={saving}
-              />
-            </div>
           </div>
 
           <div className="space-y-2">
@@ -344,18 +351,27 @@ export default function EditProductPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="is_active">Status</Label>
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="is_active"
-                checked={formData.is_active}
-                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                disabled={saving}
-                className="w-4 h-4"
-              />
-              <label htmlFor="is_active" className="text-sm">Active (visible on store)</label>
-            </div>
+            <Label htmlFor="status">Status</Label>
+            <Select
+              value={formData.status}
+              onValueChange={(value) =>
+                setFormData({
+                  ...formData,
+                  status: value as ProductFormData["status"],
+                })
+              }
+              disabled={saving}
+            >
+              <SelectTrigger id="status">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="archived">Archived</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.status && <p className="text-sm text-destructive">{errors.status}</p>}
           </div>
 
           <div className="space-y-2">

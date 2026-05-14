@@ -70,7 +70,7 @@ export async function PUT(
 
   try {
     const body = await request.json();
-    const { name, description, sku, price_pkr, stock_quantity, category_id, weight_kg, status } = body;
+    const { name, description, sku, price_pkr, stock_quantity, category_id, status } = body;
 
     const { data, error } = await supabase
       .from("products")
@@ -81,7 +81,6 @@ export async function PUT(
         price_pkr,
         stock_quantity,
         category_id,
-        weight_kg,
         status,
       })
       .eq("id", id)
