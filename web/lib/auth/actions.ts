@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { friendlyAuthMessage } from "@/lib/auth/auth-errors";
 import { isSupabaseConfigured } from "@/utils/supabase/public-env";
 
 export type AuthActionState = { error?: string; success?: string } | null;
@@ -32,7 +33,7 @@ export async function signIn(
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyAuthMessage(error, "sign_in") };
 
   revalidatePath("/", "layout");
   redirect(next.startsWith("/") ? next : "/account/orders");
@@ -71,7 +72,7 @@ export async function signUp(
     password,
     options: { data: { full_name: fullName, gender } },
   });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyAuthMessage(error, "sign_up") };
 
   if (data.user) {
     await supabase.from("profiles").upsert(
@@ -126,7 +127,7 @@ export async function sendMagicLink(
       emailRedirectTo: `${site.replace(/\/$/, "")}/auth/callback`,
     },
   });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyAuthMessage(error, "otp") };
   return { success: "Check your email for the sign-in link." };
 }
 
@@ -151,7 +152,7 @@ export async function sendPasswordReset(
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: callbackUrl,
   });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyAuthMessage(error, "password_reset") };
   return {
     success: "If an account exists for that email, a reset link was sent.",
   };
@@ -167,7 +168,7 @@ export async function updatePassword(
   const password = String(formData.get("password") ?? "");
   const supabase = await createClient();
   const { error } = await supabase.auth.updateUser({ password });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyAuthMessage(error, "update_password") };
   revalidatePath("/", "layout");
   redirect("/login");
 }

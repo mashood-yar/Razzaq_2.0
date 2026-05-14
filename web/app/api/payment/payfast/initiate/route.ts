@@ -7,29 +7,43 @@ import { getServerSiteOrigin } from "@/lib/site";
 
 export const runtime = "nodejs";
 
-function orderDatePakistan(): string {
+/** PayFast path is intentionally disabled — checkout uses COD / bank transfer instead. */
+
+export async function POST() {
+  return NextResponse.json(
+    {
+      disabled: true,
+      error:
+        "PayFast checkout is disabled for this storefront. Choose Cash on Delivery or Bank Transfer.",
+    },
+    { status: 503 },
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Former implementation retained for future re-enable — not invoked while disabled.
+// ─────────────────────────────────────────────────────────────────────────────
+
+function orderDatePakistan_DISABLED(): string {
   const d = new Date();
   const p = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
 }
 
-function formatTxnamt(totalPkr: number): string {
+function formatTxnamt_DISABLED(totalPkr: number): string {
   return Number(totalPkr).toFixed(2);
 }
 
-function normalizeCheckoutMobile(input: string): string {
+function normalizeCheckoutMobile_DISABLED(input: string): string {
   const d = input.replace(/\D/g, "");
   if (d.startsWith("92")) return `0${d.slice(2)}`.slice(0, 11);
   if (!d.startsWith("0")) return `0${d}`.slice(0, 11);
   return d.slice(0, 11);
 }
 
-/**
- * POST /api/payment/payfast/initiate
- * Fetches PayFast access token, builds hosted-checkout POST fields (cards & wallets on PayFast),
- * signs with HMAC-SHA256 over alphabetically sorted parameters.
- */
-export async function POST(request: Request) {
+async function legacyPayfastInitiateDISABLED_POST(
+  request: Request,
+): Promise<NextResponse> {
   const cfg = payfastConfig();
   if (!cfg) {
     return NextResponse.json(
@@ -108,7 +122,7 @@ export async function POST(request: Request) {
     const mobSource =
       customerMobile ||
       (typeof order.ship_phone === "string" ? order.ship_phone : "");
-    const mobile = normalizeCheckoutMobile(mobSource);
+    const mobile = normalizeCheckoutMobile_DISABLED(mobSource);
     if (!/^03\d{9}$/.test(mobile)) {
       return NextResponse.json(
         { error: "A valid Pakistani mobile (03XXXXXXXXX) is required for PayFast." },
@@ -149,11 +163,11 @@ export async function POST(request: Request) {
       FAILURE_URL: encodeURIComponent(failureUrl),
       MERCHANT_ID: cfg.merchantId,
       MERCHANT_NAME: cfg.merchantName,
-      ORDER_DATE: orderDatePakistan(),
+      ORDER_DATE: orderDatePakistan_DISABLED(),
       PROCCODE: "00",
       SUCCESS_URL: encodeURIComponent(successUrl),
       TOKEN: accessToken,
-      TXNAMT: formatTxnamt(total),
+      TXNAMT: formatTxnamt_DISABLED(total),
       TXNDESC: `Razzaq Luxe — order ${order.order_number ?? order.id.slice(0, 8)}`,
       VERSION: "NEXTJS-PAYFAST-1.0",
     };
@@ -175,3 +189,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 502 });
   }
 }
+
+/** @internal Retain reference so the disabled implementation survives minification audits. */
+void legacyPayfastInitiateDISABLED_POST;

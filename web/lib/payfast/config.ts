@@ -10,13 +10,13 @@ export type PayfastConfig = {
 export function payfastConfig(): PayfastConfig | null {
   const merchantId = process.env.PAYFAST_MERCHANT_ID?.trim();
   const securedKey = process.env.PAYFAST_SECURED_KEY?.trim();
-  const apiBaseUrl = (
-    process.env.PAYFAST_API_URL?.trim() || "https://sandbox.payfast.pk"
-  ).replace(/\/+$/, "");
-  const merchantName =
-    process.env.PAYFAST_MERCHANT_NAME?.trim() || "Razzaq Luxe";
+  const apiBaseUrl = (process.env.PAYFAST_API_URL?.trim() ?? "").replace(
+    /\/+$/,
+    "",
+  );
+  const merchantName = process.env.PAYFAST_MERCHANT_NAME?.trim() ?? "";
 
-  if (!merchantId || !securedKey) return null;
+  if (!merchantId || !securedKey || !apiBaseUrl || !merchantName) return null;
   return { merchantId, securedKey, apiBaseUrl, merchantName };
 }
 

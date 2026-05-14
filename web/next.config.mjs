@@ -26,6 +26,12 @@ const nextConfig = {
       { protocol: "https", hostname: "videos.pexels.com", pathname: "/**" },
       { protocol: "https", hostname: "picsum.photos", pathname: "/**" },
       { protocol: "https", hostname: "cdn.sanity.io", pathname: "/**" },
+      { protocol: "https", hostname: "res.cloudinary.com", pathname: "/**" },
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
       /* Google profile photos — wildcard covers lh3… and regional hosts */
       {
         protocol: "https",

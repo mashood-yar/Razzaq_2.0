@@ -19,6 +19,7 @@ import {
 } from "@/stores/cart-store";
 import { SafepayPayButton } from "@/components/checkout/safepay-pay-button";
 import { PK_PROVINCES } from "@/lib/utils";
+import { publicBankTransferDisplay } from "@/lib/checkout/bank-transfer-public";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────
 const detailsSchema = z.object({
@@ -38,7 +39,7 @@ type DetailsInput = z.input<typeof detailsSchema>;
 type DetailsData  = z.output<typeof detailsSchema>;
 
 type ShippingMethod = "standard" | "express";
-type PaymentMethod = "card" | "cod" | "safepay" | "payfast" | "jazzcash";
+type PaymentChoice = "card" | "cod" | "safepay" | "jazzcash" | "bank_transfer";
 
 function normalizePkWalletMobile(input: string): string {
   let d = input.replace(/\D/g, "");
@@ -59,7 +60,8 @@ export function CheckoutForm() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [shippingDetails, setShippingDetails] = useState<DetailsData | null>(null);
   const [shippingMethod, setShippingMethod] = useState<ShippingMethod>("standard");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentChoice>("cod");
+  const [bankTxnReference, setBankTxnReference] = useState("");
   const [jazzMobile, setJazzMobile] = useState("");
   const [jazzCnic, setJazzCnic] = useState("");
   const [promoInput, setPromoInput] = useState("");
@@ -72,6 +74,7 @@ export function CheckoutForm() {
   const shipCost =
     shippingMethod === "express" ? 500 : cartShipping(sub, promoCode);
   const total = cartTotal(sub, promoDiscount, shipCost);
+  const bankDisplay = publicBankTransferDisplay();
 
   // Step 1 form
   const {
@@ -134,6 +137,15 @@ export function CheckoutForm() {
       }
     }
 
+    if (paymentMethod === "bank_transfer") {
+      const ref = bankTxnReference.trim();
+      if (ref.length < 3) {
+        setSubmitError("Enter the transaction or reference ID from your bank or Upaisa receipt.");
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
     try {
       const res = await fetch("/api/orders", {
         method: "POST",
@@ -146,6 +158,10 @@ export function CheckoutForm() {
           paymentMethod,
           promoCode: promoCode ?? undefined,
           discountAmount: promoDiscount,
+          transactionId:
+            paymentMethod === "bank_transfer"
+              ? bankTxnReference.trim()
+              : undefined,
         }),
       });
 
@@ -216,45 +232,9 @@ export function CheckoutForm() {
         return;
       }
 
-      if (paymentMethod === "payfast" && data.order?.id && shippingDetails) {
-        const payRes = await fetch("/api/payment/payfast/initiate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            orderId: data.order.id,
-            customerEmail: shippingDetails.email,
-            customerMobile: shippingDetails.phone,
-          }),
-        });
-        const payJson = (await payRes.json()) as {
-          actionUrl?: string;
-          fields?: Record<string, string>;
-          error?: string;
-        };
-        if (!payRes.ok) {
-          throw new Error(payJson.error ?? "Could not start PayFast checkout");
-        }
-        if (!payJson.actionUrl || !payJson.fields) {
-          throw new Error("PayFast did not return checkout fields");
-        }
-        clearCart();
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = payJson.actionUrl;
-        form.style.display = "none";
-        for (const [name, value] of Object.entries(payJson.fields)) {
-          const inp = document.createElement("input");
-          inp.type = "hidden";
-          inp.name = name;
-          inp.value = value;
-          form.appendChild(inp);
-        }
-        document.body.appendChild(form);
-        form.submit();
-        setIsSubmitting(false);
-        return;
-      }
-
+      /*
+       * PAYFAST — disabled (see /api/payment/payfast/initiate). Former auto-post to PayFast checkout removed.
+       */
       if (paymentMethod === "card" && data.stripe === true && data.order?.id) {
         const stripeRes = await fetch(
           "/api/payment/stripe/create-checkout-session",
@@ -530,6 +510,16 @@ export function CheckoutForm() {
               <div className="space-y-3">
                 {[
                   {
+                    value: "cod" as const,
+                    label: "Cash on Delivery",
+                    sub: "Pay in cash when your order arrives. Available across Pakistan.",
+                  },
+                  {
+                    value: "bank_transfer" as const,
+                    label: "Online Bank Transfer / Upaisa",
+                    sub: "Transfer the order total manually, then enter your receipt reference below.",
+                  },
+                  {
                     value: "card" as const,
                     label: "Pay by Card",
                     sub: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
@@ -542,19 +532,9 @@ export function CheckoutForm() {
                     sub: "Visa, Mastercard, Easypaisa, NayaPay, SadaPay & more — hosted checkout by Safepay.",
                   },
                   {
-                    value: "payfast" as const,
-                    label: "Pay with PayFast (Pakistan)",
-                    sub: "Sandbox: sandbox.payfast.pk — hosted cards & wallets (incl. Easypaisa-style wallet rails where enabled).",
-                  },
-                  {
                     value: "jazzcash" as const,
                     label: "Pay with JazzCash Mobile Account",
                     sub: "Mobile wallet — enter JazzCash number & CNIC last 6 digits (sandbox/live credentials required).",
-                  },
-                  {
-                    value: "cod" as const,
-                    label: "Cash on Delivery",
-                    sub: "Pay in cash when your order arrives. Available across Pakistan.",
                   },
                 ].map((opt) => (
                   <button
@@ -591,6 +571,46 @@ export function CheckoutForm() {
                 <p className="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
                   {submitError}
                 </p>
+              )}
+
+              {paymentMethod === "bank_transfer" && (
+                <div className="space-y-4 rounded-xl border border-graphite bg-charcoal/40 p-4 text-sm">
+                  <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                    Transfer details — pay exactly {formatPKR(total)}
+                  </p>
+                  <dl className="grid gap-2 text-ivory">
+                    <div>
+                      <dt className="text-smoke text-xs">Bank</dt>
+                      <dd className="font-medium">{bankDisplay.bankName}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-smoke text-xs">Account title</dt>
+                      <dd className="font-medium">{bankDisplay.accountTitle}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-smoke text-xs">Account number</dt>
+                      <dd className="font-mono tracking-wide">{bankDisplay.accountNumber}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-smoke text-xs">Upaisa number</dt>
+                      <dd className="font-mono tracking-wide">{bankDisplay.upaisaNumber}</dd>
+                    </div>
+                  </dl>
+                  <p className="text-xs leading-relaxed text-smoke">
+                    After payment, Razzaq order confirmation will show your <strong className="text-ivory">order number</strong> — keep this email handy. Mention your checkout email ({shippingDetails?.email}) in your transfer narration so we can match your payment faster.
+                  </p>
+                  <div>
+                    <Label htmlFor="bank-txn-reference">Bank / Upaisa transaction ID</Label>
+                    <Input
+                      id="bank-txn-reference"
+                      className="mt-1.5"
+                      placeholder="From your SMS or banking receipt"
+                      value={bankTxnReference}
+                      onChange={(e) => setBankTxnReference(e.target.value)}
+                      autoComplete="off"
+                    />
+                  </div>
+                </div>
               )}
 
               {paymentMethod === "jazzcash" && (
@@ -634,17 +654,6 @@ export function CheckoutForm() {
                     loading={isSubmitting}
                     onPay={() => placeOrder()}
                   />
-                ) : paymentMethod === "payfast" ? (
-                  <Button
-                    size="lg"
-                    className="flex-1"
-                    onClick={placeOrder}
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting
-                      ? "Redirecting to PayFast…"
-                      : `Pay with PayFast · ${formatPKR(total)}`}
-                  </Button>
                 ) : paymentMethod === "jazzcash" ? (
                   <Button
                     size="lg"
@@ -655,6 +664,17 @@ export function CheckoutForm() {
                     {isSubmitting
                       ? "Contacting JazzCash…"
                       : `Pay with JazzCash · ${formatPKR(total)}`}
+                  </Button>
+                ) : paymentMethod === "bank_transfer" ? (
+                  <Button
+                    size="lg"
+                    className="flex-1"
+                    onClick={placeOrder}
+                    disabled={isSubmitting || bankTxnReference.trim().length < 3}
+                  >
+                    {isSubmitting
+                      ? "Placing order…"
+                      : `Confirm bank transfer · ${formatPKR(total)}`}
                   </Button>
                 ) : (
                   <Button

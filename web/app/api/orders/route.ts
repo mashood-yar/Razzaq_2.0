@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createLemonSqueezyCheckout } from "@/lib/lemonsqueezy/checkout";
 import { sendOrderConfirmationEmail } from "@/lib/resend/client";
-import { payfastConfig } from "@/lib/payfast/config";
 import type { CartItem, Order } from "@/lib/types";
 
 function isStripeCheckoutEnabled(): boolean {
@@ -24,6 +23,7 @@ export async function POST(request: Request) {
     promoCode,
     discountAmount = 0,
     guestEmail,
+    transactionId,
   }: {
     cartItems: CartItem[];
     shippingAddress: {
@@ -39,10 +39,18 @@ export async function POST(request: Request) {
       country: string;
     };
     shippingMethod: string;
-    paymentMethod: "card" | "cod" | "safepay" | "jazzcash" | "payfast";
+    paymentMethod:
+      | "card"
+      | "cod"
+      | "safepay"
+      | "jazzcash"
+      | "payfast"
+      | "bank_transfer";
     promoCode?: string;
     discountAmount?: number;
     guestEmail?: string;
+    /** Bank / wallet receipt reference for manual verification */
+    transactionId?: string;
   } = body;
 
   if (!cartItems?.length) {
@@ -71,6 +79,30 @@ export async function POST(request: Request) {
 
   const total = Math.max(0, subtotal - discountAmount) + shippingCost;
 
+  const trimmedTxn =
+    typeof transactionId === "string" ? transactionId.trim() : "";
+  if (paymentMethod === "bank_transfer") {
+    if (!trimmedTxn) {
+      return NextResponse.json(
+        { error: "Enter your bank or Upaisa transaction reference from the receipt." },
+        { status: 400 },
+      );
+    }
+  }
+
+  /*
+   * PayFast storefront integration intentionally disabled — do not accept new PayFast orders.
+   */
+  if (paymentMethod === "payfast") {
+    return NextResponse.json(
+      {
+        error:
+          "PayFast is not available. Choose Cash on Delivery or Bank / Upaisa transfer.",
+      },
+      { status: 400 },
+    );
+  }
+
   const customerEmail = shippingAddress.email || guestEmail || user?.email || "";
   const customerName = `${shippingAddress.firstName} ${shippingAddress.lastName}`.trim();
 
@@ -85,6 +117,8 @@ export async function POST(request: Request) {
       customer_phone: shippingAddress.phone,
       payment_method: paymentMethod,
       payment_status: "pending",
+      transaction_id:
+        paymentMethod === "bank_transfer" ? trimmedTxn || null : null,
       subtotal_pkr: subtotal,
       discount_pkr: discountAmount,
       shipping_pkr: shippingCost,
@@ -146,6 +180,7 @@ export async function POST(request: Request) {
   // Email: COD + Lemon Squeezy get immediate confirmation. Stripe / Safepay confirm after webhook.
   const sendNow =
     paymentMethod === "cod" ||
+    paymentMethod === "bank_transfer" ||
     (paymentMethod === "card" && !isStripeCheckoutEnabled());
 
   if (sendNow) {
@@ -190,19 +225,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ order, jazzcash: true });
   }
 
-  if (paymentMethod === "payfast") {
-    const pf = payfastConfig();
-    if (!pf) {
-      return NextResponse.json(
-        {
-          error:
-            "PayFast is not configured. Set PAYFAST_MERCHANT_ID, PAYFAST_SECURED_KEY, and PAYFAST_API_URL or choose another payment method.",
-        },
-        { status: 500 },
-      );
-    }
-    return NextResponse.json({ order, payfast: true });
-  }
+  /*
+   * PAYFAST (disabled) — formerly returned { order, payfast: true }; see commented lib + routes when re‑enabling:
+   *
+   * if (paymentMethod === "payfast") {
+   *   const pf = payfastConfig();
+   *   ...
+   *   return NextResponse.json({ order, payfast: true });
+   * }
+   */
 
   // Stripe — hosted Checkout; frontend POST /api/payment/stripe/create-checkout-session then redirects.
   if (paymentMethod === "card" && isStripeCheckoutEnabled()) {

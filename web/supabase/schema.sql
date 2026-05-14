@@ -32,7 +32,7 @@ create table if not exists public.profiles (
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
-  insert into public.profiles (id, email, full_name, avatar_url, gender)
+  insert into public.profiles (id, email, full_name, avatar_url, gender, role)
   values (
     new.id,
     new.email,
@@ -42,13 +42,18 @@ begin
       when (new.raw_user_meta_data->>'gender') in ('male', 'female', 'other')
       then new.raw_user_meta_data->>'gender'
       else null
-    end
+    end,
+    'customer'
   )
   on conflict (id) do update
     set email      = excluded.email,
         full_name  = coalesce(excluded.full_name, public.profiles.full_name),
         avatar_url = coalesce(excluded.avatar_url, public.profiles.avatar_url),
         gender     = coalesce(excluded.gender, public.profiles.gender),
+        role       = case
+          when public.profiles.role in ('admin', 'staff') then public.profiles.role
+          else coalesce(public.profiles.role, 'customer')
+        end,
         updated_at = now();
   return new;
 end;
@@ -241,9 +246,11 @@ create table if not exists public.orders (
                             'shipped','out_for_delivery','delivered',
                             'cancelled','refunded'
                           )),
-  payment_method        text not null check (payment_method in ('card','cod','safepay','jazzcash','payfast')),
+  payment_method        text not null default 'cod'
+                          check (payment_method in ('card','cod','safepay','jazzcash','payfast','bank_transfer')),
   payment_status        text not null default 'pending'
-                          check (payment_status in ('pending','paid','failed','refunded')),
+                          check (payment_status in ('pending','paid','failed','refunded','verified')),
+  transaction_id        text,
   lemonsqueezy_order_id text unique,
   safepay_tracker_token text,
   stripe_payment_intent_id text,

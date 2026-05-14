@@ -8,7 +8,9 @@ import { AuthProvider } from "@/components/providers/auth-provider";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { DeferredChrome } from "@/components/layout/deferred-chrome";
+import { AccessDeniedBanner } from "@/components/layout/access-denied-banner";
 import { FlyToCartProvider } from "@/components/motion/fly-to-cart";
+import { AppToaster } from "@/components/providers/app-toaster";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -74,6 +76,8 @@ export default function RootLayout({
         className={`${cormorant.variable} ${jost.variable} min-h-screen bg-background font-body antialiased`}
       >
         <AuthProvider>
+          <AppToaster />
+          <AccessDeniedBanner />
           <StoreHydration />
           <FlyToCartProvider>
             {/* Grain sits below page UI so it never composites over sharp SVG/text (Visa, etc.). */}
