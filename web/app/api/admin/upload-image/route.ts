@@ -39,13 +39,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: cfg.error }, { status: 503 });
   }
 
-  const { cloudName, apiKey, apiSecret } = cfg.credentials;
+  // Credentials MUST come only from env (never inlined). Mirrors Cloudinary's expected keys.
   cloudinary.config({
-    cloud_name: cloudName,
-    api_key: apiKey,
-    api_secret: apiSecret,
+    cloud_name:
+      process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME?.trim() ||
+      process.env.CLOUDINARY_CLOUD_NAME?.trim(),
+    api_key: process.env.CLOUDINARY_API_KEY?.trim(),
+    api_secret: process.env.CLOUDINARY_API_SECRET?.trim(),
     secure: true,
   });
+
+  const { cloudName } = cfg.credentials;
 
   try {
     const formData = await request.formData();

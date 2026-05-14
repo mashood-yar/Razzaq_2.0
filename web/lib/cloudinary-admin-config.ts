@@ -1,26 +1,15 @@
+/** Admin upload routes ONLY read credentials from these env vars (no CLOUDINARY_URL, no hardcoded keys). */
+
 export type CloudinaryAdminCredentials = {
   cloudName: string;
   apiKey: string;
   apiSecret: string;
 };
 
-const MISSING_CONFIG_MESSAGE =
-  "Cloudinary is not configured. Set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME or CLOUDINARY_CLOUD_NAME, plus CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET in web/.env.local, or set CLOUDINARY_URL (see web/.env.example).";
+export const CLOUDINARY_ADMIN_ENV_MISSING_MESSAGE =
+  "Cloudinary is not configured. Set CLOUDINARY_CLOUD_NAME or NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME, plus CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET in web/.env.local (see web/.env.example). HTTP 401 Invalid api_key means the key or secret does not match the cloud name — copy API Key + API Secret from the same dashboard product.";
 
-function parseCloudinaryUrl(raw: string): CloudinaryAdminCredentials | null {
-  try {
-    const u = new URL(raw);
-    if (u.protocol !== "cloudinary:") return null;
-    const apiKey = decodeURIComponent(u.username || "");
-    const apiSecret = decodeURIComponent(u.password || "");
-    const cloudName = (u.hostname || "").trim();
-    if (!apiKey || !apiSecret || !cloudName) return null;
-    return { cloudName, apiKey, apiSecret };
-  } catch {
-    return null;
-  }
-}
-
+/** Resolve credentials strictly from env; used for guards before `cloudinary.config({ ... })`. */
 export function getCloudinaryAdminCredentials():
   | { ok: true; credentials: CloudinaryAdminCredentials }
   | { ok: false; error: string } {
@@ -32,14 +21,7 @@ export function getCloudinaryAdminCredentials():
   if (cloudName && apiKey && apiSecret) {
     return { ok: true, credentials: { cloudName, apiKey, apiSecret } };
   }
-
-  const url = process.env.CLOUDINARY_URL?.trim();
-  if (url) {
-    const parsed = parseCloudinaryUrl(url);
-    if (parsed) return { ok: true, credentials: parsed };
-  }
-
-  return { ok: false, error: MISSING_CONFIG_MESSAGE };
+  return { ok: false, error: CLOUDINARY_ADMIN_ENV_MISSING_MESSAGE };
 }
 
 export function cloudinaryErrorMessage(error: unknown, fallback = "Failed to upload image"): string {
@@ -60,7 +42,7 @@ export function cloudinaryErrorMessage(error: unknown, fallback = "Failed to upl
   return fallback;
 }
 
-/** Structured fields for logs — never logs secrets */
+/** Structured fields for logs — never logs secrets or full API key */
 export function cloudinaryErrorDiag(error: unknown): {
   message: string;
   httpCode?: number;
