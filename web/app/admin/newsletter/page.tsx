@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useState, useEffect, useMemo } from "react";
+import { tryCreateBrowserClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +12,7 @@ import { Mail, Send } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function NewsletterPage() {
-  const supabase = createClient();
+  const supabase = useMemo(() => tryCreateBrowserClient(), []);
   const [subscriberCount, setSubscriberCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [subject, setSubject] = useState("");
@@ -22,6 +22,11 @@ export default function NewsletterPage() {
 
   useEffect(() => {
     const fetchSubscribers = async () => {
+      if (!supabase) {
+        setSubscriberCount(0);
+        setLoading(false);
+        return;
+      }
       const { count, error } = await supabase
         .from("newsletter_subscribers")
         .select("*", { count: "exact", head: true })

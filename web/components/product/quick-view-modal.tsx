@@ -82,7 +82,7 @@ export function QuickViewModal({
                 Add to bag
               </Button>
               <Button variant="secondary" asChild>
-                <Link href={`/shop/${product.slug}`} onClick={() => onOpenChange(false)}>
+                <Link href={`/products/${product.slug}`} onClick={() => onOpenChange(false)}>
                   Full details
                 </Link>
               </Button>

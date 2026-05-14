@@ -6,9 +6,11 @@ import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { signIn, sendMagicLink, type AuthActionState } from "@/lib/auth/actions";
 import { signInWithGoogle } from "@/lib/auth/google";
+import { friendlyAuthMessage } from "@/lib/auth/auth-errors";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import toast from "react-hot-toast";
 
 type Props = {
   defaultNext?: string;
@@ -93,7 +95,11 @@ export function LoginForm({ defaultNext = "/account/orders" }: Props) {
           variant="secondary"
           className="flex !h-auto min-h-11 w-auto items-center justify-center gap-3 px-8 py-3"
           disabled={pending || magicPending}
-          onClick={() => signInWithGoogle(next).catch(console.error)}
+          onClick={() =>
+            signInWithGoogle(next).catch((e) =>
+              toast.error(friendlyAuthMessage(e, "sign_in")),
+            )
+          }
         >
           <GoogleGlyph />
           Continue with Google

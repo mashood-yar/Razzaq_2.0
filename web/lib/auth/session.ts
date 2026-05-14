@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { tryCreateServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/utils/supabase/public-env";
 
 export async function getSession() {
   if (!isSupabaseConfigured()) return null;
-  const supabase = await createClient();
+  const supabase = await tryCreateServerClient();
+  if (!supabase) return null;
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -13,7 +14,8 @@ export async function getSession() {
 
 export async function getUser() {
   if (!isSupabaseConfigured()) return null;
-  const supabase = await createClient();
+  const supabase = await tryCreateServerClient();
+  if (!supabase) return null;
   const {
     data: { user },
     error,

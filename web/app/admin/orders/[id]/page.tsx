@@ -1,27 +1,52 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import Image from "next/image";
+import { tryCreateBrowserClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { formatPKR, formatDate } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  formatPKR,
+  formatDate,
+  PAYMENT_METHOD_LABELS,
+  PAYMENT_STATUS_LABELS,
+  PAYMENT_STATUS_COLORS,
+} from "@/lib/utils";
 import { ArrowLeft, MapPin, Phone, Mail } from "lucide-react";
 import toast from "react-hot-toast";
-import type { Order, OrderItem } from "@/lib/types";
+import type { Order, OrderItem, PaymentStatus } from "@/lib/types";
+
+const ADMIN_PAYMENT_STATUSES: PaymentStatus[] = [
+  "pending",
+  "verified",
+  "failed",
+  "paid",
+  "refunded",
+];
 
 export default function OrderDetailPage() {
   const router = useRouter();
   const params = useParams();
-  const supabase = createClient();
+  const supabase = useMemo(() => tryCreateBrowserClient(), []);
   const [order, setOrder] = useState<Order | null>(null);
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
     const loadOrder = async () => {
       const [orderRes, itemsRes] = await Promise.all([
         supabase.from("orders").select("*").eq("id", params.id).single(),
@@ -37,7 +62,7 @@ export default function OrderDetailPage() {
   }, [params.id, supabase]);
 
   const handleStatusUpdate = async (newStatus: string) => {
-    if (!order) return;
+    if (!order || !supabase) return;
     setUpdating(true);
     try {
       const { error } = await supabase
@@ -47,7 +72,6 @@ export default function OrderDetailPage() {
 
       if (error) throw error;
 
-      // Add to status history
       await supabase.from("order_status_history").insert({
         order_id: order.id,
         status: newStatus,
@@ -62,6 +86,28 @@ export default function OrderDetailPage() {
     }
   };
 
+  const handlePaymentStatusUpdate = async (nextPay: PaymentStatus) => {
+    if (!order || !supabase) return;
+    setUpdating(true);
+    try {
+      const { error } = await supabase
+        .from("orders")
+        .update({ payment_status: nextPay })
+        .eq("id", order.id);
+
+      if (error) throw error;
+
+      setOrder({ ...order, payment_status: nextPay });
+      toast.success("Payment status updated");
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to update payment status",
+      );
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   if (loading) {
     return <div className="text-center py-8">Loading...</div>;
   }
@@ -70,35 +116,38 @@ export default function OrderDetailPage() {
     return <div className="text-center py-8">Order not found</div>;
   }
 
+  const payBadgeClass =
+    PAYMENT_STATUS_COLORS[order.payment_status as PaymentStatus] ??
+    PAYMENT_STATUS_COLORS.pending;
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start">
         <Button variant="ghost" size="icon" onClick={() => router.back()}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div className="flex-1">
+        <div className="flex-1 space-y-1">
           <h1 className="text-3xl font-display font-bold">Order {order.order_number}</h1>
           <p className="text-muted-foreground">{formatDate(order.created_at)}</p>
+          <div className="flex flex-wrap items-center gap-2 pt-2">
+            <span className="text-sm text-muted-foreground">Fulfillment</span>
+            <Select value={order.status} onValueChange={handleStatusUpdate} disabled={updating}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="confirmed">Confirmed</SelectItem>
+                <SelectItem value="processing">Processing</SelectItem>
+                <SelectItem value="shipped">Shipped</SelectItem>
+                <SelectItem value="out_for_delivery">Out for Delivery</SelectItem>
+                <SelectItem value="delivered">Delivered</SelectItem>
+                <SelectItem value="cancelled">Cancelled</SelectItem>
+                <SelectItem value="refunded">Refunded</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-        <Select
-          value={order.status}
-          onValueChange={handleStatusUpdate}
-          disabled={updating}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="confirmed">Confirmed</SelectItem>
-            <SelectItem value="processing">Processing</SelectItem>
-            <SelectItem value="shipped">Shipped</SelectItem>
-            <SelectItem value="out_for_delivery">Out for Delivery</SelectItem>
-            <SelectItem value="delivered">Delivered</SelectItem>
-            <SelectItem value="cancelled">Cancelled</SelectItem>
-            <SelectItem value="refunded">Refunded</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
@@ -113,14 +162,19 @@ export default function OrderDetailPage() {
               <div className="space-y-4">
                 {orderItems.map((item) => (
                   <div key={item.id} className="flex items-center gap-4">
-                    {item.image_url && (
-                      <img
-                        src={item.image_url}
-                        alt={item.product_name}
-                        className="w-16 h-16 object-cover rounded"
-                      />
-                    )}
-                    <div className="flex-1">
+                    {item.image_url ? (
+                      <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md">
+                        <Image
+                          src={item.image_url}
+                          alt={item.product_name}
+                          fill
+                          sizes="64px"
+                          unoptimized
+                          className="object-cover"
+                        />
+                      </span>
+                    ) : null}
+                    <div className="flex-1 min-w-0">
                       <p className="font-medium">{item.product_name}</p>
                       {item.variant_label && (
                         <p className="text-sm text-muted-foreground">{item.variant_label}</p>
@@ -165,16 +219,49 @@ export default function OrderDetailPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Payment Info</CardTitle>
+              <CardTitle>Payment</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex justify-between">
+            <CardContent className="space-y-4">
+              <div className="flex justify-between gap-4">
                 <span className="text-muted-foreground">Method</span>
-                <span className="capitalize">{order.payment_method}</span>
+                <span className="font-medium text-right">
+                  {PAYMENT_METHOD_LABELS[order.payment_method] ??
+                    order.payment_method}
+                </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Status</span>
-                <Badge variant="outline">{order.payment_status}</Badge>
+              {order.transaction_id ? (
+                <div className="flex justify-between gap-4">
+                  <span className="text-muted-foreground">Customer transaction ID</span>
+                  <span className="font-mono text-sm break-all text-right">
+                    {order.transaction_id}
+                  </span>
+                </div>
+              ) : null}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm text-muted-foreground">Payment status</span>
+                <Badge className={payBadgeClass} variant="outline">
+                  {PAYMENT_STATUS_LABELS[order.payment_status as PaymentStatus] ??
+                    order.payment_status}
+                </Badge>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Update payment status</p>
+                <Select
+                  value={order.payment_status}
+                  onValueChange={(v) => handlePaymentStatusUpdate(v as PaymentStatus)}
+                  disabled={updating}
+                >
+                  <SelectTrigger className="mt-1.5 w-full max-w-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ADMIN_PAYMENT_STATUSES.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {PAYMENT_STATUS_LABELS[s]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>

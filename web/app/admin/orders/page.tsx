@@ -1,28 +1,34 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { tryCreateBrowserClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { formatPKR, formatDate, STATUS_COLORS, STATUS_LABELS } from "@/lib/utils";
+import { formatPKR, formatDate, STATUS_COLORS, STATUS_LABELS, PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS, PAYMENT_STATUS_COLORS } from "@/lib/utils";
 import { Search } from "lucide-react";
-import type { Order } from "@/lib/types";
+import toast from "react-hot-toast";
+import type { Order, PaymentStatus } from "@/lib/types";
 
 const ORDER_STATUSES = ["all", "pending", "confirmed", "processing", "shipped", "out_for_delivery", "delivered", "cancelled", "refunded"] as const;
 
 export default function OrdersPage() {
-  const supabase = createClient();
+  const supabase = useMemo(() => tryCreateBrowserClient(), []);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setLoading(true);
+    if (!supabase) {
+      setOrders([]);
+      setLoading(false);
+      return;
+    }
     try {
       let query = supabase
         .from("orders")
@@ -42,16 +48,16 @@ export default function OrdersPage() {
       if (error) throw error;
       setOrders(data || []);
     } catch (error: unknown) {
-      console.error(error);
+      const msg = error instanceof Error ? error.message : "Failed to load orders";
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
-  };
+  }, [supabase, statusFilter, search]);
 
   useEffect(() => {
     fetchOrders();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statusFilter, search]);
+  }, [fetchOrders]);
 
   return (
     <div className="space-y-6">
@@ -115,9 +121,9 @@ export default function OrdersPage() {
                     <td className="p-3">{formatPKR(Number(order.total_pkr))}</td>
                     <td className="p-3">
                       <div>
-                        <p className="text-sm capitalize">{order.payment_method}</p>
-                        <Badge variant="outline" className="text-xs">
-                          {order.payment_status}
+                        <p className="text-sm">{PAYMENT_METHOD_LABELS[order.payment_method]}</p>
+                        <Badge variant="outline" className={`text-xs ${PAYMENT_STATUS_COLORS[order.payment_status as PaymentStatus] ?? ""}`}>
+                          {PAYMENT_STATUS_LABELS[order.payment_status as PaymentStatus] ?? order.payment_status}
                         </Badge>
                       </div>
                     </td>

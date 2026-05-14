@@ -1,5 +1,9 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type {
+  PaymentMethod as OrderPaymentMethod,
+  PaymentStatus,
+} from "@/lib/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -75,6 +79,31 @@ export const STATUS_COLORS: Record<OrderStatus, string> = {
   delivered:        "bg-green-900/30 text-green-400 border-green-700/30",
   cancelled:        "bg-red-900/30 text-red-400 border-red-700/30",
   refunded:         "bg-gray-900/30 text-gray-400 border-gray-700/30",
+};
+
+export const PAYMENT_METHOD_LABELS: Record<OrderPaymentMethod, string> = {
+  card: "Card (Stripe / hosted)",
+  cod: "Cash on Delivery",
+  safepay: "Safepay",
+  jazzcash: "JazzCash",
+  payfast: "PayFast (disabled)",
+  bank_transfer: "Bank / Upaisa transfer",
+};
+
+export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
+  pending: "Pending",
+  paid: "Paid",
+  verified: "Verified",
+  failed: "Failed",
+  refunded: "Refunded",
+};
+
+export const PAYMENT_STATUS_COLORS: Record<PaymentStatus, string> = {
+  pending: "bg-yellow-900/30 text-yellow-400 border-yellow-700/30",
+  paid: "bg-green-900/30 text-green-400 border-green-700/30",
+  verified: "bg-emerald-900/30 text-emerald-300 border-emerald-700/30",
+  failed: "bg-red-900/30 text-red-400 border-red-700/30",
+  refunded: "bg-gray-900/30 text-gray-400 border-gray-700/30",
 };
 
 export const VALID_TRANSITIONS: Record<string, string[]> = {

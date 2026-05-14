@@ -107,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [supabase, user?.id]);
+  }, [supabase, user]);
 
   const value = useMemo(
     () => ({ user, loading, profileGender }),

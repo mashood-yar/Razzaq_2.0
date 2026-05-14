@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Search } from "lucide-react";
@@ -12,24 +12,49 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useUiStore } from "@/stores/ui-store";
-import { PRODUCTS } from "@/lib/products";
+import type { LegacyProduct } from "@/lib/products";
+import type { Product as DbProduct } from "@/lib/types";
+import { mapDbProductToLegacy } from "@/lib/catalog/map-db-product";
 import { formatPKR } from "@/lib/utils";
 
 export function SearchModal() {
   const open = useUiStore((s) => s.searchOpen);
   const setOpen = useUiStore((s) => s.setSearchOpen);
   const [q, setQ] = useState("");
+  const [catalog, setCatalog] = useState<LegacyProduct[]>([]);
+  const [catalogLoaded, setCatalogLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    setCatalogLoaded(false);
+    fetch("/api/products?limit=48")
+      .then((r) => r.json())
+      .then((body: { data?: unknown }) => {
+        if (cancelled || !Array.isArray(body.data)) return;
+        setCatalog((body.data as DbProduct[]).map(mapDbProductToLegacy));
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setCatalogLoaded(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
 
   const results = useMemo(() => {
     const t = q.trim().toLowerCase();
-    if (!t) return PRODUCTS.slice(0, 6);
-    return PRODUCTS.filter(
-      (p) =>
-        p.name.toLowerCase().includes(t) ||
-        p.tagline.toLowerCase().includes(t) ||
-        p.mainNotes.some((n) => n.toLowerCase().includes(t)),
-    ).slice(0, 8);
-  }, [q]);
+    if (!t) return catalog.slice(0, 6);
+    return catalog
+      .filter(
+        (p) =>
+          p.name.toLowerCase().includes(t) ||
+          p.tagline.toLowerCase().includes(t) ||
+          p.mainNotes.some((n) => n.toLowerCase().includes(t)),
+      )
+      .slice(0, 8);
+  }, [catalog, q]);
 
   return (
     <Dialog
@@ -55,10 +80,13 @@ export function SearchModal() {
           </div>
         </DialogHeader>
         <ul className="max-h-[min(60vh,420px)] overflow-y-auto p-2">
+          {open && !catalogLoaded && (
+            <li className="p-6 text-center text-sm text-muted-foreground">Loading catalog…</li>
+          )}
           {results.map((p) => (
             <li key={p.id}>
               <Link
-                href={`/shop/${p.slug}`}
+                href={`/products/${p.slug}`}
                 className="flex gap-3 rounded-lg p-2 transition-colors hover:bg-white/5"
                 onClick={() => setOpen(false)}
               >
@@ -83,7 +111,12 @@ export function SearchModal() {
               </Link>
             </li>
           ))}
-          {results.length === 0 && (
+          {catalogLoaded && catalog.length === 0 && (
+            <li className="p-6 text-center text-sm text-muted-foreground">
+              Catalog unavailable. Check connection or try again later.
+            </li>
+          )}
+          {catalogLoaded && catalog.length > 0 && results.length === 0 && q.trim() !== "" && (
             <li className="p-6 text-center text-sm text-muted-foreground">
               No matches. Try another note or name.
             </li>
