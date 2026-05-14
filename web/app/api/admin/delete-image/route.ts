@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { v2 as cloudinary } from "cloudinary";
-
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { cloudinaryErrorDiag, cloudinaryErrorMessage, getCloudinaryAdminCredentials } from "@/lib/cloudinary-admin-config";
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
@@ -26,6 +21,19 @@ export async function POST(request: NextRequest) {
   if (profile?.role !== "admin") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
+
+  const cfg = getCloudinaryAdminCredentials();
+  if (!cfg.ok) {
+    return NextResponse.json({ error: cfg.error }, { status: 503 });
+  }
+
+  const { cloudName, apiKey, apiSecret } = cfg.credentials;
+  cloudinary.config({
+    cloud_name: cloudName,
+    api_key: apiKey,
+    api_secret: apiSecret,
+    secure: true,
+  });
 
   try {
     const body = await request.json();
@@ -55,7 +63,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
-    console.error("Delete image error:", error);
-    return NextResponse.json({ error: "Failed to delete image" }, { status: 500 });
+    const diag = cloudinaryErrorDiag(error);
+    console.error("[delete-image]", diag);
+    return NextResponse.json(
+      { error: cloudinaryErrorMessage(error, "Failed to delete image") },
+      { status: 502 },
+    );
   }
 }
