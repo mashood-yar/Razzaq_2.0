@@ -16,9 +16,10 @@ import {
   Menu,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { ADMIN_HOME_PATH, ADMIN_LOGIN_PATH } from "@/lib/admin/paths";
 
 const navItems = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: ADMIN_HOME_PATH, label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/customers", label: "Customers", icon: Users },
@@ -31,6 +32,9 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const isLoginRoute =
+    pathname === ADMIN_LOGIN_PATH ||
+    pathname.startsWith(`${ADMIN_LOGIN_PATH}/`);
   const supabase = useMemo(() => tryCreateBrowserClient(), []);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userName, setUserName] = useState<string>("");
@@ -58,12 +62,12 @@ export default function AdminLayout({
 
   const handleLogout = async () => {
     if (!supabase) {
-      window.location.href = "/admin/login";
+      window.location.href = ADMIN_LOGIN_PATH;
       return;
     }
     await supabase.auth.signOut();
     toast.success("Logged out successfully");
-    window.location.href = "/admin/login";
+    window.location.href = ADMIN_LOGIN_PATH;
   };
 
   const SidebarContent = () => (
@@ -89,6 +93,10 @@ export default function AdminLayout({
       })}
     </nav>
   );
+
+  if (isLoginRoute) {
+    return <>{children}</>;
+  }
 
   return (
     <div className="min-h-screen bg-background flex">

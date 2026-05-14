@@ -7,15 +7,15 @@ export function publicBankTransferDisplay(): {
   upaisaNumber: string;
 } {
   return {
-    bankName: process.env.NEXT_PUBLIC_CHECKOUT_BANK_NAME?.trim() || "[BANK_NAME_PLACEHOLDER]",
+    bankName: process.env.NEXT_PUBLIC_CHECKOUT_BANK_NAME?.trim() || "Bank Islami",
     accountTitle:
       process.env.NEXT_PUBLIC_CHECKOUT_BANK_ACCOUNT_TITLE?.trim() ||
-      "[ACCOUNT_TITLE_PLACEHOLDER]",
+      "BASHIR AHMED",
     accountNumber:
       process.env.NEXT_PUBLIC_CHECKOUT_BANK_ACCOUNT_NUMBER?.trim() ||
-      "[ACCOUNT_NUMBER_PLACEHOLDER]",
+      "103100660870001",
     upaisaNumber:
       process.env.NEXT_PUBLIC_CHECKOUT_UPAISA_NUMBER?.trim() ||
-      "[UPAISA_NUMBER_PLACEHOLDER]",
+      "03332361713",
   };
 }

@@ -6,8 +6,15 @@ import {
   cloudinaryErrorMessage,
   getCloudinaryAdminCredentials,
 } from "@/lib/cloudinary-admin-config";
+import { ADMIN_PRODUCT_IMAGE_MAX_BYTES } from "@/lib/admin/product-image-upload";
 
-const MAX_BYTES = 15 * 1024 * 1024;
+/** Cloudinary SDK and Buffer require Node; avoid accidental Edge bundling. */
+export const runtime = "nodejs";
+
+/** Allow slow uploads + Cloudinary round-trip on serverless (platform applies its own cap). */
+export const maxDuration = 60;
+
+const MAX_BYTES = ADMIN_PRODUCT_IMAGE_MAX_BYTES;
 const ALLOWED = new Set(["image/png", "image/jpeg", "image/webp", "image/jpg"]);
 
 function sanitizeFileLabel(name: string): string {
@@ -16,42 +23,42 @@ function sanitizeFileLabel(name: string): string {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "admin") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
-
-  const cfg = getCloudinaryAdminCredentials();
-  if (!cfg.ok) {
-    return NextResponse.json({ error: cfg.error }, { status: 503 });
-  }
-
-  // Credentials MUST come only from env (never inlined). Mirrors Cloudinary's expected keys.
-  cloudinary.config({
-    cloud_name:
-      process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME?.trim() ||
-      process.env.CLOUDINARY_CLOUD_NAME?.trim(),
-    api_key: process.env.CLOUDINARY_API_KEY?.trim(),
-    api_secret: process.env.CLOUDINARY_API_SECRET?.trim(),
-    secure: true,
-  });
-
-  const { cloudName } = cfg.credentials;
-
   try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.role !== "admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const cfg = getCloudinaryAdminCredentials();
+    if (!cfg.ok) {
+      return NextResponse.json({ error: cfg.error }, { status: 503 });
+    }
+
+    const { cloudName } = cfg.credentials;
+
+    // Credentials MUST come only from env (never inlined). Mirrors Cloudinary's expected keys.
+    cloudinary.config({
+      cloud_name:
+        process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME?.trim() ||
+        process.env.CLOUDINARY_CLOUD_NAME?.trim(),
+      api_key: process.env.CLOUDINARY_API_KEY?.trim(),
+      api_secret: process.env.CLOUDINARY_API_SECRET?.trim(),
+      secure: true,
+    });
+
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
 
@@ -103,8 +110,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ url: result.secure_url });
   } catch (error: unknown) {
     const diag = cloudinaryErrorDiag(error);
-    console.error("[upload-image] Cloudinary failure", diag);
+    console.error("[upload-image] failure", diag);
     const message = cloudinaryErrorMessage(error);
-    return NextResponse.json({ error: message }, { status: 502 });
+    const status =
+      /supabase is not configured|cloudinary is not configured|not configured|ECONNREFUSED|ETIMEDOUT|fetch failed|network/i.test(
+        message,
+      )
+        ? 503
+        : 502;
+    return NextResponse.json({ error: message }, { status });
   }
 }

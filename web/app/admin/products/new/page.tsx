@@ -14,6 +14,10 @@ import { X, Upload, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import type { Category } from "@/lib/types";
+import {
+  ADMIN_PRODUCT_IMAGE_MAX_BYTES,
+  formatImageUploadFetchError,
+} from "@/lib/admin/product-image-upload";
 
 const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -59,7 +63,17 @@ export default function AddProductPage() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: { "image/*": [".png", ".jpg", ".jpeg", ".webp"] },
     multiple: true,
+    maxSize: ADMIN_PRODUCT_IMAGE_MAX_BYTES,
     disabled: loading,
+    onDropRejected: (rejections) => {
+      for (const { file, errors } of rejections) {
+        const tooBig = errors.some((e) => e.code === "file-too-large");
+        const msg = tooBig
+          ? `Too large (max ${ADMIN_PRODUCT_IMAGE_MAX_BYTES / (1024 * 1024)} MB)`
+          : errors.map((e) => e.message).join(", ") || "File rejected";
+        toast.error(`${file.name}: ${msg}`);
+      }
+    },
     onDrop: async (acceptedFiles) => {
       const newImages = acceptedFiles.map((file) => ({
         file,
@@ -77,7 +91,9 @@ export default function AddProductPage() {
         try {
           const res = await fetch("/api/admin/upload-image", {
             method: "POST",
+            credentials: "same-origin",
             body: formData,
+            signal: AbortSignal.timeout(120_000),
           });
           const payload = (await res.json().catch(() => ({}))) as {
             url?: string;
@@ -96,9 +112,7 @@ export default function AddProductPage() {
             )
           );
         } catch (e) {
-          const message =
-            e instanceof Error ? e.message : `Failed to upload ${img.file.name}`;
-          toast.error(`${img.file.name}: ${message}`);
+          toast.error(`${img.file.name}: ${formatImageUploadFetchError(e, img.file.name)}`);
         } finally {
           setPendingImageUploads((n) => Math.max(0, n - 1));
         }

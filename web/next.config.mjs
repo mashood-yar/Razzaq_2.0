@@ -18,6 +18,11 @@ const nextConfig = {
       "framer-motion",
       "recharts",
     ],
+    /** Align with admin image uploads (15MB) when the framework clones request bodies (e.g. middleware). */
+    middlewareClientMaxBodySize: "16mb",
+    serverActions: {
+      bodySizeLimit: "16mb",
+    },
   },
   images: {
     remotePatterns: [

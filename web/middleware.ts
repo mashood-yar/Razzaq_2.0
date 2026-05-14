@@ -6,6 +6,7 @@ import {
   getSupabaseUrl,
   isSupabaseConfigured,
 } from "./utils/supabase/public-env";
+import { ADMIN_LOGIN_PATH } from "./lib/admin/paths";
 
 function createMiddlewareSupabase(
   request: NextRequest,
@@ -109,11 +110,14 @@ export async function middleware(request: NextRequest) {
   const isAdminRoute =
     pathname === ADMIN_PREFIX || pathname.startsWith(`${ADMIN_PREFIX}/`);
   const isAdminLoginRoute =
-    pathname === "/admin/login" || pathname.startsWith("/admin/login/");
+    pathname === ADMIN_LOGIN_PATH ||
+    pathname.startsWith(`${ADMIN_LOGIN_PATH}/`);
 
   if (isAdminRoute && !isAdminLoginRoute) {
     if (!user) {
-      const redirect = NextResponse.redirect(new URL("/admin/login", request.url));
+      const redirect = NextResponse.redirect(
+        new URL(ADMIN_LOGIN_PATH, request.url),
+      );
       copyCookies(response, redirect);
       return redirect;
     }
