@@ -1,26 +1,34 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import Link from "next/link";
+import { tryCreateBrowserClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { formatPKR, formatDate } from "@/lib/utils";
 import { Search } from "lucide-react";
+import toast from "react-hot-toast";
 import type { Profile } from "@/lib/types";
 
 interface CustomerWithStats extends Profile {
   total_orders?: number;
   total_spent?: number;
+  city?: string;
 }
 
 export default function CustomersPage() {
-  const supabase = createClient();
+  const supabase = useMemo(() => tryCreateBrowserClient(), []);
   const [customers, setCustomers] = useState<CustomerWithStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  const fetchCustomers = async () => {
+  const fetchCustomers = useCallback(async () => {
     setLoading(true);
+    if (!supabase) {
+      setCustomers([]);
+      setLoading(false);
+      return;
+    }
     try {
       let query = supabase
         .from("profiles")
@@ -36,9 +44,27 @@ export default function CustomersPage() {
 
       if (error) throw error;
 
-      // Fetch order stats for each customer
+      const list = data || [];
+      const ids = list.map((c) => c.id);
+      const cityByUser = new Map<string, string>();
+      if (ids.length > 0) {
+        const { data: addrRows } = await supabase
+          .from("addresses")
+          .select("user_id, city, is_default")
+          .in("user_id", ids);
+
+        const sorted = [...(addrRows || [])].sort(
+          (a, b) => Number(b.is_default) - Number(a.is_default),
+        );
+        for (const row of sorted) {
+          if (!cityByUser.has(row.user_id)) {
+            cityByUser.set(row.user_id, row.city);
+          }
+        }
+      }
+
       const customersWithStats = await Promise.all(
-        (data || []).map(async (customer) => {
+        list.map(async (customer) => {
           const { data: orders } = await supabase
             .from("orders")
             .select("total_pkr")
@@ -51,22 +77,23 @@ export default function CustomersPage() {
             ...customer,
             total_orders: totalOrders,
             total_spent: totalSpent,
+            city: cityByUser.get(customer.id) ?? "—",
           };
         })
       );
 
       setCustomers(customersWithStats);
     } catch (error: unknown) {
-      console.error(error);
+      const msg = error instanceof Error ? error.message : "Failed to load customers";
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
-  };
+  }, [supabase, search]);
 
   useEffect(() => {
     fetchCustomers();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
+  }, [fetchCustomers]);
 
   return (
     <div className="space-y-6">
@@ -110,20 +137,24 @@ export default function CustomersPage() {
                 {customers.map((customer) => (
                   <tr key={customer.id} className="border-b border-border hover:bg-muted/50">
                     <td className="p-3">
-                      <div className="flex items-center gap-3">
+                      <Link
+                        href={`/admin/customers/${customer.id}`}
+                        className="flex items-center gap-3 text-left hover:underline"
+                      >
                         {customer.avatar_url && (
+                          // eslint-disable-next-line @next/next/no-img-element -- arbitrary OAuth CDN hosts
                           <img
                             src={customer.avatar_url}
                             alt={customer.full_name || "Customer"}
                             className="w-10 h-10 rounded-full object-cover"
                           />
                         )}
-                        <p className="font-medium">{customer.full_name || "No name"}</p>
-                      </div>
+                        <span className="font-medium">{customer.full_name || "No name"}</span>
+                      </Link>
                     </td>
                     <td className="p-3 text-sm">{customer.email || "-"}</td>
                     <td className="p-3 text-sm">{customer.phone || "-"}</td>
-                    <td className="p-3 text-sm">-</td>
+                    <td className="p-3 text-sm">{customer.city ?? "—"}</td>
                     <td className="p-3">{customer.total_orders || 0}</td>
                     <td className="p-3">{formatPKR(customer.total_spent || 0)}</td>
                     <td className="p-3 text-sm">{formatDate(customer.created_at)}</td>

@@ -1,16 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { tryCreateBrowserClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import toast from "react-hot-toast";
+import { ADMIN_HOME_PATH } from "@/lib/admin/paths";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => tryCreateBrowserClient(), []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,6 +19,12 @@ export default function AdminLoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
+    if (!supabase) {
+      toast.error("Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
+      setLoading(false);
+      return;
+    }
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -40,7 +47,7 @@ export default function AdminLoginPage() {
       }
 
       toast.success("Logged in successfully");
-      router.push("/admin");
+      router.push(ADMIN_HOME_PATH);
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : "Login failed");
     } finally {

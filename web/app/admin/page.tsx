@@ -1,19 +1,18 @@
 import { Suspense } from "react";
-import { createClient } from "@/lib/supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { tryCreateServerClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatPKR, formatDate, STATUS_COLORS, STATUS_LABELS } from "@/lib/utils";
 import { LayoutDashboard, Package, ShoppingCart, Users, AlertTriangle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-async function getDashboardStats() {
-  const supabase = await createClient();
-
+async function getDashboardStats(supabase: SupabaseClient) {
   const [productsCount, ordersCount, customersCount, revenueResult, recentOrders, lowStockProducts] = await Promise.all([
     supabase.from("products").select("id", { count: "exact", head: true }),
     supabase.from("orders").select("id", { count: "exact", head: true }),
     supabase.from("profiles").select("id", { count: "exact", head: true }),
-    supabase.from("orders").select("total_pkr").eq("payment_status", "paid"),
+    supabase.from("orders").select("total_pkr").in("payment_status", ["paid", "verified"]),
     supabase
       .from("orders")
       .select("id, order_number, customer_name, total_pkr, status, created_at")
@@ -109,7 +108,21 @@ export default function AdminDashboard() {
 }
 
 async function DashboardContent() {
-  const stats = await getDashboardStats();
+  const supabase = await tryCreateServerClient();
+  if (!supabase) {
+    return (
+      <Card className="border-amber-800/60 bg-amber-950/20">
+        <CardContent className="py-10 text-center text-sm leading-relaxed text-muted-foreground">
+          Supabase is not reachable from this build: set NEXT_PUBLIC_SUPABASE_URL and
+          NEXT_PUBLIC_SUPABASE_ANON_KEY (or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) in{" "}
+          <span className="font-mono text-foreground">web/.env.local</span> locally and in{" "}
+          <span className="font-semibold text-foreground">Vercel → Environment Variables</span> for production previews.
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const stats = await getDashboardStats(supabase);
 
   return (
     <>

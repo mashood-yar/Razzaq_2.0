@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { tryCreateBrowserClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -14,10 +14,9 @@ import toast from "react-hot-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { Product, ProductImage } from "@/lib/types";
 
-const CATEGORIES = ["Fragrances", "Lawn", "Formal", "Casual", "Accessories"];
-
 export default function ProductsPage() {
-  const supabase = createClient();
+  const supabase = useMemo(() => tryCreateBrowserClient(), []);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [products, setProducts] = useState<(Product & { product_images: ProductImage[] })[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -26,8 +25,13 @@ export default function ProductsPage() {
   const [page, setPage] = useState(1);
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; product: Product | null }>({ open: false, product: null });
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
+    if (!supabase) {
+      setProducts([]);
+      setLoading(false);
+      return;
+    }
     try {
       let query = supabase
         .from("products")
@@ -38,7 +42,7 @@ export default function ProductsPage() {
         `);
 
       if (categoryFilter !== "all") {
-        query = query.eq("categories.name", categoryFilter);
+        query = query.eq("category_id", categoryFilter);
       }
 
       if (search) {
@@ -50,35 +54,48 @@ export default function ProductsPage() {
       if (error) throw error;
       setProducts(data || []);
     } catch (error: unknown) {
-      console.error(error);
+      toast.error(error instanceof Error ? error.message : "Failed to load products");
     } finally {
       setLoading(false);
     }
-  };
+  }, [supabase, categoryFilter, search, sortBy]);
+
+  useEffect(() => {
+    if (!supabase) return;
+    supabase
+      .from("categories")
+      .select("id, name")
+      .order("sort_order")
+      .then(({ data }) => setCategories(data || []));
+  }, [supabase]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [categoryFilter, search, sortBy]);
 
   useEffect(() => {
     fetchProducts();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryFilter, search, sortBy]);
+  }, [fetchProducts]);
 
   const handleStockUpdate = async (productId: string, delta: number) => {
     try {
-      const { error } = await supabase.rpc("decrement_product_stock", {
-        p_product_id: productId,
-        p_qty: delta,
+      const res = await fetch(`/api/admin/products/${productId}/stock`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ delta }),
       });
-      if (error) throw error;
+      const json = (await res.json()) as { error?: string };
+      if (!res.ok) throw new Error(json.error || "Failed to update stock");
       await fetchProducts();
       toast.success("Stock updated");
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : "Failed to update stock");
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!deleteDialog.product) return;
+    if (!deleteDialog.product || !supabase) return;
     try {
       const { error } = await supabase
         .from("products")
@@ -107,7 +124,7 @@ export default function ProductsPage() {
         <Link href="/admin/products/new">
           <Button>
             <Plus className="w-4 h-4 mr-2" />
-            <p>No products yet</p>
+            Add Product
           </Button>
         </Link>
       </div>
@@ -129,8 +146,8 @@ export default function ProductsPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
-              {CATEGORIES.map((cat) => (
-                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+              {categories.map((cat) => (
+                <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -171,6 +188,7 @@ export default function ProductsPage() {
                       <td className="p-3">
                         <div className="flex items-center gap-3">
                           {primaryImage && (
+                            // eslint-disable-next-line @next/next/no-img-element -- product images from arbitrary CDNs
                             <img
                               src={primaryImage.url}
                               alt={product.name}
@@ -179,7 +197,9 @@ export default function ProductsPage() {
                           )}
                           <div>
                             <p className="font-medium">{product.name}</p>
-                            <p className="text-sm text-muted-foreground">No products found</p>
+                            {product.categories?.name && (
+                              <p className="text-sm text-muted-foreground">{product.categories.name}</p>
+                            )}
                           </div>
                         </div>
                       </td>
@@ -193,6 +213,7 @@ export default function ProductsPage() {
                             className="h-7 w-7"
                             onClick={() => handleStockUpdate(product.id, -1)}
                             disabled={product.stock_quantity <= 0}
+                            aria-label="Decrease stock"
                           >
                             <MinusIcon className="h-3 w-3" />
                           </Button>
@@ -202,6 +223,7 @@ export default function ProductsPage() {
                             size="icon"
                             className="h-7 w-7"
                             onClick={() => handleStockUpdate(product.id, 1)}
+                            aria-label="Increase stock"
                           >
                             <PlusIcon className="h-3 w-3" />
                           </Button>

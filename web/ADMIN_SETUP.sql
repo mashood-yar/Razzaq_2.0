@@ -8,12 +8,12 @@
 -- Set a user as admin by their email
 UPDATE public.profiles
 SET role = 'admin'
-WHERE email = 'sultanshah101004@gmail.com';
+WHERE email = 'YOUR_EMAIL_HERE';
 
 -- Verify the change
 SELECT id, email, full_name, role
 FROM public.profiles
-WHERE email = 'sultanshah101004@gmail.com';
+WHERE email = 'YOUR_EMAIL_HERE';
 
 -- ============================================
 -- OPTIONAL: Add is_active column to products table if missing

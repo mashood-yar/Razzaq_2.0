@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { tryCreateBrowserClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
@@ -16,9 +16,10 @@ import {
   Menu,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { ADMIN_HOME_PATH, ADMIN_LOGIN_PATH } from "@/lib/admin/paths";
 
 const navItems = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: ADMIN_HOME_PATH, label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/customers", label: "Customers", icon: Users },
@@ -31,30 +32,42 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const supabase = createClient();
+  const isLoginRoute =
+    pathname === ADMIN_LOGIN_PATH ||
+    pathname.startsWith(`${ADMIN_LOGIN_PATH}/`);
+  const supabase = useMemo(() => tryCreateBrowserClient(), []);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userName, setUserName] = useState<string>("");
 
-  // Fetch user name on mount
-  useState(() => {
+  useEffect(() => {
+    if (!supabase) return;
+    let cancelled = false;
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
-        supabase
-          .from("profiles")
-          .select("full_name")
-          .eq("id", user.id)
-          .single()
-          .then(({ data }) => {
+      if (!user || cancelled) return;
+      supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single()
+        .then(({ data }) => {
+          if (!cancelled) {
             setUserName(data?.full_name || user.email || "Admin");
-          });
-      }
+          }
+        });
     });
-  });
+    return () => {
+      cancelled = true;
+    };
+  }, [supabase]);
 
   const handleLogout = async () => {
+    if (!supabase) {
+      window.location.href = ADMIN_LOGIN_PATH;
+      return;
+    }
     await supabase.auth.signOut();
     toast.success("Logged out successfully");
-    window.location.href = "/admin/login";
+    window.location.href = ADMIN_LOGIN_PATH;
   };
 
   const SidebarContent = () => (
@@ -80,6 +93,10 @@ export default function AdminLayout({
       })}
     </nav>
   );
+
+  if (isLoginRoute) {
+    return <>{children}</>;
+  }
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -167,6 +184,12 @@ export default function AdminLayout({
 
         {/* Page Content */}
         <main className="flex-1 p-4 md:p-6 overflow-auto">
+          {!supabase ? (
+            <div className="mb-6 rounded-xl border border-amber-800/60 bg-amber-950/30 px-4 py-3 text-sm text-amber-100">
+              Supabase browser keys are not set. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to{' '}
+              <code className="font-mono text-xs">web/.env.local</code>, then restart the dev server so admin tools can load signed-in profiles.
+            </div>
+          ) : null}
           {children}
         </main>
       </div>
