@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   description: "Your LUMINA account — orders and preferences.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function AccountPage() {
   const user = await getUser();
 

@@ -1,14 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
-/** Inline env check — middleware runs on Edge; avoid `@/` imports (Vercel bundler). */
-function isSupabaseConfigured(): boolean {
-  return !!(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
-  );
-}
+import {
+  getSupabaseAnonPublishableKey,
+  getSupabaseUrl,
+  isSupabaseConfigured,
+} from "./utils/supabase/public-env";
 
 function createMiddlewareSupabase(
   request: NextRequest,
@@ -53,10 +50,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const key =
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  const url = getSupabaseUrl();
+  const key = getSupabaseAnonPublishableKey();
 
   let response = NextResponse.next({ request: { headers: request.headers } });
   const supabase = createMiddlewareSupabase(request, response, url, key);
