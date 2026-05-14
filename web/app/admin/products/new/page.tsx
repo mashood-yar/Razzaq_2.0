@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { useDropzone } from "react-dropzone";
-import { X, Upload } from "lucide-react";
+import { X, Upload, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import type { Category } from "@/lib/types";
@@ -31,6 +31,7 @@ export default function AddProductPage() {
   const router = useRouter();
   const supabase = useMemo(() => tryCreateBrowserClient(), []);
   const [loading, setLoading] = useState(false);
+  const [pendingImageUploads, setPendingImageUploads] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
   const [formData, setFormData] = useState<ProductFormData>({
     name: "",
@@ -58,6 +59,7 @@ export default function AddProductPage() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: { "image/*": [".png", ".jpg", ".jpeg", ".webp"] },
     multiple: true,
+    disabled: loading,
     onDrop: async (acceptedFiles) => {
       const newImages = acceptedFiles.map((file) => ({
         file,
@@ -66,7 +68,9 @@ export default function AddProductPage() {
       }));
       setImages((prev) => [...prev, ...newImages]);
 
-      // Upload to Cloudinary
+      setPendingImageUploads((n) => n + newImages.length);
+
+      // Upload to Cloudinary once per file (submit only sends returned URLs to Supabase)
       for (const img of newImages) {
         const formData = new FormData();
         formData.append("file", img.file);
@@ -95,6 +99,8 @@ export default function AddProductPage() {
           const message =
             e instanceof Error ? e.message : `Failed to upload ${img.file.name}`;
           toast.error(`${img.file.name}: ${message}`);
+        } finally {
+          setPendingImageUploads((n) => Math.max(0, n - 1));
         }
       }
     },
@@ -112,18 +118,33 @@ export default function AddProductPage() {
     }
 
     try {
+      if (pendingImageUploads > 0) {
+        toast.error("Wait for all image uploads to finish before creating the product.");
+        return;
+      }
+      const stuckLocal = images.some((img) => img.file && !img.url?.trim());
+      if (stuckLocal) {
+        toast.error("Some images failed to upload or are still pending. Remove them or re-add files.");
+        return;
+      }
+
       const validated = productSchema.parse(formData);
       const categoryId = validated.category_id;
 
+      /** Only Cloudinary HTTPS URLs — never re-send File blobs on submit */
       const imagePayload = images
         .filter((img) => typeof img.url === "string" && img.url.trim().length > 0)
         .map((img) => ({ url: img.url.trim() }));
 
       const skuTrimmed = validated.sku?.trim() ?? "";
 
+      const controller = new AbortController();
+      const abortTimer = setTimeout(() => controller.abort(), 10_000);
+
       const res = await fetch("/api/admin/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           name: validated.name,
           description: validated.description,
@@ -134,7 +155,7 @@ export default function AddProductPage() {
           status: validated.status,
           images: imagePayload,
         }),
-      });
+      }).finally(() => clearTimeout(abortTimer));
 
       const payload = (await res.json().catch(() => ({}))) as {
         error?: string;
@@ -152,7 +173,14 @@ export default function AddProductPage() {
       toast.success("Product created successfully");
       router.push("/admin/products");
     } catch (error: unknown) {
-      if (error instanceof z.ZodError) {
+      const isAbort =
+        (error instanceof DOMException && error.name === "AbortError") ||
+        (error instanceof Error && error.name === "AbortError");
+      if (isAbort) {
+        toast.error(
+          "Request timed out after 10 seconds. See the terminal for Supabase/logs or try again.",
+        );
+      } else if (error instanceof z.ZodError) {
         const fieldErrors: Record<string, string> = {};
         error.issues.forEach((err) => {
           if (err.path[0]) fieldErrors[err.path[0] as string] = err.message;
@@ -290,9 +318,11 @@ export default function AddProductPage() {
             <Label>Product Images</Label>
             <div
               {...getRootProps()}
-              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-                isDragActive ? "border-gold bg-gold/5" : "border-border hover:border-gold/50"
-              }`}
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                loading
+                  ? "border-border cursor-not-allowed opacity-60"
+                  : "cursor-pointer border-border hover:border-gold/50"
+              } ${isDragActive && !loading ? "border-gold bg-gold/5" : ""}`}
             >
               <input {...getInputProps()} />
               <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-2" />
@@ -300,6 +330,12 @@ export default function AddProductPage() {
                 {isDragActive ? "Drop images here" : "Drag & drop images, or click to select"}
               </p>
               <p className="text-xs text-muted-foreground mt-1">PNG, JPG, JPEG, WebP</p>
+              {pendingImageUploads > 0 && (
+                <p className="text-xs text-muted-foreground mt-2 flex items-center justify-center gap-2">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+                  Uploading {pendingImageUploads} image{pendingImageUploads === 1 ? "" : "s"} to Cloudinary…
+                </p>
+              )}
             </div>
 
             {images.length > 0 && (
@@ -317,6 +353,12 @@ export default function AddProductPage() {
                         Primary
                       </span>
                     )}
+                    {!img.url && (
+                      <span className="absolute bottom-1 left-1 right-1 flex items-center justify-center gap-1 bg-background/90 text-xs py-1 rounded">
+                        <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
+                        Uploading…
+                      </span>
+                    )}
                     <button
                       type="button"
                       onClick={() => removeImage(img.preview)}
@@ -331,8 +373,19 @@ export default function AddProductPage() {
           </div>
 
           <div className="flex gap-4">
-            <Button type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Create Product"}
+            <Button
+              type="submit"
+              disabled={loading || pendingImageUploads > 0}
+              aria-busy={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+                  Creating…
+                </>
+              ) : (
+                "Create Product"
+              )}
             </Button>
             <Button
               type="button"
