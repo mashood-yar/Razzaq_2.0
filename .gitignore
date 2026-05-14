@@ -6,6 +6,8 @@
 js/config.local.js
 
 # Local tooling and build artifacts
+web/.env.local
+
 .cursor/
 .vercel/
 node_modules/

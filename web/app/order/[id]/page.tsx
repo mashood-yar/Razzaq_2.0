@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getUser } from "@/lib/auth/session";
-import { formatPKR, formatDate, STATUS_LABELS } from "@/lib/utils";
+import { formatPKR, formatDate, STATUS_LABELS, PAYMENT_METHOD_LABELS } from "@/lib/utils";
 import { isSupabaseConfigured } from "@/utils/supabase/public-env";
 
 export const dynamic = "force-dynamic";
@@ -64,7 +64,9 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
           <p className="mt-1 text-sm text-smoke">
             {order.payment_method === "cod"
               ? "We will confirm your order shortly. Cash on delivery is available at your door."
-              : "Payment confirmed. Your order is now being processed."}
+              : order.payment_method === "bank_transfer"
+                ? "We received your order and pending bank transfer reference. Razzaq will verify your payment and email updates — keep your transaction ID handy."
+                : "Payment confirmed. Your order is now being processed."}
           </p>
         </div>
       )}
@@ -74,8 +76,9 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
         {order.order_number}
       </h1>
       <p className="mt-2 text-sm text-smoke">
-        Placed {formatDate(order.created_at)} ·{" "}
-        <span className="capitalize">{order.payment_method}</span>
+        Placed {formatDate(order.created_at)} · Payment:{" "}
+        {PAYMENT_METHOD_LABELS[order.payment_method as keyof typeof PAYMENT_METHOD_LABELS] ??
+          order.payment_method}
       </p>
 
       {/* Status timeline */}

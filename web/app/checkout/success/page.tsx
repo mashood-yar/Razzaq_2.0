@@ -10,9 +10,10 @@ export default async function CheckoutSuccessPage(props: Props) {
     <div className="mx-auto max-w-lg px-4 py-24 text-center">
       <h1 className="font-display text-3xl text-ivory">Thank you</h1>
       <p className="mt-4 text-sm leading-relaxed text-smoke">
-        If you paid with Safepay, PayFast, or JazzCash, your confirmation email usually arrives within a
-        minute once our server confirms payment (webhook or return URL). You can track this order anytime
-        from your account or the link in your email.
+        If you paid with Safepay or JazzCash, your confirmation email usually arrives within a
+        minute once our server confirms payment (webhook or return URL). For bank transfers our team verifies
+        your receipt manually—you’ll see verified payment status in your order confirmation email sequence.
+        You can track this order anytime from your account or the link in your email.
       </p>
       {orderId && (
         <p className="mt-6 text-xs text-ash">
