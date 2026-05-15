@@ -13,7 +13,7 @@ export function customerSupportWhatsAppUrl(orderNumber: string): string | null {
   if (!digits) return null;
 
   const msg = encodeURIComponent(
-    `Assalamualaikum — I need help with Razzaq Luxe order ${orderNumber}.`,
+    `Hello — I need help with Razzaq Luxe order ${orderNumber}.`,
   );
   return `https://wa.me/${digits}?text=${msg}`;
 }
