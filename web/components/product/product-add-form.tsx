@@ -23,6 +23,21 @@ export function ProductAddForm({ product }: { product: Product }) {
   const sel = product.sizes[sizeIdx];
   if (!sel) return null;
 
+  const wishToggle = async () => {
+    const next = !wished;
+    toggle(product.id);
+    try {
+      await fetch("/api/wishlist", {
+        method: next ? "POST" : "DELETE",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId: product.id }),
+      });
+    } catch {
+      toggle(product.id);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div>
@@ -101,7 +116,7 @@ export function ProductAddForm({ product }: { product: Product }) {
             className={cn(wished && "border-gold text-gold")}
             aria-pressed={wished}
             aria-label={wished ? "Remove from wishlist" : "Add to wishlist"}
-            onClick={() => toggle(product.id)}
+            onClick={() => void wishToggle()}
           >
             <Heart
               className={cn("mr-2 h-5 w-5", wished && "fill-gold text-gold")}

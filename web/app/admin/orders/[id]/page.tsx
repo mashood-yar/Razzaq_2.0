@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
-import { tryCreateBrowserClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -36,49 +37,83 @@ const ADMIN_PAYMENT_STATUSES: PaymentStatus[] = [
 export default function OrderDetailPage() {
   const router = useRouter();
   const params = useParams();
-  const supabase = useMemo(() => tryCreateBrowserClient(), []);
+  const orderId = typeof params?.id === "string" ? params.id : "";
+
   const [order, setOrder] = useState<Order | null>(null);
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [courierName, setCourierName] = useState("");
+  const [trackingInput, setTrackingInput] = useState("");
+  const [cancellationReason, setCancellationReason] = useState("");
 
   useEffect(() => {
-    if (!supabase) {
+    if (!orderId) {
       setLoading(false);
       return;
     }
     const loadOrder = async () => {
-      const [orderRes, itemsRes] = await Promise.all([
-        supabase.from("orders").select("*").eq("id", params.id).single(),
-        supabase.from("order_items").select("*").eq("order_id", params.id),
-      ]);
-
-      if (orderRes.data) setOrder(orderRes.data);
-      if (itemsRes.data) setOrderItems(itemsRes.data);
-      setLoading(false);
+      try {
+        const res = await fetch(`/api/admin/orders/${orderId}`, {
+          credentials: "include",
+        });
+        const data = (await res.json()) as Order & {
+          error?: string;
+          order_items?: OrderItem[];
+        };
+        if (!res.ok) throw new Error(data.error ?? "Failed to load");
+        setOrder(data);
+        setOrderItems(data.order_items ?? []);
+        setCourierName(data.courier_name ?? "");
+        setTrackingInput(data.tracking_number ?? "");
+        setCancellationReason(data.cancellation_reason ?? "");
+      } catch {
+        setOrder(null);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    loadOrder();
-  }, [params.id, supabase]);
+    void loadOrder();
+  }, [orderId]);
 
   const handleStatusUpdate = async (newStatus: string) => {
-    if (!order || !supabase) return;
+    if (!order) return;
+    if (newStatus === "shipped") {
+      if (!courierName.trim() || !trackingInput.trim()) {
+        toast.error(
+          "Enter courier name and tracking number before marking shipped.",
+        );
+        return;
+      }
+    }
     setUpdating(true);
     try {
-      const { error } = await supabase
-        .from("orders")
-        .update({ status: newStatus })
-        .eq("id", order.id);
-
-      if (error) throw error;
-
-      await supabase.from("order_status_history").insert({
-        order_id: order.id,
-        status: newStatus,
+      const body: Record<string, unknown> = { status: newStatus };
+      if (newStatus === "shipped") {
+        body.courier_name = courierName.trim();
+        body.tracking_number = trackingInput.trim();
+      }
+      if (newStatus === "cancelled" && cancellationReason.trim()) {
+        body.cancellation_reason = cancellationReason.trim();
+      }
+      const res = await fetch(`/api/admin/orders/${order.id}`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       });
-
-      setOrder({ ...order, status: newStatus as Order["status"] });
-      toast.success("Order status updated");
+      const data = (await res.json()) as Order & {
+        error?: string;
+        order_items?: OrderItem[];
+      };
+      if (!res.ok) throw new Error(data.error ?? "Failed to update status");
+      setOrder(data);
+      setOrderItems(data.order_items ?? []);
+      setCourierName(data.courier_name ?? "");
+      setTrackingInput(data.tracking_number ?? "");
+      setCancellationReason(data.cancellation_reason ?? "");
+      toast.success("Order updated");
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : "Failed to update status");
     } finally {
@@ -87,17 +122,22 @@ export default function OrderDetailPage() {
   };
 
   const handlePaymentStatusUpdate = async (nextPay: PaymentStatus) => {
-    if (!order || !supabase) return;
+    if (!order) return;
     setUpdating(true);
     try {
-      const { error } = await supabase
-        .from("orders")
-        .update({ payment_status: nextPay })
-        .eq("id", order.id);
-
-      if (error) throw error;
-
-      setOrder({ ...order, payment_status: nextPay });
+      const res = await fetch(`/api/admin/orders/${order.id}`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ payment_status: nextPay }),
+      });
+      const data = (await res.json()) as Order & {
+        error?: string;
+        order_items?: OrderItem[];
+      };
+      if (!res.ok) throw new Error(data.error ?? "Failed to update payment status");
+      setOrder(data);
+      setOrderItems(data.order_items ?? []);
       toast.success("Payment status updated");
     } catch (error: unknown) {
       toast.error(
@@ -132,20 +172,42 @@ export default function OrderDetailPage() {
           <div className="flex flex-wrap items-center gap-2 pt-2">
             <span className="text-sm text-muted-foreground">Fulfillment</span>
             <Select value={order.status} onValueChange={handleStatusUpdate} disabled={updating}>
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-[260px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="pending_confirmation">Pending confirmation</SelectItem>
                 <SelectItem value="confirmed">Confirmed</SelectItem>
                 <SelectItem value="processing">Processing</SelectItem>
                 <SelectItem value="shipped">Shipped</SelectItem>
-                <SelectItem value="out_for_delivery">Out for Delivery</SelectItem>
                 <SelectItem value="delivered">Delivered</SelectItem>
                 <SelectItem value="cancelled">Cancelled</SelectItem>
-                <SelectItem value="refunded">Refunded</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div className="mt-4 grid max-w-lg gap-3">
+            <div>
+              <Label>Courier name (required to ship)</Label>
+              <Input
+                value={courierName}
+                onChange={(e) => setCourierName(e.target.value)}
+                placeholder="e.g. TCS"
+              />
+            </div>
+            <div>
+              <Label>Tracking number (required to ship)</Label>
+              <Input
+                value={trackingInput}
+                onChange={(e) => setTrackingInput(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Cancellation reason (when cancelling)</Label>
+              <Input
+                value={cancellationReason}
+                onChange={(e) => setCancellationReason(e.target.value)}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -270,8 +332,23 @@ export default function OrderDetailPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Shipping Address</CardTitle>
+          <CardTitle>Confirmation code (support)</CardTitle>
         </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          <p>
+            Active code:{" "}
+            <span className="font-mono font-semibold">
+              {order.confirmation_code ?? "— (verified or expired)"}
+            </span>
+          </p>
+          <p className="text-muted-foreground">
+            Wrong-code attempts: {order.confirmation_attempts ?? 0}
+            {order.confirmation_locked ? " · locked" : ""}
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
         <CardContent className="space-y-4">
           <div className="flex items-start gap-4">
             <div className="space-y-3">

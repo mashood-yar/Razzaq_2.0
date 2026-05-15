@@ -13,7 +13,7 @@ const footerNav = {
   account: [
     { href: "/account",          label: "My Account" },
     { href: "/account/orders",   label: "Orders" },
-    { href: "/account/wishlist", label: "Wishlist" },
+    { href: "/wishlist", label: "Wishlist" },
     { href: "/cart",             label: "Cart" },
   ],
   company: [

@@ -105,7 +105,10 @@ export async function POST(request: Request) {
       .update({
         payment_status: "paid",
         status:
-          existing.status === "pending" ? "confirmed" : existing.status,
+          existing.status === "pending" ||
+          existing.status === "pending_confirmation"
+            ? "confirmed"
+            : existing.status,
         updated_at: new Date().toISOString(),
       })
       .eq("id", orderId)

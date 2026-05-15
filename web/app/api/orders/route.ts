@@ -1,14 +1,13 @@
+import { randomInt } from "crypto";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createLemonSqueezyCheckout } from "@/lib/lemonsqueezy/checkout";
-import { sendOrderConfirmationEmail } from "@/lib/resend/client";
+import { splitFullName } from "@/lib/checkout/split-full-name";
+import { sendOrderConfirmationCodeEmail } from "@/lib/resend/client";
 import type { CartItem, Order } from "@/lib/types";
+import { customerSupportWhatsAppUrl } from "@/lib/notifications/whatsapp";
 
-function isStripeCheckoutEnabled(): boolean {
-  return !!(
-    process.env.STRIPE_SECRET_KEY?.trim() &&
-    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim()
-  );
+function generateConfirmationCode(): string {
+  return String(100000 + randomInt(900000));
 }
 
 export async function POST(request: Request) {
@@ -27,8 +26,7 @@ export async function POST(request: Request) {
   }: {
     cartItems: CartItem[];
     shippingAddress: {
-      firstName: string;
-      lastName: string;
+      fullName: string;
       email: string;
       phone: string;
       addressLine1: string;
@@ -39,17 +37,10 @@ export async function POST(request: Request) {
       country: string;
     };
     shippingMethod: string;
-    paymentMethod:
-      | "card"
-      | "cod"
-      | "safepay"
-      | "jazzcash"
-      | "payfast"
-      | "bank_transfer";
+    paymentMethod: "cod" | "bank_transfer";
     promoCode?: string;
     discountAmount?: number;
     guestEmail?: string;
-    /** Bank / wallet receipt reference for manual verification */
     transactionId?: string;
   } = body;
 
@@ -57,18 +48,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
   }
 
-  // Get logged-in user
+  if (paymentMethod !== "cod" && paymentMethod !== "bank_transfer") {
+    return NextResponse.json(
+      { error: "Only Cash on Delivery or Bank / Upaisa transfer is available." },
+      { status: 400 },
+    );
+  }
+
+  const fullName = String(shippingAddress?.fullName ?? "").trim();
+  if (fullName.length < 2) {
+    return NextResponse.json(
+      { error: "Please enter your full name." },
+      { status: 400 },
+    );
+  }
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Server-side subtotal (never trust client totals)
   const subtotal = cartItems.reduce(
     (sum: number, item: CartItem) => sum + item.price * item.quantity,
     0,
   );
 
-  // Shipping cost
   const isFreeShipping =
     promoCode === "FREESHIP" || subtotal >= 5000 || shippingMethod === "standard_free";
   const shippingCost = isFreeShipping
@@ -81,32 +84,21 @@ export async function POST(request: Request) {
 
   const trimmedTxn =
     typeof transactionId === "string" ? transactionId.trim() : "";
-  if (paymentMethod === "bank_transfer") {
-    if (!trimmedTxn) {
-      return NextResponse.json(
-        { error: "Enter your bank or Upaisa transaction reference from the receipt." },
-        { status: 400 },
-      );
-    }
-  }
 
-  /*
-   * PayFast storefront integration intentionally disabled — do not accept new PayFast orders.
-   */
-  if (paymentMethod === "payfast") {
+  const customerEmail =
+    shippingAddress.email || guestEmail || user?.email || "";
+  if (!customerEmail.trim()) {
     return NextResponse.json(
-      {
-        error:
-          "PayFast is not available. Choose Cash on Delivery or Bank / Upaisa transfer.",
-      },
+      { error: "A valid email is required for order confirmation." },
       { status: 400 },
     );
   }
 
-  const customerEmail = shippingAddress.email || guestEmail || user?.email || "";
-  const customerName = `${shippingAddress.firstName} ${shippingAddress.lastName}`.trim();
+  const { first: shipFirst, last: shipLast } = splitFullName(fullName);
+  const customerName = fullName;
+  const plainCode = generateConfirmationCode();
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
-  // Create order record
   const { data: order, error: orderError } = await supabase
     .from("orders")
     .insert({
@@ -115,18 +107,22 @@ export async function POST(request: Request) {
       customer_email: customerEmail,
       customer_name: customerName,
       customer_phone: shippingAddress.phone,
+      status: "pending_confirmation",
       payment_method: paymentMethod,
       payment_status: "pending",
       transaction_id:
         paymentMethod === "bank_transfer" ? trimmedTxn || null : null,
+      confirmation_code: plainCode,
+      confirmation_code_expires_at: expiresAt,
+      confirmation_attempts: 0,
       subtotal_pkr: subtotal,
       discount_pkr: discountAmount,
       shipping_pkr: shippingCost,
       total_pkr: total,
       discount_code: promoCode ?? null,
       shipping_method: shippingMethod,
-      ship_first_name: shippingAddress.firstName,
-      ship_last_name: shippingAddress.lastName,
+      ship_first_name: shipFirst,
+      ship_last_name: shipLast,
       ship_address1: shippingAddress.addressLine1,
       ship_address2: shippingAddress.addressLine2 ?? null,
       ship_city: shippingAddress.city,
@@ -146,7 +142,6 @@ export async function POST(request: Request) {
     );
   }
 
-  // Insert order items (denormalized snapshot)
   const orderItems = cartItems.map((item: CartItem) => ({
     order_id: order.id,
     product_id: item.productId || null,
@@ -161,106 +156,58 @@ export async function POST(request: Request) {
 
   await supabase.from("order_items").insert(orderItems);
 
-  // Initial status history
   await supabase.from("order_status_history").insert({
     order_id: order.id,
-    status: "pending",
-    note: "Order placed",
+    status: "pending_confirmation",
+    note: "Order placed — awaiting email confirmation",
   });
 
-  // Increment discount usage
+  if (user?.id) {
+    const { error: profErr } = await supabase
+      .from("profiles")
+      .update({
+        phone: shippingAddress.phone,
+        address_line: shippingAddress.addressLine1,
+        city: shippingAddress.city,
+        province: shippingAddress.province,
+        shipping_full_name: fullName,
+        shipping_phone: shippingAddress.phone,
+        shipping_address: shippingAddress.addressLine1,
+        shipping_city: shippingAddress.city,
+        shipping_province: shippingAddress.province,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", user.id);
+    if (profErr) console.warn("[Orders] profile update:", profErr);
+  }
+
   if (promoCode) {
     try {
       await supabase.rpc("increment_discount_usage", { p_code: promoCode });
     } catch {
-      // non-fatal
+      /* non-fatal */
     }
   }
 
-  // Email: COD + Lemon Squeezy get immediate confirmation. Stripe / Safepay confirm after webhook.
-  const sendNow =
-    paymentMethod === "cod" ||
-    paymentMethod === "bank_transfer" ||
-    (paymentMethod === "card" && !isStripeCheckoutEnabled());
-
-  if (sendNow) {
-    try {
-      const fullOrder: Order = {
-        ...order,
-        order_items: orderItems.map((i, idx) => ({ ...i, id: `item-${idx}` })),
-      };
-      await sendOrderConfirmationEmail(fullOrder);
-    } catch (e) {
-      console.error("[Orders] confirmation email failed:", e);
-    }
+  try {
+    const fullOrder: Order = {
+      ...(order as unknown as Order),
+      order_items: orderItems.map((i, idx) => ({
+        ...i,
+        id: `item-${idx}`,
+      })) as Order["order_items"],
+    };
+    await sendOrderConfirmationCodeEmail(fullOrder, plainCode, expiresAt);
+  } catch (e) {
+    console.error("[Orders] confirmation code email failed:", e);
   }
 
-  if (paymentMethod === "safepay") {
-    if (!process.env.SAFEPAY_API_KEY?.trim()) {
-      return NextResponse.json(
-        {
-          error:
-            "Safepay is not configured. Set SAFEPAY_API_KEY or choose another payment method.",
-        },
-        { status: 500 },
-      );
-    }
-    return NextResponse.json({ order, safepay: true });
-  }
+  const whatsappHelpUrl = customerSupportWhatsAppUrl(order.order_number);
 
-  if (paymentMethod === "jazzcash") {
-    const jc =
-      process.env.JAZZCASH_MERCHANT_ID?.trim() &&
-      process.env.JAZZCASH_PASSWORD?.trim() &&
-      process.env.JAZZCASH_INTEGRITY_SALT?.trim();
-    if (!jc) {
-      return NextResponse.json(
-        {
-          error:
-            "JazzCash is not configured. Set JAZZCASH_MERCHANT_ID, JAZZCASH_PASSWORD, and JAZZCASH_INTEGRITY_SALT or choose another payment method.",
-        },
-        { status: 500 },
-      );
-    }
-    return NextResponse.json({ order, jazzcash: true });
-  }
-
-  /*
-   * PAYFAST (disabled) — formerly returned { order, payfast: true }; see commented lib + routes when re‑enabling:
-   *
-   * if (paymentMethod === "payfast") {
-   *   const pf = payfastConfig();
-   *   ...
-   *   return NextResponse.json({ order, payfast: true });
-   * }
-   */
-
-  // Stripe — hosted Checkout; frontend POST /api/payment/stripe/create-checkout-session then redirects.
-  if (paymentMethod === "card" && isStripeCheckoutEnabled()) {
-    return NextResponse.json({ order, stripe: true });
-  }
-
-  // Card via Lemon Squeezy (legacy) when Stripe env is not configured
-  if (paymentMethod === "card") {
-    const checkoutUrl = await createLemonSqueezyCheckout({
-      id: order.id,
-      orderNumber: order.order_number,
-      totalPkr: total,
-      email: customerEmail,
-      name: customerName,
-    });
-
-    if (!checkoutUrl) {
-      return NextResponse.json(
-        { error: "Failed to create payment session. Try COD or contact support." },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json({ order, checkoutUrl });
-  }
-
-  return NextResponse.json({ order });
+  return NextResponse.json({
+    order,
+    whatsappHelpUrl: whatsappHelpUrl ?? undefined,
+  });
 }
 
 export async function GET() {

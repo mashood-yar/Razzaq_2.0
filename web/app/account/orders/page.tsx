@@ -1,3 +1,8 @@
+import {
+  PAYMENT_METHOD_LABELS,
+  STATUS_LABELS,
+} from "@/lib/utils";
+import type { OrderStatus, PaymentMethod } from "@/lib/types";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requireUser } from "@/lib/auth/session";
@@ -15,7 +20,9 @@ export default async function AccountOrdersPage() {
 
   const { data: orders, error } = await supabase
     .from("orders")
-    .select("id, order_number, status, total_pkr, created_at")
+    .select(
+      "id, order_number, status, total_pkr, created_at, payment_method",
+    )
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
@@ -59,7 +66,8 @@ export default async function AccountOrdersPage() {
               <div>
                 <p className="font-medium">{o.order_number}</p>
                 <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                  {o.status} ·{" "}
+                  {STATUS_LABELS[o.status as OrderStatus] ?? o.status} ·{" "}
+                  {PAYMENT_METHOD_LABELS[o.payment_method as PaymentMethod]} ·{" "}
                   {new Date(o.created_at).toLocaleDateString(undefined, {
                     year: "numeric",
                     month: "short",

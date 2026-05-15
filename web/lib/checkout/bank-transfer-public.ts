@@ -10,10 +10,10 @@ export function publicBankTransferDisplay(): {
     bankName: process.env.NEXT_PUBLIC_CHECKOUT_BANK_NAME?.trim() || "Bank Islami",
     accountTitle:
       process.env.NEXT_PUBLIC_CHECKOUT_BANK_ACCOUNT_TITLE?.trim() ||
-      "BASHIR AHMED",
+      "Bashir Ahmed",
     accountNumber:
       process.env.NEXT_PUBLIC_CHECKOUT_BANK_ACCOUNT_NUMBER?.trim() ||
-      "103100660870001",
+      "1031006608700001",
     upaisaNumber:
       process.env.NEXT_PUBLIC_CHECKOUT_UPAISA_NUMBER?.trim() ||
       "03332361713",

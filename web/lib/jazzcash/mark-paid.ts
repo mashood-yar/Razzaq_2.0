@@ -23,7 +23,11 @@ export async function markJazzcashOrderPaid(orderId: string, note: string) {
     .from("orders")
     .update({
       payment_status: "paid",
-      status: existing.status === "pending" ? "confirmed" : existing.status,
+      status:
+        existing.status === "pending" ||
+        existing.status === "pending_confirmation"
+          ? "confirmed"
+          : existing.status,
       updated_at: new Date().toISOString(),
     })
     .eq("id", orderId)

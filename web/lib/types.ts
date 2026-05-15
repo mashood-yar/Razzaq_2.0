@@ -2,14 +2,12 @@
 
 export type ProductStatus = "draft" | "active" | "archived";
 export type OrderStatus =
-  | "pending"
+  | "pending_confirmation"
   | "confirmed"
   | "processing"
   | "shipped"
-  | "out_for_delivery"
   | "delivered"
-  | "cancelled"
-  | "refunded";
+  | "cancelled";
 export type PaymentMethod =
   | "card"
   | "cod"
@@ -19,6 +17,7 @@ export type PaymentMethod =
   | "bank_transfer";
 export type PaymentStatus =
   | "pending"
+  | "pending_verification"
   | "paid"
   | "failed"
   | "refunded"
@@ -33,12 +32,21 @@ export interface Profile {
   email: string | null;
   full_name: string | null;
   phone: string | null;
+  /** Last-used address fields from checkout when logged in */
+  address_line: string | null;
+  city: string | null;
+  province: string | null;
   avatar_url: string | null;
   gender: ProfileGender | null;
   role: UserRole;
   is_banned: boolean;
   created_at: string;
   updated_at: string;
+  shipping_full_name?: string | null;
+  shipping_phone?: string | null;
+  shipping_address?: string | null;
+  shipping_city?: string | null;
+  shipping_province?: string | null;
 }
 
 export interface Category {
@@ -173,11 +181,17 @@ export interface Order {
   status: OrderStatus;
   payment_method: PaymentMethod;
   payment_status: PaymentStatus;
+  confirmation_code?: string | null;
+  confirmation_code_expires_at?: string | null;
+  confirmation_attempts?: number;
+  confirmed_at?: string | null;
   transaction_id?: string | null;
   lemonsqueezy_order_id: string | null;
   safepay_tracker_token?: string | null;
   stripe_payment_intent_id?: string | null;
   jazzcash_txn_ref_no?: string | null;
+  courier_name?: string | null;
+  cancellation_reason?: string | null;
   subtotal_pkr: number;
   discount_pkr: number;
   shipping_pkr: number;
@@ -186,6 +200,7 @@ export interface Order {
   shipping_method: string | null;
   tracking_number: string | null;
   tracking_url: string | null;
+  confirmation_locked?: boolean | null;
   notes: string | null;
   confirmation_email_delivered_at?: string | null;
   shipped_notice_email_delivered_at?: string | null;
@@ -223,8 +238,7 @@ export interface CartItem {
 
 // Checkout form data
 export interface CheckoutAddress {
-  firstName: string;
-  lastName: string;
+  fullName: string;
   email: string;
   phone: string;
   addressLine1: string;

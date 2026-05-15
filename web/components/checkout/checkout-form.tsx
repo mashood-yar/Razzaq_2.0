@@ -17,17 +17,14 @@ import {
   cartTotal,
   formatPKR,
 } from "@/stores/cart-store";
-import { SafepayPayButton } from "@/components/checkout/safepay-pay-button";
 import { PK_PROVINCES } from "@/lib/utils";
 import { publicBankTransferDisplay } from "@/lib/checkout/bank-transfer-public";
 
-// ─── Schemas ──────────────────────────────────────────────────────────────
 const detailsSchema = z.object({
-  firstName:    z.string().min(1, "First name required"),
-  lastName:     z.string().min(1, "Last name required"),
+  fullName:     z.string().min(2, "Full name required"),
   email:        z.string().email("Valid email required"),
   phone:        z.string().min(10, "Valid phone required"),
-  addressLine1: z.string().min(5, "Address required"),
+  addressLine1: z.string().min(10, "Full address required"),
   addressLine2: z.string().optional(),
   city:         z.string().min(2, "City required"),
   province:     z.string().min(2, "Province required"),
@@ -39,16 +36,20 @@ type DetailsInput = z.input<typeof detailsSchema>;
 type DetailsData  = z.output<typeof detailsSchema>;
 
 type ShippingMethod = "standard" | "express";
-type PaymentChoice = "card" | "cod" | "safepay" | "jazzcash" | "bank_transfer";
+type PaymentChoice = "cod" | "bank_transfer";
 
-function normalizePkWalletMobile(input: string): string {
-  let d = input.replace(/\D/g, "");
-  if (d.startsWith("92")) d = d.slice(2);
-  if (!d.startsWith("0")) d = `0${d}`;
-  return d.slice(0, 11);
-}
-
-export function CheckoutForm() {
+export function CheckoutForm({
+  saved,
+}: {
+  saved?: {
+    fullName?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    province?: string;
+  } | null;
+}) {
   const router = useRouter();
   const items = useCartStore((s) => s.items);
   const promoCode = useCartStore((s) => s.promoCode);
@@ -62,8 +63,6 @@ export function CheckoutForm() {
   const [shippingMethod, setShippingMethod] = useState<ShippingMethod>("standard");
   const [paymentMethod, setPaymentMethod] = useState<PaymentChoice>("cod");
   const [bankTxnReference, setBankTxnReference] = useState("");
-  const [jazzMobile, setJazzMobile] = useState("");
-  const [jazzCnic, setJazzCnic] = useState("");
   const [promoInput, setPromoInput] = useState("");
   const [promoError, setPromoError] = useState("");
   const [promoLoading, setPromoLoading] = useState(false);
@@ -76,12 +75,22 @@ export function CheckoutForm() {
   const total = cartTotal(sub, promoDiscount, shipCost);
   const bankDisplay = publicBankTransferDisplay();
 
-  // Step 1 form
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<DetailsInput, unknown, DetailsData>({ resolver: zodResolver(detailsSchema) });
+  } = useForm<DetailsInput, unknown, DetailsData>({
+    resolver: zodResolver(detailsSchema),
+    defaultValues: {
+      country: "PK",
+      fullName: saved?.fullName ?? "",
+      email: saved?.email ?? "",
+      phone: saved?.phone ?? "",
+      addressLine1: saved?.address ?? "",
+      city: saved?.city ?? "",
+      province: saved?.province ?? "",
+    },
+  });
 
   if (items.length === 0) {
     return (
@@ -122,30 +131,6 @@ export function CheckoutForm() {
     setIsSubmitting(true);
     setSubmitError("");
 
-    if (paymentMethod === "jazzcash") {
-      const mob = normalizePkWalletMobile(jazzMobile || shippingDetails.phone);
-      const cnic = jazzCnic.replace(/\D/g, "");
-      if (!/^03\d{9}$/.test(mob)) {
-        setSubmitError("Enter a valid JazzCash mobile number (03XXXXXXXXX).");
-        setIsSubmitting(false);
-        return;
-      }
-      if (cnic.length !== 6) {
-        setSubmitError("Enter the last 6 digits of the CNIC linked to this JazzCash wallet.");
-        setIsSubmitting(false);
-        return;
-      }
-    }
-
-    if (paymentMethod === "bank_transfer") {
-      const ref = bankTxnReference.trim();
-      if (ref.length < 3) {
-        setSubmitError("Enter the transaction or reference ID from your bank or Upaisa receipt.");
-        setIsSubmitting(false);
-        return;
-      }
-    }
-
     try {
       const res = await fetch("/api/orders", {
         method: "POST",
@@ -165,110 +150,19 @@ export function CheckoutForm() {
         }),
       });
 
-      const data = await res.json();
+      const data = (await res.json()) as {
+        error?: string;
+        order?: { id: string };
+      };
       if (!res.ok) throw new Error(data.error ?? "Order failed");
 
-      /*
-       * Safepay hosted checkout — Visa/MC + Pakistani wallets on Safepay’s page.
-       * Session is billed from DB total (never trust client `amount`).
-       */
-      if (paymentMethod === "safepay" && data.order?.id && shippingDetails) {
-        const payRes = await fetch("/api/payment/create-session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            orderId: data.order.id,
-            customerEmail: shippingDetails.email,
-            amount: total,
-          }),
-        });
-        const payJson = await payRes.json();
-        if (!payRes.ok) {
-          throw new Error(payJson.error ?? "Could not start Safepay checkout");
-        }
-        if (payJson.redirectUrl) {
-          clearCart();
-          window.location.href = payJson.redirectUrl as string;
-        } else {
-          throw new Error("Safepay did not return a redirect URL");
-        }
-        setIsSubmitting(false);
-        return;
-      }
-
-      if (paymentMethod === "jazzcash" && data.order?.id && shippingDetails) {
-        const payRes = await fetch("/api/payment/jazzcash/initiate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            orderId: data.order.id,
-            customerEmail: shippingDetails.email,
-            mobileNumber: normalizePkWalletMobile(jazzMobile || shippingDetails.phone),
-            cnicLast6: jazzCnic.replace(/\D/g, "").slice(-6),
-          }),
-        });
-        const payJson = (await payRes.json()) as {
-          paid?: boolean;
-          error?: string;
-          message?: string;
-          gateway?: { pp_ResponseMessage?: string };
-        };
-        if (!payRes.ok) {
-          throw new Error(payJson.error ?? "Could not start JazzCash payment");
-        }
-        clearCart();
-        setIsSubmitting(false);
-        if (payJson.paid) {
-          router.push(
-            `/checkout/success?order_id=${encodeURIComponent(data.order.id)}`,
-          );
-        } else {
-          throw new Error(
-            payJson.message ||
-              payJson.gateway?.pp_ResponseMessage ||
-              "JazzCash did not confirm payment. If money was debited, wait for the return page or contact support.",
-          );
-        }
-        return;
-      }
-
-      /*
-       * PAYFAST — disabled (see /api/payment/payfast/initiate). Former auto-post to PayFast checkout removed.
-       */
-      if (paymentMethod === "card" && data.stripe === true && data.order?.id) {
-        const stripeRes = await fetch(
-          "/api/payment/stripe/create-checkout-session",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              orderId: data.order.id as string,
-              customerEmail: shippingDetails.email,
-            }),
-          },
-        );
-        const stripeJson = (await stripeRes.json()) as { url?: string; error?: string };
-        if (!stripeRes.ok) {
-          throw new Error(stripeJson.error ?? "Could not start Stripe checkout");
-        }
-        if (stripeJson.url) {
-          clearCart();
-          window.location.href = stripeJson.url;
-        } else {
-          throw new Error("Stripe did not return a checkout URL");
-        }
-        setIsSubmitting(false);
-        return;
-      }
-
       clearCart();
-
       setIsSubmitting(false);
 
-      if (paymentMethod === "card" && data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
+      if (data.order?.id) {
+        router.push(`/order/confirm/${data.order.id}`);
       } else {
-        router.push(`/order/${data.order.id}?success=true`);
+        throw new Error("Order created without id");
       }
     } catch (e: unknown) {
       setSubmitError(e instanceof Error ? e.message : "Something went wrong. Please try again.");
@@ -284,9 +178,7 @@ export function CheckoutForm() {
 
   return (
     <div className="mx-auto grid max-w-6xl gap-12 px-4 py-12 lg:grid-cols-[1fr_380px] lg:px-8">
-      {/* Left column */}
       <div>
-        {/* Progress */}
         <div className="mb-8 flex items-center gap-2 text-xs uppercase tracking-widest">
           {(["Details", "Shipping", "Payment"] as const).map((label, idx) => (
             <span key={label} className="flex items-center gap-2">
@@ -307,7 +199,6 @@ export function CheckoutForm() {
         </div>
 
         <AnimatePresence mode="wait">
-          {/* Step 1 — Details */}
           {step === 1 && (
             <motion.form
               key="step1"
@@ -320,25 +211,19 @@ export function CheckoutForm() {
               className="space-y-6"
             >
               <h2 className="font-display text-3xl text-ivory">
-                Shipping Details
+                Shipping details
               </h2>
               <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <Label htmlFor="firstName">First Name</Label>
+                <div className="sm:col-span-2">
+                  <Label htmlFor="fullName">Full name</Label>
                   <Input
-                    id="firstName"
+                    id="fullName"
                     className="mt-1.5"
-                    {...register("firstName")}
+                    autoComplete="name"
+                    {...register("fullName")}
                   />
-                  {errors.firstName && (
-                    <p className="mt-1 text-xs text-error">{errors.firstName.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" className="mt-1.5" {...register("lastName")} />
-                  {errors.lastName && (
-                    <p className="mt-1 text-xs text-error">{errors.lastName.message}</p>
+                  {errors.fullName && (
+                    <p className="mt-1 text-xs text-error">{errors.fullName.message}</p>
                   )}
                 </div>
                 <div>
@@ -356,14 +241,14 @@ export function CheckoutForm() {
                   )}
                 </div>
                 <div className="sm:col-span-2">
-                  <Label htmlFor="addressLine1">Address</Label>
+                  <Label htmlFor="addressLine1">Full address</Label>
                   <Input id="addressLine1" className="mt-1.5" {...register("addressLine1")} />
                   {errors.addressLine1 && (
                     <p className="mt-1 text-xs text-error">{errors.addressLine1.message}</p>
                   )}
                 </div>
                 <div className="sm:col-span-2">
-                  <Label htmlFor="addressLine2">Apartment / Suite (optional)</Label>
+                  <Label htmlFor="addressLine2">Apartment / landmark (optional)</Label>
                   <Input id="addressLine2" className="mt-1.5" {...register("addressLine2")} />
                 </div>
                 <div>
@@ -389,15 +274,10 @@ export function CheckoutForm() {
                     <p className="mt-1 text-xs text-error">{errors.province.message}</p>
                   )}
                 </div>
-                <div>
-                  <Label htmlFor="postalCode">Postal Code (optional)</Label>
-                  <Input id="postalCode" className="mt-1.5" {...register("postalCode")} />
-                </div>
               </div>
 
-              {/* Promo code */}
               <div>
-                <Label>Promo Code</Label>
+                <Label>Promo code</Label>
                 <div className="mt-1.5 flex gap-2">
                   <Input
                     value={promoInput}
@@ -432,12 +312,11 @@ export function CheckoutForm() {
               </div>
 
               <Button type="submit" size="lg" className="w-full">
-                Continue to Shipping
+                Continue to shipping
               </Button>
             </motion.form>
           )}
 
-          {/* Step 2 — Shipping method */}
           {step === 2 && (
             <motion.div
               key="step2"
@@ -446,19 +325,19 @@ export function CheckoutForm() {
               className="space-y-6"
             >
               <h2 className="font-display text-3xl text-ivory">
-                Shipping Method
+                Shipping method
               </h2>
               <div className="space-y-3">
                 {[
                   {
                     value: "standard" as const,
-                    label: "Standard Delivery",
+                    label: "Standard delivery",
                     sub: "3–5 business days · TCS / Leopards",
                     price: sub >= 5000 ? "Free" : formatPKR(250),
                   },
                   {
                     value: "express" as const,
-                    label: "Express Delivery",
+                    label: "Express delivery",
                     sub: "1–2 business days · TCS",
                     price: formatPKR(500),
                   },
@@ -490,13 +369,12 @@ export function CheckoutForm() {
                   className="flex-1"
                   onClick={() => setStep(3)}
                 >
-                  Continue to Payment
+                  Continue to payment
                 </Button>
               </div>
             </motion.div>
           )}
 
-          {/* Step 3 — Payment */}
           {step === 3 && (
             <motion.div
               key="step3"
@@ -505,47 +383,25 @@ export function CheckoutForm() {
               className="space-y-6"
             >
               <h2 className="font-display text-3xl text-ivory">
-                Payment Method
+                Payment
               </h2>
               <div className="space-y-3">
-                {[
+                {([
                   {
                     value: "cod" as const,
-                    label: "Cash on Delivery",
-                    sub: "Pay in cash when your order arrives. Available across Pakistan.",
+                    label: "Cash on delivery",
+                    sub: "Pay in cash when your parcel arrives — available nationwide.",
                   },
                   {
                     value: "bank_transfer" as const,
-                    label: "Online Bank Transfer / Upaisa",
-                    sub: "Transfer the order total manually, then enter your receipt reference below.",
+                    label: "Bank / Upaisa transfer",
+                    sub: "Transfer the exact total, then enter your receipt reference below.",
                   },
-                  {
-                    value: "card" as const,
-                    label: "Pay by Card",
-                    sub: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-                      ? "International cards via Stripe Checkout (hosted)."
-                      : "Secure card checkout — hosted payment page.",
-                  },
-                  {
-                    value: "safepay" as const,
-                    label: "Pay with Safepay (Pakistan)",
-                    sub: "Visa, Mastercard, Easypaisa, NayaPay, SadaPay & more — hosted checkout by Safepay.",
-                  },
-                  {
-                    value: "jazzcash" as const,
-                    label: "Pay with JazzCash Mobile Account",
-                    sub: "Mobile wallet — enter JazzCash number & CNIC last 6 digits (sandbox/live credentials required).",
-                  },
-                ].map((opt) => (
+                ]).map((opt) => (
                   <button
                     key={opt.value}
                     type="button"
-                    onClick={() => {
-                      setPaymentMethod(opt.value);
-                      if (opt.value === "jazzcash" && shippingDetails?.phone && !jazzMobile) {
-                        setJazzMobile(shippingDetails.phone);
-                      }
-                    }}
+                    onClick={() => setPaymentMethod(opt.value)}
                     className={`flex w-full items-center gap-4 rounded-xl border p-4 text-left transition-colors ${
                       paymentMethod === opt.value
                         ? "border-gold/60 bg-gold/5"
@@ -576,7 +432,7 @@ export function CheckoutForm() {
               {paymentMethod === "bank_transfer" && (
                 <div className="space-y-4 rounded-xl border border-graphite bg-charcoal/40 p-4 text-sm">
                   <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                    Transfer details — pay exactly {formatPKR(total)}
+                    Transfer exactly {formatPKR(total)}
                   </p>
                   <dl className="grid gap-2 text-ivory">
                     <div>
@@ -597,7 +453,7 @@ export function CheckoutForm() {
                     </div>
                   </dl>
                   <p className="text-xs leading-relaxed text-smoke">
-                    After payment, Razzaq order confirmation will show your <strong className="text-ivory">order number</strong> — keep this email handy. Mention your checkout email ({shippingDetails?.email}) in your transfer narration so we can match your payment faster.
+                    Use your checkout email ({shippingDetails?.email}) in the transfer narration when possible. After payment, enter your transaction ID below.
                   </p>
                   <div>
                     <Label htmlFor="bank-txn-reference">Bank / Upaisa transaction ID</Label>
@@ -613,90 +469,28 @@ export function CheckoutForm() {
                 </div>
               )}
 
-              {paymentMethod === "jazzcash" && (
-                <div className="space-y-4 rounded-xl border border-graphite p-4">
-                  <div>
-                    <Label htmlFor="jazzMobile">JazzCash mobile number</Label>
-                    <Input
-                      id="jazzMobile"
-                      type="tel"
-                      className="mt-1.5"
-                      placeholder="03XXXXXXXXX"
-                      value={jazzMobile}
-                      onChange={(e) => setJazzMobile(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="jazzCnic">CNIC — last 6 digits</Label>
-                    <Input
-                      id="jazzCnic"
-                      inputMode="numeric"
-                      maxLength={6}
-                      className="mt-1.5 tracking-widest"
-                      placeholder="••••••"
-                      value={jazzCnic}
-                      onChange={(e) =>
-                        setJazzCnic(e.target.value.replace(/\D/g, "").slice(0, 6))
-                      }
-                    />
-                  </div>
-                </div>
-              )}
-
               <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
                 <Button variant="outline" onClick={() => setStep(2)}>
                   Back
                 </Button>
-                {paymentMethod === "safepay" ? (
-                  <SafepayPayButton
-                    className="flex-1"
-                    totalLabel={formatPKR(total)}
-                    loading={isSubmitting}
-                    onPay={() => placeOrder()}
-                  />
-                ) : paymentMethod === "jazzcash" ? (
-                  <Button
-                    size="lg"
-                    className="flex-1"
-                    onClick={placeOrder}
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting
-                      ? "Contacting JazzCash…"
-                      : `Pay with JazzCash · ${formatPKR(total)}`}
-                  </Button>
-                ) : paymentMethod === "bank_transfer" ? (
-                  <Button
-                    size="lg"
-                    className="flex-1"
-                    onClick={placeOrder}
-                    disabled={isSubmitting || bankTxnReference.trim().length < 3}
-                  >
-                    {isSubmitting
-                      ? "Placing order…"
-                      : `Confirm bank transfer · ${formatPKR(total)}`}
-                  </Button>
-                ) : (
-                  <Button
-                    size="lg"
-                    className="flex-1"
-                    onClick={placeOrder}
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting
-                      ? "Placing order…"
-                      : `Place Order · ${formatPKR(total)}`}
-                  </Button>
-                )}
+                <Button
+                  size="lg"
+                  className="flex-1"
+                  onClick={placeOrder}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting
+                    ? "Placing order…"
+                    : `Place order · ${formatPKR(total)}`}
+                </Button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      {/* Order summary sidebar */}
       <aside className="h-fit rounded-2xl border border-graphite bg-charcoal/60 p-6 backdrop-blur-md lg:sticky lg:top-28">
-        <h2 className="font-display text-xl text-ivory">Order Summary</h2>
+        <h2 className="font-display text-xl text-ivory">Order summary</h2>
         <ul className="mt-6 space-y-4">
           {items.map((i) => (
             <li key={i.id} className="flex justify-between gap-4 text-sm">
@@ -743,5 +537,4 @@ export function CheckoutForm() {
   );
 }
 
-/** Alias for pages that prefer a generic `CheckoutPage` name. */
 export { CheckoutForm as CheckoutPage };

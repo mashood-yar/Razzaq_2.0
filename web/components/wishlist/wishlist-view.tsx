@@ -19,6 +19,31 @@ export function WishlistView() {
   const [saved, setSaved] = useState<LegacyProduct[]>([]);
 
   useEffect(() => {
+    void fetch("/api/wishlist", { credentials: "include" })
+      .then((r) => r.json())
+      .then((d: { ids?: string[]; error?: string }) => {
+        if (d.ids?.length) {
+          useWishlistStore.setState({ ids: d.ids });
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const removeItem = async (productId: string) => {
+    toggle(productId);
+    try {
+      await fetch("/api/wishlist", {
+        method: "DELETE",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId }),
+      });
+    } catch {
+      toggle(productId);
+    }
+  };
+
+  useEffect(() => {
     const client = tryCreateBrowserClient();
     if (!client || ids.length === 0) {
       setSaved([]);
@@ -83,7 +108,7 @@ export function WishlistView() {
                   size="sm"
                   className="mt-4 w-full"
                   type="button"
-                  onClick={() => toggle(p.id)}
+                  onClick={() => void removeItem(p.id)}
                 >
                   Remove
                 </Button>

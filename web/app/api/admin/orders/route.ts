@@ -23,7 +23,11 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
-    const search = searchParams.get("search");
+    const paymentStatus = searchParams.get("payment_status");
+    const paymentMethod = searchParams.get("payment_method");
+    const search = searchParams.get("search")?.trim() ?? "";
+    const dateFrom = searchParams.get("date_from");
+    const dateTo = searchParams.get("date_to");
 
     let query = supabase
       .from("orders")
@@ -33,9 +37,26 @@ export async function GET(request: NextRequest) {
     if (status && status !== "all") {
       query = query.eq("status", status);
     }
-
+    if (paymentStatus && paymentStatus !== "all") {
+      query = query.eq("payment_status", paymentStatus);
+    }
+    if (paymentMethod && paymentMethod !== "all") {
+      query = query.eq("payment_method", paymentMethod);
+    }
+    if (dateFrom) {
+      query = query.gte("created_at", dateFrom);
+    }
+    if (dateTo) {
+      query = query.lte("created_at", dateTo);
+    }
     if (search) {
-      query = query.or(`order_number.ilike.%${search}%,customer_name.ilike.%${search}%`);
+      const safe = search.replace(/[%]/g, "").slice(0, 80);
+      if (safe.length > 0) {
+        const term = `%${safe}%`;
+        query = query.or(
+          `order_number.ilike.${term},customer_name.ilike.${term},customer_phone.ilike.${term},customer_email.ilike.${term}`,
+        );
+      }
     }
 
     const { data, error } = await query;
@@ -44,6 +65,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(data);
   } catch (error: unknown) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "An error occurred" }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : "An error occurred",
+      },
+      { status: 500 },
+    );
   }
 }

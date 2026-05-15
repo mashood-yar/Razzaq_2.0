@@ -27,6 +27,15 @@ export default async function AccountPage() {
               <Link href="/account/orders">View orders</Link>
             </Button>
             <Button asChild variant="outline">
+              <Link href="/account/address">Saved address</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/account/profile">Profile</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/wishlist">Wishlist</Link>
+            </Button>
+            <Button asChild variant="outline">
               <Link href="/shop">Continue shopping</Link>
             </Button>
             <SignOutButton />
