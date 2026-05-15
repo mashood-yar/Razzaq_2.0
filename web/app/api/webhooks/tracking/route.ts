@@ -5,15 +5,15 @@ import { sendEmail } from "@/lib/admin/email";
 const STATUS_MAP: Record<string, string> = {
   "Picked Up": "processing",
   "In Transit": "shipped",
-  "Out for Delivery": "out_for_delivery",
+  "Out for Delivery": "shipped",
   Delivered: "delivered",
   Returned: "cancelled",
   SHIPMENT_PICKED: "processing",
   IN_TRANSIT: "shipped",
-  OUT_FOR_DELIVERY: "out_for_delivery",
+  OUT_FOR_DELIVERY: "shipped",
   DELIVERED: "delivered",
   transit: "shipped",
-  "out-for-delivery": "out_for_delivery",
+  "out-for-delivery": "shipped",
   delivered: "delivered",
   returned: "cancelled",
 };
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
 
     if (
       customerEmail &&
-      ["out_for_delivery", "delivered"].includes(internalStatus)
+      ["shipped", "delivered"].includes(internalStatus)
     ) {
       try {
         await sendEmail({

@@ -47,38 +47,33 @@ export function formatDate(dateStr: string): string {
 }
 
 export const ORDER_STATUSES = [
-  "pending",
+  "pending_confirmation",
   "confirmed",
   "processing",
   "shipped",
-  "out_for_delivery",
   "delivered",
   "cancelled",
-  "refunded",
 ] as const;
 
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
 export const STATUS_LABELS: Record<OrderStatus, string> = {
-  pending:          "Pending",
-  confirmed:        "Confirmed",
-  processing:       "Processing",
-  shipped:          "Shipped",
-  out_for_delivery: "Out for Delivery",
-  delivered:        "Delivered",
-  cancelled:        "Cancelled",
-  refunded:         "Refunded",
+  pending_confirmation: "Pending Confirmation",
+  confirmed:           "Confirmed",
+  processing:          "Processing",
+  shipped:             "Shipped",
+  delivered:           "Delivered",
+  cancelled:           "Cancelled",
 };
 
 export const STATUS_COLORS: Record<OrderStatus, string> = {
-  pending:          "bg-yellow-900/30 text-yellow-400 border-yellow-700/30",
-  confirmed:        "bg-blue-900/30 text-blue-400 border-blue-700/30",
-  processing:       "bg-purple-900/30 text-purple-400 border-purple-700/30",
-  shipped:          "bg-indigo-900/30 text-indigo-400 border-indigo-700/30",
-  out_for_delivery: "bg-orange-900/30 text-orange-400 border-orange-700/30",
-  delivered:        "bg-green-900/30 text-green-400 border-green-700/30",
-  cancelled:        "bg-red-900/30 text-red-400 border-red-700/30",
-  refunded:         "bg-gray-900/30 text-gray-400 border-gray-700/30",
+  pending_confirmation:
+    "bg-amber-900/30 text-amber-300 border-amber-700/30",
+  confirmed:           "bg-blue-900/30 text-blue-400 border-blue-700/30",
+  processing:          "bg-purple-900/30 text-purple-400 border-purple-700/30",
+  shipped:             "bg-indigo-900/30 text-indigo-400 border-indigo-700/30",
+  delivered:           "bg-green-900/30 text-green-400 border-green-700/30",
+  cancelled:           "bg-red-900/30 text-red-400 border-red-700/30",
 };
 
 export const PAYMENT_METHOD_LABELS: Record<OrderPaymentMethod, string> = {
@@ -92,6 +87,7 @@ export const PAYMENT_METHOD_LABELS: Record<OrderPaymentMethod, string> = {
 
 export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
   pending: "Pending",
+  pending_verification: "Pending Verification",
   paid: "Paid",
   verified: "Verified",
   failed: "Failed",
@@ -100,6 +96,8 @@ export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
 
 export const PAYMENT_STATUS_COLORS: Record<PaymentStatus, string> = {
   pending: "bg-yellow-900/30 text-yellow-400 border-yellow-700/30",
+  pending_verification:
+    "bg-orange-900/30 text-orange-300 border-orange-700/30",
   paid: "bg-green-900/30 text-green-400 border-green-700/30",
   verified: "bg-emerald-900/30 text-emerald-300 border-emerald-700/30",
   failed: "bg-red-900/30 text-red-400 border-red-700/30",
@@ -107,14 +105,12 @@ export const PAYMENT_STATUS_COLORS: Record<PaymentStatus, string> = {
 };
 
 export const VALID_TRANSITIONS: Record<string, string[]> = {
-  pending:          ["confirmed", "cancelled"],
-  confirmed:        ["processing", "cancelled", "refunded"],
-  processing:       ["shipped", "cancelled", "refunded"],
-  shipped:          ["out_for_delivery", "delivered"],
-  out_for_delivery: ["delivered"],
-  delivered:        ["refunded"],
-  cancelled:        [],
-  refunded:         [],
+  pending_confirmation: ["confirmed", "cancelled"],
+  confirmed:           ["processing", "cancelled"],
+  processing:          ["shipped", "cancelled"],
+  shipped:             ["delivered", "cancelled"],
+  delivered:           ["cancelled"],
+  cancelled:           [],
 };
 
 export function canTransition(from: string, to: string): boolean {

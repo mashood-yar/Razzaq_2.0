@@ -139,7 +139,10 @@ export async function processResendWebhookEvent(event: WebhookEventPayload) {
 
   if (event.type === "email.delivered") {
     const patch: Record<string, unknown> = {};
-    if (tags.emailKind === RESEND_ORDER_EMAIL_KIND.CONFIRMATION) {
+    if (
+      tags.emailKind === RESEND_ORDER_EMAIL_KIND.CONFIRMATION ||
+      tags.emailKind === RESEND_ORDER_EMAIL_KIND.ORDER_CODE
+    ) {
       patch.confirmation_email_delivered_at = createdAt;
     } else if (tags.emailKind === RESEND_ORDER_EMAIL_KIND.SHIPPED) {
       patch.shipped_notice_email_delivered_at = createdAt;

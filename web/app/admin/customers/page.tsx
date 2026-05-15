@@ -13,7 +13,6 @@ import type { Profile } from "@/lib/types";
 interface CustomerWithStats extends Profile {
   total_orders?: number;
   total_spent?: number;
-  city?: string;
 }
 
 export default function CustomersPage() {

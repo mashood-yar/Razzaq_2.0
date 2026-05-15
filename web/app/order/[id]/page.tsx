@@ -2,9 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getUser } from "@/lib/auth/session";
-import { formatPKR, formatDate, STATUS_LABELS, PAYMENT_METHOD_LABELS } from "@/lib/utils";
+import { requireUser } from "@/lib/auth/session";
+import {
+  formatPKR,
+  formatDate,
+  PAYMENT_METHOD_LABELS,
+  PAYMENT_STATUS_LABELS,
+} from "@/lib/utils";
 import { isSupabaseConfigured } from "@/utils/supabase/public-env";
+import { buildCourierTrackingUrl } from "@/lib/courier-tracking";
+import type { PaymentStatus } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -18,19 +25,39 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: `Order ${id.slice(0, 8)}…` };
 }
 
-const STEPS = [
-  "pending",
+const TRACK_STEPS = [
   "confirmed",
   "processing",
   "shipped",
-  "out_for_delivery",
   "delivered",
 ] as const;
+
+function labelForStep(step: (typeof TRACK_STEPS)[number]): string {
+  switch (step) {
+    case "confirmed":
+      return "Confirmed";
+    case "processing":
+      return "Processing";
+    case "shipped":
+      return "Shipped";
+    case "delivered":
+      return "Delivered";
+    default:
+      return step;
+  }
+}
+
+function stepIndexForStatus(status: string): number {
+  if (status === "pending_confirmation") return -1;
+  if (status === "cancelled") return -2;
+  const i = TRACK_STEPS.indexOf(status as (typeof TRACK_STEPS)[number]);
+  return i >= 0 ? i : 0;
+}
 
 export default async function OrderTrackingPage({ params, searchParams }: Props) {
   const { id } = await params;
   const { success } = await searchParams;
-  const user = await getUser();
+  const user = await requireUser();
 
   if (!isSupabaseConfigured()) notFound();
   const supabase = await createClient();
@@ -43,30 +70,31 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
 
   if (error || !order) notFound();
 
-  // Allow access if: logged-in user owns it, or it's a guest order (linked via email)
-  const userEmail = user?.email;
-  const ownsOrder =
-    (user && order.user_id === user.id) ||
-    (userEmail && order.customer_email === userEmail) ||
-    (!order.user_id && !user); // guest orders accessible via link
+  const emailMatch =
+    user.email &&
+    order.customer_email?.toLowerCase() === user.email.toLowerCase();
+  const idMatch = order.user_id === user.id;
+  if (!idMatch && !emailMatch) {
+    notFound();
+  }
 
-  if (!ownsOrder) notFound();
-
-  const currentStepIndex = STEPS.indexOf(order.status as (typeof STEPS)[number]);
+  const currentStepIndex = stepIndexForStatus(order.status as string);
+  const isCancelled = order.status === "cancelled";
+  const trackUrl = buildCourierTrackingUrl(
+    order.courier_name,
+    order.tracking_number,
+    order.tracking_url,
+  );
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
       {success === "true" && (
         <div className="mb-8 rounded-xl border border-success/30 bg-success/10 p-6">
-          <p className="font-display text-xl text-ivory">
-            Your order has been placed!
-          </p>
+          <p className="font-display text-xl text-ivory">Thank you</p>
           <p className="mt-1 text-sm text-smoke">
-            {order.payment_method === "cod"
-              ? "We will confirm your order shortly. Cash on delivery is available at your door."
-              : order.payment_method === "bank_transfer"
-                ? "We received your order and pending bank transfer reference. Razzaq will verify your payment and email updates — keep your transaction ID handy."
-                : "Payment confirmed. Your order is now being processed."}
+            {order.status === "pending_confirmation"
+              ? "Your order is waiting for email confirmation."
+              : "Your order was updated successfully."}
           </p>
         </div>
       )}
@@ -76,21 +104,39 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
         {order.order_number}
       </h1>
       <p className="mt-2 text-sm text-smoke">
-        Placed {formatDate(order.created_at)} · Payment:{" "}
-        {PAYMENT_METHOD_LABELS[order.payment_method as keyof typeof PAYMENT_METHOD_LABELS] ??
-          order.payment_method}
+        Placed {formatDate(order.created_at)} ·{" "}
+        {PAYMENT_METHOD_LABELS[
+          order.payment_method as keyof typeof PAYMENT_METHOD_LABELS
+        ] ?? order.payment_method}{" "}
+        · Payment:{" "}
+        {PAYMENT_STATUS_LABELS[order.payment_status as PaymentStatus] ??
+          order.payment_status}
       </p>
+
+      {order.status === "pending_confirmation" && (
+        <div className="mt-6 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-ivory">
+          <p>
+            Confirm your order with the 6-digit code we emailed you:{" "}
+            <Link
+              href={`/order/confirm/${order.id}`}
+              className="font-medium text-gold underline"
+            >
+              Open confirmation page
+            </Link>
+          </p>
+        </div>
+      )}
 
       {/* Status timeline */}
       <div className="my-12">
-        <div className="flex items-center gap-0">
-          {STEPS.map((step, i) => {
-            const done = currentStepIndex >= 0 && i <= currentStepIndex;
-            const active = i === currentStepIndex;
-            const isCancelled = order.status === "cancelled" || order.status === "refunded";
+        <div className="flex flex-wrap items-center gap-2">
+          {TRACK_STEPS.map((step, i) => {
+            const done =
+              !isCancelled && currentStepIndex >= 0 && i <= currentStepIndex;
+            const active = !isCancelled && i === currentStepIndex;
 
             return (
-              <div key={step} className="flex flex-1 flex-col items-center">
+              <div key={step} className="flex flex-1 min-w-[72px] flex-col items-center">
                 <div
                   className={`h-3 w-3 rounded-full transition-colors ${
                     isCancelled
@@ -100,9 +146,9 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
                         : "bg-graphite"
                   } ${active && !isCancelled ? "ring-2 ring-gold ring-offset-2 ring-offset-obsidian" : ""}`}
                 />
-                {i < STEPS.length - 1 && (
+                {i < TRACK_STEPS.length - 1 && (
                   <div
-                    className={`h-0.5 w-full ${
+                    className={`hidden h-0.5 w-full md:block ${
                       done && !isCancelled ? "bg-gold/50" : "bg-graphite"
                     }`}
                   />
@@ -112,48 +158,76 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
                     active ? "font-medium text-gold" : "text-ash"
                   }`}
                 >
-                  {STATUS_LABELS[step]}
+                  {labelForStep(step)}
                 </p>
               </div>
             );
           })}
         </div>
 
-        {(order.status === "cancelled" || order.status === "refunded") && (
+        {isCancelled && (
           <div className="mt-6 rounded-lg border border-error/30 bg-error/10 px-4 py-3">
             <p className="text-sm font-medium capitalize text-error">
-              Order {order.status}
+              Order cancelled
             </p>
+            {order.cancellation_reason && (
+              <p className="mt-1 text-sm text-smoke">{order.cancellation_reason}</p>
+            )}
           </div>
         )}
       </div>
 
-      {/* Tracking info */}
-      {order.tracking_number && (
+      {order.status === "shipped" &&
+        (order.tracking_number || order.courier_name) && (
+          <div className="mb-8 rounded-xl border border-gold/30 bg-gold/10 p-5">
+            <p className="text-xs uppercase tracking-widest text-smoke">
+              Shipment
+            </p>
+            {order.courier_name && (
+              <p className="mt-1 text-sm text-ivory">
+                Courier: <strong>{order.courier_name}</strong>
+              </p>
+            )}
+            {order.tracking_number && (
+              <p className="mt-2 font-mono text-lg text-gold">
+                {order.tracking_number}
+              </p>
+            )}
+            {trackUrl && (
+              <a
+                href={trackUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-block text-xs uppercase tracking-widest text-gold hover:underline"
+              >
+                Track on courier website →
+              </a>
+            )}
+          </div>
+        )}
+
+      {order.tracking_number && order.status !== "shipped" && (
         <div className="mb-8 rounded-xl border border-gold/20 bg-gold/5 p-5">
           <p className="text-xs uppercase tracking-widest text-smoke">
-            Tracking Number
+            Tracking number
           </p>
-          <p className="mt-1 font-mono text-lg text-gold">
-            {order.tracking_number}
-          </p>
-          {order.tracking_url && (
+          <p className="mt-1 font-mono text-lg text-gold">{order.tracking_number}</p>
+          {trackUrl && (
             <a
-              href={order.tracking_url}
+              href={trackUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-2 inline-block text-xs uppercase tracking-widest text-gold hover:underline"
             >
-              Track Package →
+              Track package →
             </a>
           )}
         </div>
       )}
 
-      {/* Shipping address */}
       <div className="rounded-xl border border-graphite bg-charcoal p-5">
         <p className="text-xs uppercase tracking-widest text-smoke">
-          Shipping Address
+          Shipping address
         </p>
         <p className="mt-2 text-sm text-ivory">
           {order.ship_first_name} {order.ship_last_name}
@@ -168,7 +242,6 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
         </p>
       </div>
 
-      {/* Order items */}
       <div className="mt-6 rounded-xl border border-graphite bg-charcoal">
         <div className="border-b border-graphite px-5 py-4">
           <p className="text-xs uppercase tracking-widest text-smoke">Items</p>
@@ -238,21 +311,12 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
       </div>
 
       <p className="mt-8">
-        {user ? (
-          <Link
-            href="/account/orders"
-            className="text-sm uppercase tracking-widest text-gold hover:underline"
-          >
-            ← All Orders
-          </Link>
-        ) : (
-          <Link
-            href="/shop"
-            className="text-sm uppercase tracking-widest text-gold hover:underline"
-          >
-            Continue Shopping →
-          </Link>
-        )}
+        <Link
+          href="/account/orders"
+          className="text-sm uppercase tracking-widest text-gold hover:underline"
+        >
+          ← All orders
+        </Link>
       </p>
     </div>
   );

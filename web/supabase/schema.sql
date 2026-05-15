@@ -20,6 +20,9 @@ create table if not exists public.profiles (
   email       text,
   full_name   text,
   phone       text,
+  address_line text,
+  city          text,
+  province      text,
   avatar_url  text,
   gender      text check (gender is null or gender in ('male', 'female', 'other')),
   role        text not null default 'customer'
@@ -241,17 +244,20 @@ create table if not exists public.orders (
   customer_email        text not null,
   customer_name         text,
   customer_phone        text,
-  status                text not null default 'pending'
+  status                text not null default 'pending_confirmation'
                           check (status in (
-                            'pending','confirmed','processing',
-                            'shipped','out_for_delivery','delivered',
-                            'cancelled','refunded'
+                            'pending_confirmation','confirmed','processing',
+                            'shipped','delivered','cancelled'
                           )),
   payment_method        text not null default 'cod'
                           check (payment_method in ('card','cod','safepay','jazzcash','payfast','bank_transfer')),
   payment_status        text not null default 'pending'
                           check (payment_status in ('pending','paid','failed','refunded','verified')),
   transaction_id        text,
+  confirmation_code              text,
+  confirmation_code_expires_at   timestamptz,
+  confirmation_attempts          int not null default 0,
+  confirmed_at                   timestamptz,
   lemonsqueezy_order_id text unique,
   safepay_tracker_token text,
   stripe_payment_intent_id text,
@@ -264,6 +270,8 @@ create table if not exists public.orders (
   shipping_method       text,
   tracking_number       text,
   tracking_url          text,
+  courier_name          text,
+  cancellation_reason   text,
   notes                 text,
   -- Resend transactional email tracking (see add-order-resend-tracking.sql)
   confirmation_email_delivered_at    timestamptz,

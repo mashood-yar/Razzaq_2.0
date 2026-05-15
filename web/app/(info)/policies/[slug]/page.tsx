@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getSupportEmail } from "@/lib/support";
 
 const VALID_SLUGS = [
   "privacy-policy",
@@ -44,29 +45,20 @@ Razzaq Luxe — Lahore, Pakistan · privacy@razzaqluxe.com
     content: `
 **Last updated:** May 2026
 
-## Return Window
-We accept returns within **7 days** of delivery for unworn, unused items with original tags attached.
+## Returns window
+We accept returns within **7 days** of delivery.
 
-## Eligible Items
-- Clothing: unworn with all tags and packaging intact
-- Fragrances: unopened and sealed in original packaging
-- Accessories: unused, undamaged
+## Condition
+Items must be **unused** and returned in **original packaging** (fragrances must remain sealed).
 
-## Non-Returnable Items
-- Items marked "Final Sale"
-- Washed, worn, or altered items
-- Fragrances that have been opened
-
-## How to Return
-1. Email returns@razzaqluxe.com with your order number and reason for return
-2. We will send you a return authorization and instructions within 24 hours
-3. Pack items securely and ship to our address (return shipping is the customer's responsibility)
+## How to start a return
+Email **__SUPPORT__** with your **order ID** and the **reason** for your return.
 
 ## Refunds
-Approved refunds are processed within 3–5 business days to the original payment method. COD orders receive a bank transfer refund.
+Approved refunds are processed within **5–7 business days** to your original payment path (bank transfer for COD orders where applicable).
 
-## Exchanges
-We offer size/colour exchanges subject to availability. Contact us within 7 days of delivery.
+## Questions
+Contact **__SUPPORT__** any time — we reply as quickly as we can.
     `,
   },
   "shipping-policy": {
@@ -151,7 +143,12 @@ export default async function PolicyPage({ params }: Props) {
 
   if (!VALID_SLUGS.includes(slug as Slug)) notFound();
 
-  const policy = POLICIES[slug as Slug];
+  const policyRaw = POLICIES[slug as Slug];
+  const support = getSupportEmail();
+  const policy = {
+    ...policyRaw,
+    content: policyRaw.content.replace(/__SUPPORT__/g, support),
+  };
 
   const sections = policy.content
     .trim()
