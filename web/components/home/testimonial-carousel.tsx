@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -32,11 +32,34 @@ const items = [
     image:
       "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80",
   },
+  {
+    quote:
+      "Ordering was straightforward — COD confirmation took seconds. Packaging felt bespoke; I'll be back for Sporty.",
+    name: "Omar N.",
+    role: "Product designer",
+    image:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80",
+  },
 ];
+
+const AUTO_ADVANCE_MS = 6500;
 
 export function TestimonialCarousel() {
   const [i, setI] = useState(0);
   const cur = items[i];
+
+  useEffect(() => {
+    if (
+      typeof window === "undefined" ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
+    const id = window.setInterval(() => {
+      setI((x) => (x + 1) % items.length);
+    }, AUTO_ADVANCE_MS);
+    return () => clearInterval(id);
+  }, []);
 
   return (
     <div className="relative mx-auto max-w-4xl">

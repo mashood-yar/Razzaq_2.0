@@ -51,8 +51,29 @@ export function AIBot() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: [...messages, userMsg] }),
       });
-      const { reply } = await res.json();
-      setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
+      let reply = "";
+      try {
+        const data: unknown = await res.json();
+        if (
+          data &&
+          typeof data === "object" &&
+          "reply" in data &&
+          typeof (data as { reply: unknown }).reply === "string"
+        ) {
+          reply = (data as { reply: string }).reply;
+        }
+      } catch {
+        /* non-JSON or empty body */
+      }
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            reply.trim() ||
+            "Sorry, I couldn’t read that response. Please try again or email sultanbarak77@gmail.com.",
+        },
+      ]);
     } catch {
       setMessages((prev) => [
         ...prev,

@@ -60,3 +60,124 @@
     color: hsl(var(--gold));
   }
 }
+
+/* Luxury session intro (components/ui/intro-animation.tsx) — ~9.4s timeline, GPU-friendly letters */
+@layer components {
+  @keyframes intro-tracking-in {
+    0% {
+      letter-spacing: 0.35em;
+      opacity: 0;
+      filter: blur(4px);
+      transform: translate3d(0, 0.12em, 0) scale(0.98);
+    }
+    100% {
+      letter-spacing: 0;
+      opacity: 1;
+      filter: blur(0);
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+  }
+
+  @keyframes intro-letter-luxe {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, 14px, 0);
+    }
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes intro-line-x {
+    0% {
+      transform: translateZ(0) scaleX(0);
+      opacity: 0.6;
+    }
+    100% {
+      transform: translateZ(0) scaleX(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes intro-fade-in-up {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, 12px, 0);
+    }
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes intro-overlay-fade-out {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  .intro-letter-r {
+    will-change: transform, opacity;
+    animation-name: intro-tracking-in;
+    animation-duration: 700ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: both;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  .intro-letter-l {
+    will-change: transform, opacity;
+    animation-name: intro-letter-luxe;
+    animation-duration: 700ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: both;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  .intro-gold-line {
+    transform: translateZ(0) scaleX(0);
+    transform-origin: center;
+    animation-name: intro-line-x;
+    animation-duration: 700ms;
+    animation-timing-function: ease-out;
+    animation-fill-mode: forwards;
+    animation-delay: 5400ms;
+    will-change: transform;
+  }
+
+  .intro-tagline {
+    animation-name: intro-fade-in-up;
+    animation-duration: 900ms;
+    animation-timing-function: ease-out;
+    animation-fill-mode: forwards;
+    animation-delay: 6300ms;
+    opacity: 0;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+  }
+
+  /* Tagline done ~7200ms; 1000ms hold; fade from 8200ms, 1200ms → gone ~9400ms */
+  .intro-fade-end {
+    animation-name: intro-overlay-fade-out;
+    animation-duration: 1.2s;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-fill-mode: forwards;
+    animation-delay: 8200ms;
+  }
+
+  /* User skip: immediate 600ms fade */
+  .intro-skip-exit {
+    animation-name: intro-overlay-fade-out !important;
+    animation-duration: 600ms !important;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+    animation-fill-mode: forwards !important;
+    animation-delay: 0ms !important;
+  }
+}

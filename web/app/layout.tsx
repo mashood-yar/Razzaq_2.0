@@ -11,6 +11,7 @@ import { DeferredChrome } from "@/components/layout/deferred-chrome";
 import { AccessDeniedBanner } from "@/components/layout/access-denied-banner";
 import { FlyToCartProvider } from "@/components/motion/fly-to-cart";
 import { AppToaster } from "@/components/providers/app-toaster";
+import { IntroAnimation } from "@/components/ui/intro-animation";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -78,6 +79,7 @@ export default function RootLayout({
         <AuthProvider>
           <AppToaster />
           <AccessDeniedBanner />
+          <IntroAnimation />
           <StoreHydration />
           <FlyToCartProvider>
             {/* Grain sits below page UI so it never composites over sharp SVG/text (Visa, etc.). */}

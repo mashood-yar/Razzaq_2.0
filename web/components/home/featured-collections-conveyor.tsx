@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import {
   useCallback,
   useEffect,
@@ -108,24 +109,32 @@ export function FeaturedCollectionsConveyor({
         }}
         onTransitionEnd={handleTransitionEnd}
       >
-        {order.map((c) => (
-          <Link
-            key={c.title}
-            href={c.href}
-            className="group relative h-72 min-w-0 flex-[1_1_0] overflow-hidden rounded-2xl"
+        {order.map((c, idx) => (
+          <motion.div
+            key={`${c.href}-${c.title}`}
+            className="min-w-0 flex-[1_1_0]"
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-48px" }}
+            transition={{ duration: 0.5, delay: idx * 0.07, ease: [0.22, 1, 0.36, 1] }}
           >
-            <Image
-              src={c.image}
-              alt=""
-              fill
-              className="object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none"
-              sizes="(max-width: 640px) 25vw, (max-width: 1024px) 22vw, 280px"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-            <span className="absolute bottom-6 left-6 font-serif text-2xl text-white">
-              {c.title}
-            </span>
-          </Link>
+            <Link
+              href={c.href}
+              className="group relative block h-72 overflow-hidden rounded-2xl"
+            >
+              <Image
+                src={c.image}
+                alt=""
+                fill
+                className="object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none"
+                sizes="(max-width: 640px) 25vw, (max-width: 1024px) 22vw, 280px"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <span className="absolute bottom-6 left-6 font-serif text-2xl text-white">
+                {c.title}
+              </span>
+            </Link>
+          </motion.div>
         ))}
       </div>
     </div>

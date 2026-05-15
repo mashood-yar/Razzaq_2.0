@@ -50,7 +50,7 @@ export function SearchModal() {
       .filter(
         (p) =>
           p.name.toLowerCase().includes(t) ||
-          p.tagline.toLowerCase().includes(t) ||
+          (p.tagline ?? "").toLowerCase().includes(t) ||
           p.mainNotes.some((n) => n.toLowerCase().includes(t)),
       )
       .slice(0, 8);

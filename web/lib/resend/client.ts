@@ -89,7 +89,7 @@ function baseHtml(content: string): string {
 <body>
 <div class="wrap">
   <div class="logo">${BRAND}</div>
-  <p class="tagline">Lahore&nbsp; · &nbsp;Pakistan</p>
+  <p class="tagline">Quetta&nbsp; · &nbsp;Pakistan</p>
   <div class="panel">
     ${content}
   </div>
