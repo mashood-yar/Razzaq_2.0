@@ -7,10 +7,18 @@ export type SendEmailInput = {
   html: string;
 };
 
+let warnedSendEmailNoKey = false;
+
 export async function sendEmail(input: SendEmailInput) {
-  const key = process.env.RESEND_API_KEY;
+  const key = process.env.RESEND_API_KEY?.trim();
   if (!key) {
-    throw new Error("RESEND_API_KEY is not configured");
+    if (!warnedSendEmailNoKey) {
+      warnedSendEmailNoKey = true;
+      console.warn(
+        "[Resend] RESEND_API_KEY is not set — sendEmail skipped (configure in environment to enable).",
+      );
+    }
+    return;
   }
   const resend = new Resend(key);
   const from =

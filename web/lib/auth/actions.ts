@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { friendlyAuthMessage } from "@/lib/auth/auth-errors";
+import { sendWelcomeEmail } from "@/lib/resend/client";
 import { isSupabaseConfigured } from "@/utils/supabase/public-env";
 
 export type AuthActionState = { error?: string; success?: string } | null;
@@ -85,6 +86,11 @@ export async function signUp(
       },
       { onConflict: "id" },
     );
+    try {
+      await sendWelcomeEmail(email, fullName);
+    } catch (e) {
+      console.warn("[auth/signUp] welcome email:", e);
+    }
   }
 
   if (data.user && !data.session) {

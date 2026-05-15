@@ -9,12 +9,19 @@ import { publicBankTransferDisplay } from "@/lib/checkout/bank-transfer-public";
 import { buildCourierTrackingUrl } from "@/lib/courier-tracking";
 
 let resendClient: Resend | null = null;
+let warnedMissingResendKey = false;
 
-/** Lazily construct so `next build` can load routes without RESEND_API_KEY set. */
-function getResend(): Resend {
+/** Returns null when `RESEND_API_KEY` is unset — callers skip send (no throw). */
+function getResend(): Resend | null {
   const key = process.env.RESEND_API_KEY?.trim();
   if (!key) {
-    throw new Error("RESEND_API_KEY is not set");
+    if (!warnedMissingResendKey) {
+      warnedMissingResendKey = true;
+      console.warn(
+        "[Resend] RESEND_API_KEY is not set — transactional emails are skipped until the key is configured in the environment.",
+      );
+    }
+    return null;
   }
   resendClient ??= new Resend(key);
   return resendClient;
@@ -126,7 +133,10 @@ export async function sendOrderConfirmationCodeEmail(
   const bank = publicBankTransferDisplay();
   const isBank = order.payment_method === "bank_transfer";
 
-  await getResend().emails.send({
+  const resend = getResend();
+  if (!resend) return;
+
+  await resend.emails.send({
     from: FROM,
     to,
     tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.ORDER_CODE),
@@ -166,7 +176,10 @@ export async function sendOrderVerifiedConfirmationEmail(order: Order) {
   const origin = siteOrigin();
   const isCod = order.payment_method === "cod";
 
-  await getResend().emails.send({
+  const resend = getResend();
+  if (!resend) return;
+
+  await resend.emails.send({
     from: FROM,
     to,
     tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.CONFIRMED_FOLLOWUP),
@@ -194,7 +207,10 @@ export async function sendOrderConfirmationEmail(order: Order) {
   const to = order.customer_email;
   const origin = siteOrigin();
 
-  await getResend().emails.send({
+  const resend = getResend();
+  if (!resend) return;
+
+  await resend.emails.send({
     from: FROM,
     to,
     tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.CONFIRMATION),
@@ -224,7 +240,10 @@ export async function sendOrderShippedEmail(order: Order) {
     order.tracking_url,
   );
 
-  await getResend().emails.send({
+  const resend = getResend();
+  if (!resend) return;
+
+  await resend.emails.send({
     from: FROM,
     to: order.customer_email,
     tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.SHIPPED),
@@ -246,7 +265,10 @@ export async function sendOrderDeliveredEmail(order: Order) {
   const origin = siteOrigin();
   const support = getSupportEmail();
 
-  await getResend().emails.send({
+  const resend = getResend();
+  if (!resend) return;
+
+  await resend.emails.send({
     from: FROM,
     to: order.customer_email,
     tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.DELIVERED_NOTICE),
@@ -263,7 +285,11 @@ export async function sendOrderDeliveredEmail(order: Order) {
 
 export async function sendOrderProcessingEmail(order: Order) {
   const origin = siteOrigin();
-  await getResend().emails.send({
+
+  const resend = getResend();
+  if (!resend) return;
+
+  await resend.emails.send({
     from: FROM,
     to: order.customer_email,
     tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.PROCESSING),
@@ -281,7 +307,10 @@ export async function sendOrderProcessingEmail(order: Order) {
 export async function sendBankPaymentVerifiedEmail(order: Order) {
   const origin = siteOrigin();
 
-  await getResend().emails.send({
+  const resend = getResend();
+  if (!resend) return;
+
+  await resend.emails.send({
     from: FROM,
     to: order.customer_email,
     tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.PAYMENT_VERIFIED),
@@ -303,7 +332,10 @@ export async function sendOrderCancelledEmail(
 ) {
   const origin = siteOrigin();
 
-  await getResend().emails.send({
+  const resend = getResend();
+  if (!resend) return;
+
+  await resend.emails.send({
     from: FROM,
     to: order.customer_email,
     tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.CANCELLED),
@@ -321,7 +353,10 @@ export async function sendOrderCancelledEmail(
 export async function sendWelcomeEmail(email: string, name: string) {
   const origin = siteOrigin();
 
-  await getResend().emails.send({
+  const resend = getResend();
+  if (!resend) return;
+
+  await resend.emails.send({
     from: FROM,
     to: email,
     subject: `Welcome to ${BRAND}`,
@@ -349,7 +384,10 @@ export async function sendContactAutoReply(
 ) {
   const origin = siteOrigin();
 
-  await getResend().emails.send({
+  const resend = getResend();
+  if (!resend) return;
+
+  await resend.emails.send({
     from: FROM,
     to: email,
     subject: `We received your message — ${BRAND}`,
@@ -365,11 +403,10 @@ export async function sendContactAutoReply(
 export async function sendHelloWorldTestEmail(
   to: string = "sultanshah101004@gmail.com",
 ) {
-  if (!process.env.RESEND_API_KEY) {
-    throw new Error("RESEND_API_KEY is not set");
-  }
+  const resend = getResend();
+  if (!resend) return;
 
-  const { error } = await getResend().emails.send({
+  const { error } = await resend.emails.send({
     from: "onboarding@resend.dev",
     to,
     subject: "Hello World",

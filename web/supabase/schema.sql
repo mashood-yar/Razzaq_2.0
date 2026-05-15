@@ -23,6 +23,11 @@ create table if not exists public.profiles (
   address_line text,
   city          text,
   province      text,
+  shipping_full_name  text,
+  shipping_phone      text,
+  shipping_address    text,
+  shipping_city       text,
+  shipping_province   text,
   avatar_url  text,
   gender      text check (gender is null or gender in ('male', 'female', 'other')),
   role        text not null default 'customer'

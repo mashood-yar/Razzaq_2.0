@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
         body.track_number ??
         body.shipmentTrackingNumber ??
         "",
-    );
+    ).trim();
     const rawStatus = String(
       body.status ?? body.current_status ?? body.shipmentStatus ?? "",
     );
@@ -42,34 +42,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { data: fulfillment, error: fErr } = await supabase
-      .from("fulfillments")
-      .select("*, orders(*)")
+    const { data: orderRows, error: orderErr } = await supabase
+      .from("orders")
+      .select("*")
       .eq("tracking_number", trackingNumber)
-      .maybeSingle();
+      .order("updated_at", { ascending: false })
+      .limit(1);
+    const orderRow = orderRows?.[0];
 
-    if (fErr || !fulfillment) {
+    if (orderErr || !orderRow) {
       return NextResponse.json(
-        { error: "Fulfillment not found" },
+        { error: "Order not found for this tracking number" },
         { status: 404 },
       );
     }
 
-    const orderId = fulfillment.order_id as string;
-    const fulfillmentId = fulfillment.id as string;
-
-    const order = fulfillment.orders as Record<string, unknown> | null;
-
-    await supabase
-      .from("fulfillments")
-      .update({
-        status: internalStatus,
-        updated_at: new Date().toISOString(),
-        ...(internalStatus === "delivered"
-          ? { delivered_at: new Date().toISOString() }
-          : {}),
-      })
-      .eq("id", fulfillmentId);
+    const orderId = orderRow.id as string;
+    const order = orderRow as Record<string, unknown>;
 
     await supabase
       .from("orders")
