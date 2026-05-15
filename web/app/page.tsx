@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product/product-card";
 import { HomeMarqueeSkeleton } from "@/components/home/home-marquee-skeleton";
 import { SectionCardSkeleton } from "@/components/home/section-card-skeleton";
+import { FeaturedCollectionsConveyor } from "@/components/home/featured-collections-conveyor";
 
 const SignatureScentsMarquee = dynamic(
   () =>
@@ -54,34 +55,46 @@ const collections = [
   {
     title: "Men",
     href: "/shop?gender=men",
-    image:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=900&q=80",
+    image: "/images/habibi.png",
   },
   {
     title: "Women",
     href: "/shop?gender=women",
-    image:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=80",
+    image: "/images/flourine.png",
   },
   {
     title: "Unisex",
     href: "/shop?gender=unisex",
-    image:
-      "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=900&q=80",
+    image: "/images/sporty.png",
   },
   {
     title: "Limited editions",
     href: "/collections",
-    image:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=900&q=80",
+    image: "/images/khan.png",
   },
 ];
 
 const ugcTiles = [
-  { id: "ugc-a", src: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80" },
-  { id: "ugc-b", src: "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=600&q=80" },
-  { id: "ugc-c", src: "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=600&q=80" },
-  { id: "ugc-d", src: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80" },
+  {
+    id: "ugc-a",
+    src: "/images/habibi-promo.png",
+    alt: "Habibi — Razzaq Luxe fragrance",
+  },
+  {
+    id: "ugc-b",
+    src: "/images/flourine-promo.png",
+    alt: "Flourine — Razzaq Luxe fragrance",
+  },
+  {
+    id: "ugc-c",
+    src: "/images/sporty-promo.png",
+    alt: "Sporty — Razzaq Luxe fragrance",
+  },
+  {
+    id: "ugc-d",
+    src: "/images/khans-aura-promo.png",
+    alt: "Khan's Aura — Razzaq Luxe fragrance",
+  },
 ];
 
 export default async function HomePage() {
@@ -150,30 +163,10 @@ export default async function HomePage() {
               </p>
             </div>
             <Button asChild variant="outline">
-              <Link href="/collections">View all</Link>
+              <Link href="/shop">View all</Link>
             </Button>
           </div>
-          <div className="scrollbar-thin flex gap-4 overflow-x-auto pb-2">
-            {collections.map((c) => (
-              <Link
-                key={c.title}
-                href={c.href}
-                className="group relative h-72 min-w-[260px] flex-[0_0_auto] overflow-hidden rounded-2xl sm:min-w-[300px]"
-              >
-                <Image
-                  src={c.image}
-                  alt=""
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  sizes="300px"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <span className="absolute bottom-6 left-6 font-serif text-2xl text-white">
-                  {c.title}
-                </span>
-              </Link>
-            ))}
-          </div>
+          <FeaturedCollectionsConveyor items={collections} />
         </section>
 
         {/* Best sellers */}
@@ -229,7 +222,7 @@ export default async function HomePage() {
                 key={tile.id}
                 className="relative aspect-square overflow-hidden rounded-xl bg-muted"
               >
-                <Image src={tile.src} alt="Community wearing Razzaq Luxe" fill className="object-cover" sizes="(max-width:768px) 50vw, 25vw" />
+                <Image src={tile.src} alt={tile.alt} fill className="object-cover" sizes="(max-width:768px) 50vw, 25vw" />
               </div>
             ))}
           </div>

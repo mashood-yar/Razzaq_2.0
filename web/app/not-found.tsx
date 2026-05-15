@@ -7,10 +7,10 @@ export default function NotFound() {
       <p className="text-xs font-semibold uppercase tracking-[0.35em] text-gold">404</p>
       <h1 className="mt-6 font-serif text-4xl sm:text-5xl">This page has faded</h1>
       <p className="mt-4 max-w-md text-muted-foreground">
-        The scent trail ends here — let us guide you back to the collection.
+        The scent trail ends here — let us guide you back to the shop.
       </p>
       <Button asChild className="mt-10" size="lg">
-        <Link href="/">Return home</Link>
+        <Link href="/shop">Browse the shop</Link>
       </Button>
     </div>
   );

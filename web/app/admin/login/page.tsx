@@ -99,7 +99,7 @@ export default function AdminLoginPage() {
           <Button
             variant="ghost"
             type="button"
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/shop")}
             className="text-muted-foreground"
           >
             ← Back to Store

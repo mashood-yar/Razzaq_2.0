@@ -59,12 +59,12 @@ export default async function SearchPage({ searchParams }: Props) {
           {products.length === 0 ? (
             <div className="py-16 text-center">
               <p className="font-display text-3xl italic text-smoke">No results found.</p>
-              <p className="mt-2 text-sm text-smoke">Try a different search term or browse our collections.</p>
+              <p className="mt-2 text-sm text-smoke">Try a different search term or browse the shop.</p>
               <Link
-                href="/collections"
-                className="mt-6 inline-block rounded-full border border-gold px-6 py-2.5 text-sm text-gold hover:bg-gold/10 transition-colors"
+                href="/shop"
+                className="mt-6 inline-block rounded-full border border-gold px-6 py-2.5 text-sm text-gold transition-colors hover:bg-gold/10"
               >
-                Browse Collections
+                Browse the shop
               </Link>
             </div>
           ) : (

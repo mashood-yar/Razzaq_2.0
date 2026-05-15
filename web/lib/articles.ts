@@ -54,8 +54,7 @@ export const ARTICLES: Article[] = [
       "Projection as generosity versus intrusion—a concise etiquette guide for offices, transit, and intimacy.",
     date: "2025-12-02",
     readTime: "5 min read",
-    image:
-      "https://images.unsplash.com/photo-1563170351-be82bc9200ba?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/habibi-promo.png",
     category: "Journal",
     body: [
       "Fragrance should invite someone closer—not announce you three corridors away.",

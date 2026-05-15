@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Minus, Plus, Heart, ChevronDown } from "lucide-react";
+import { Minus, Plus, Heart, ChevronDown, ArrowLeft } from "lucide-react";
 import { useCartStore } from "@/stores/cart-store";
 import { useUiStore } from "@/stores/ui-store";
 import { formatPKR } from "@/lib/utils";
@@ -123,6 +123,13 @@ export function ProductDetail({ product, related }: { product: DbProduct; relate
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <Link
+        href="/shop"
+        className="mb-8 inline-flex items-center gap-2 text-sm text-smoke transition-colors hover:text-gold"
+      >
+        <ArrowLeft className="h-4 w-4" aria-hidden />
+        Back to shop
+      </Link>
       <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
         {/* Gallery */}
         <div className="space-y-4">
