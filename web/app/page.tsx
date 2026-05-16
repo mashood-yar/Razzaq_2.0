@@ -69,7 +69,7 @@ const collections = [
   },
   {
     title: "Limited editions",
-    href: "/collections",
+    href: "/shop",
     image: "/images/khan.png",
   },
 ];
@@ -77,8 +77,8 @@ const collections = [
 const ugcTiles = [
   {
     id: "ugc-a",
-    src: "/images/habibi-promo.png",
-    alt: "Habibi — Razzaq Luxe fragrance",
+    src: "/images/home-ugc-sporty.png",
+    alt: "Sporty — Razzaq Luxe fragrance",
   },
   {
     id: "ugc-b",
