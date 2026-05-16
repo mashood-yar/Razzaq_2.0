@@ -16,13 +16,17 @@ export async function generateMetadata({
   const { slug } = await params;
   const a = getArticleBySlug(slug);
   if (!a) return {};
+  const ogImage =
+    a.image.startsWith("http://") || a.image.startsWith("https://")
+      ? a.image
+      : `${(process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/$/, "") || ""}${a.image.startsWith("/") ? a.image : `/${a.image}`}`;
   return {
     title: a.title,
     description: a.excerpt,
     openGraph: {
       title: a.title,
       description: a.excerpt,
-      images: [{ url: a.image, alt: a.title }],
+      images: ogImage ? [{ url: ogImage, alt: a.title }] : undefined,
     },
   };
 }

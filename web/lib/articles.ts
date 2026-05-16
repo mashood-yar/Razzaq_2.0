@@ -8,8 +8,7 @@ export const ARTICLES: Article[] = [
       "How to build depth without chaos—base rules, timing, and pairings that honor each composition.",
     date: "2026-03-12",
     readTime: "8 min read",
-    image:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/areeb.png",
     category: "Guides",
     body: [
       "Layering is not about spraying more—it is about choreography. Start with the quietest molecular textures and finish with the loudest resins or woods.",
