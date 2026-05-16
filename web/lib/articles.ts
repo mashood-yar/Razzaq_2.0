@@ -8,7 +8,7 @@ export const ARTICLES: Article[] = [
       "How to build depth without chaos—base rules, timing, and pairings that honor each composition.",
     date: "2026-03-12",
     readTime: "8 min read",
-    image: "/images/layering-fragrance.png",
+    image: "/product-placeholder.svg",
     category: "Guides",
     body: [
       "Layering is not about spraying more—it is about choreography. Start with the quietest molecular textures and finish with the loudest resins or woods.",
@@ -23,7 +23,7 @@ export const ARTICLES: Article[] = [
       "Understanding barnyard versus noble oud—and why modern compositions invite newcomers.",
     date: "2026-02-28",
     readTime: "6 min read",
-    image: "/images/oud-without-intimidation.png",
+    image: "/product-placeholder.svg",
     category: "Stories",
     body: [
       "Traditional oud can read fierce on first encounter. Our niche blends temper resin with florals or citrus so the journey feels cinematic rather than aggressive.",
@@ -37,7 +37,7 @@ export const ARTICLES: Article[] = [
       "A night inside our Paris atelier—pipettes, silence, and the moment a formula locks.",
     date: "2026-01-14",
     readTime: "10 min read",
-    image: "/images/behind-blending-room.png",
+    image: "/product-placeholder.svg",
     category: "Behind the Scenes",
     body: [
       "Visitors describe our blending room as a temple of glass—every raw material labeled by harvest year.",
@@ -51,7 +51,7 @@ export const ARTICLES: Article[] = [
       "Projection as generosity versus intrusion—a concise etiquette guide for offices, transit, and intimacy.",
     date: "2025-12-02",
     readTime: "5 min read",
-    image: "/images/habibi-promo.png",
+    image: "/product-placeholder.svg",
     category: "Journal",
     body: [
       "Fragrance should invite someone closer—not announce you three corridors away.",

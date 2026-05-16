@@ -55,44 +55,44 @@ const collections = [
   {
     title: "Men",
     href: "/shop?gender=men",
-    image: "/images/habibi.png",
+    image: "/product-placeholder.svg",
   },
   {
     title: "Women",
     href: "/shop?gender=women",
-    image: "/images/flourine.png",
+    image: "/product-placeholder.svg",
   },
   {
     title: "Unisex",
     href: "/shop?gender=unisex",
-    image: "/images/sporty.png",
+    image: "/product-placeholder.svg",
   },
   {
     title: "Limited editions",
     href: "/shop",
-    image: "/images/khan.png",
+    image: "/product-placeholder.svg",
   },
 ];
 
 const ugcTiles = [
   {
     id: "ugc-a",
-    src: "/images/home-ugc-sporty.png",
+    src: "/product-placeholder.svg",
     alt: "Sporty — Razzaq Luxe fragrance",
   },
   {
     id: "ugc-b",
-    src: "/images/flourine-promo.png",
+    src: "/product-placeholder.svg",
     alt: "Flourine — Razzaq Luxe fragrance",
   },
   {
     id: "ugc-c",
-    src: "/images/sporty-promo.png",
+    src: "/product-placeholder.svg",
     alt: "Sporty — Razzaq Luxe fragrance",
   },
   {
     id: "ugc-d",
-    src: "/images/khans-aura-promo.png",
+    src: "/product-placeholder.svg",
     alt: "Khan's Aura — Razzaq Luxe fragrance",
   },
 ];
