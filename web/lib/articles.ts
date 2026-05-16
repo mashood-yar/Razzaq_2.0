@@ -23,8 +23,7 @@ export const ARTICLES: Article[] = [
       "Understanding barnyard versus noble oud—and why modern compositions invite newcomers.",
     date: "2026-02-28",
     readTime: "6 min read",
-    image:
-      "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/oud-without-intimidation.png",
     category: "Stories",
     body: [
       "Traditional oud can read fierce on first encounter. Our niche blends temper resin with florals or citrus so the journey feels cinematic rather than aggressive.",
