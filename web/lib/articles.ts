@@ -37,8 +37,7 @@ export const ARTICLES: Article[] = [
       "A night inside our Paris atelier—pipettes, silence, and the moment a formula locks.",
     date: "2026-01-14",
     readTime: "10 min read",
-    image:
-      "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/behind-blending-room.png",
     category: "Behind the Scenes",
     body: [
       "Visitors describe our blending room as a temple of glass—every raw material labeled by harvest year.",
