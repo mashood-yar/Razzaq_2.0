@@ -163,22 +163,55 @@ export async function POST(request: Request) {
   });
 
   if (user?.id) {
+    const profileExtended = {
+      phone: shippingAddress.phone,
+      address_line: shippingAddress.addressLine1,
+      city: shippingAddress.city,
+      province: shippingAddress.province,
+      shipping_full_name: fullName,
+      shipping_phone: shippingAddress.phone,
+      shipping_address: shippingAddress.addressLine1,
+      shipping_city: shippingAddress.city,
+      shipping_province: shippingAddress.province,
+      updated_at: new Date().toISOString(),
+    };
+    const profileBase = {
+      phone: shippingAddress.phone,
+      address_line: shippingAddress.addressLine1,
+      city: shippingAddress.city,
+      province: shippingAddress.province,
+      shipping_full_name: fullName,
+      shipping_phone: shippingAddress.phone,
+      updated_at: new Date().toISOString(),
+    };
+
     const { error: profErr } = await supabase
       .from("profiles")
-      .update({
-        phone: shippingAddress.phone,
-        address_line: shippingAddress.addressLine1,
-        city: shippingAddress.city,
-        province: shippingAddress.province,
-        shipping_full_name: fullName,
-        shipping_phone: shippingAddress.phone,
-        shipping_address: shippingAddress.addressLine1,
-        shipping_city: shippingAddress.city,
-        shipping_province: shippingAddress.province,
-        updated_at: new Date().toISOString(),
-      })
+      .update(profileExtended)
       .eq("id", user.id);
-    if (profErr) console.warn("[Orders] profile update:", profErr);
+
+    if (profErr) {
+      const missingShippingCols =
+        profErr.message?.includes("shipping_address") ||
+        profErr.message?.includes("shipping_city") ||
+        profErr.message?.includes("shipping_province");
+
+      if (missingShippingCols) {
+        const { error: fallErr } = await supabase
+          .from("profiles")
+          .update(profileBase)
+          .eq("id", user.id);
+        if (fallErr) {
+          console.warn("[Orders] profile update:", fallErr);
+        } else {
+          console.warn(
+            "[Orders] profile updated without shipping_* columns — apply latest Supabase migrations (profiles shipping snapshot).",
+          );
+        }
+      } else {
+        console.warn("[Orders] profile update:", profErr);
+      }
+    }
   }
 
   if (promoCode) {
@@ -189,6 +222,7 @@ export async function POST(request: Request) {
     }
   }
 
+  let confirmationEmailSent = false;
   try {
     const fullOrder: Order = {
       ...(order as unknown as Order),
@@ -197,7 +231,18 @@ export async function POST(request: Request) {
         id: `item-${idx}`,
       })) as Order["order_items"],
     };
-    await sendOrderConfirmationCodeEmail(fullOrder, plainCode, expiresAt);
+    const emailResult = await sendOrderConfirmationCodeEmail(
+      fullOrder,
+      plainCode,
+      expiresAt,
+    );
+    confirmationEmailSent = emailResult.sent;
+    if (!emailResult.sent) {
+      console.warn("[Orders] confirmation code email not dispatched:", {
+        reason: emailResult.reason,
+        orderId: order.id,
+      });
+    }
   } catch (e) {
     console.error("[Orders] confirmation code email failed:", e);
   }
@@ -207,6 +252,7 @@ export async function POST(request: Request) {
   return NextResponse.json({
     order,
     whatsappHelpUrl: whatsappHelpUrl ?? undefined,
+    confirmationEmailSent,
   });
 }
 

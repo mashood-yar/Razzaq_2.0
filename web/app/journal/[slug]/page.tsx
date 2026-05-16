@@ -60,11 +60,11 @@ export default async function ArticlePage({
       <div className="relative mt-12 aspect-[16/9] overflow-hidden rounded-2xl bg-muted">
         <Image
           src={article.image}
-          alt=""
+          alt={article.title}
           fill
           className="object-cover"
           priority
-          sizes="100vw"
+          sizes="(max-width: 768px) 100vw, min(100vw, 48rem)"
         />
       </div>
 

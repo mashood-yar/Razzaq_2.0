@@ -220,7 +220,7 @@ export default async function HomePage() {
             {ugcTiles.map((tile) => (
               <div
                 key={tile.id}
-                className="relative aspect-square overflow-hidden rounded-xl bg-muted"
+                className="relative aspect-[1/1.15] overflow-hidden rounded-xl bg-muted"
               >
                 <Image src={tile.src} alt={tile.alt} fill className="object-cover" sizes="(max-width:768px) 50vw, 25vw" />
               </div>

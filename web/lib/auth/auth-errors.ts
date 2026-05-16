@@ -9,6 +9,9 @@ const GENERIC_SIGN_UP =
   "We couldn't create your account. Please try again or use a different sign-up method.";
 const NETWORK =
   "Connection problem. Check your internet connection and try again.";
+/** GoTrue uses `unexpected_failure` for many non-network issues; don't blame the user's internet. */
+const SERVICE_TRY_AGAIN =
+  "We couldn't reach the sign-in service. Try again in a moment.";
 
 /** Known `AuthError` / REST `error_code` values from Supabase Auth. */
 const CODE_MESSAGES: Record<string, string> = {
@@ -30,8 +33,24 @@ const CODE_MESSAGES: Record<string, string> = {
     "An account with this email already exists. Sign in instead, or reset your password.",
   over_request_rate_limit:
     "Too many attempts from this location. Wait a minute and try again.",
-  unexpected_failure: NETWORK,
+  unexpected_failure: SERVICE_TRY_AGAIN,
 };
+
+function looksLikeConnectivityIssue(messageLower: string): boolean {
+  return (
+    messageLower.includes("fetch failed") ||
+    messageLower.includes("failed to fetch") ||
+    messageLower.includes("networkerror") ||
+    messageLower.includes("load failed") ||
+    messageLower.includes("econnrefused") ||
+    messageLower.includes("enotfound") ||
+    messageLower.includes("getaddrinfo") ||
+    messageLower.includes("etimedout") ||
+    messageLower.includes("eai_again") ||
+    messageLower.includes("socket hang up") ||
+    messageLower.includes("connect econnrefused")
+  );
+}
 
 function normalize(raw: unknown): string {
   if (raw instanceof Error && raw.message) return raw.message;
@@ -58,33 +77,46 @@ export function friendlyAuthMessage(
       : codeFromSupabaseDescription(fromDesc);
 
   if (errorCode && CODE_MESSAGES[errorCode]) {
-    return CODE_MESSAGES[errorCode];
+    return withDevDetail(CODE_MESSAGES[errorCode], error);
   }
 
-  if (
-    message.includes("fetch failed") ||
-    message.includes("network") ||
-    message.includes("failed to fetch")
-  ) {
-    return NETWORK;
+  if (looksLikeConnectivityIssue(message)) {
+    return withDevDetail(NETWORK, error);
   }
 
   if (message.includes("invalid login credentials")) {
-    return GENERIC_SIGN_IN;
+    return withDevDetail(GENERIC_SIGN_IN, error);
   }
 
+  let fallback: string;
   switch (context) {
     case "sign_in":
-      return GENERIC_SIGN_IN;
+      fallback = GENERIC_SIGN_IN;
+      break;
     case "sign_up":
-      return GENERIC_SIGN_UP;
+      fallback = GENERIC_SIGN_UP;
+      break;
     case "otp":
-      return "We couldn't send or verify that link. Check the email address and try again.";
+      fallback =
+        "We couldn't send or verify that link. Check the email address and try again.";
+      break;
     case "password_reset":
-      return "We couldn't send a reset link right now. Try again shortly.";
+      fallback = "We couldn't send a reset link right now. Try again shortly.";
+      break;
     case "update_password":
-      return "We couldn't update your password. Sign in again and retry, or request a new reset link.";
+      fallback =
+        "We couldn't update your password. Sign in again and retry, or request a new reset link.";
+      break;
     default:
-      return "Something went wrong. Please try again.";
+      fallback = "Something went wrong. Please try again.";
   }
+  return withDevDetail(fallback, error);
+}
+
+/** In development, append the upstream message so misclassified errors are visible. */
+function withDevDetail(friendly: string, error: unknown): string {
+  if (process.env.NODE_ENV !== "development") return friendly;
+  const raw = normalize(error);
+  if (!raw || friendly.includes(raw)) return friendly;
+  return `${friendly} [dev: ${raw}]`;
 }

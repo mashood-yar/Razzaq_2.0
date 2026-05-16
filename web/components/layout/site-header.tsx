@@ -24,7 +24,6 @@ import { HeaderAccountDropdown } from "@/components/layout/header-account-dropdo
 
 const nav = [
   { href: "/shop", label: "Shop" },
-  { href: "/collections", label: "Collections" },
   { href: "/about", label: "About" },
   { href: "/journal", label: "Journal" },
   { href: "/contact", label: "Contact" },

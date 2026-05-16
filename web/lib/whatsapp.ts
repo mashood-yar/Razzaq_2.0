@@ -1,8 +1,14 @@
 /**
  * Optional WhatsApp Cloud API notifications.
+ * Set `false` to honor `WHATSAPP_ENABLED` and Meta credentials in env.
+ */
+export const WHATSAPP_INTEGRATION_DISABLED = false;
+
+/**
  * Set WHATSAPP_ENABLED=true and Meta credentials in env.
  */
 export function isWhatsAppEnabled(): boolean {
+  if (WHATSAPP_INTEGRATION_DISABLED) return false;
   return process.env.WHATSAPP_ENABLED === "true";
 }
 

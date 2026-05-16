@@ -11,6 +11,24 @@ import { buildCourierTrackingUrl } from "@/lib/courier-tracking";
 let resendClient: Resend | null = null;
 let warnedMissingResendKey = false;
 
+export type SendOrderConfirmationCodeEmailResult =
+  | { sent: true }
+  | { sent: false; reason: "missing_api_key" | "resend_rejected" };
+
+/** Non-PII summary for server logs when Resend rejects a send. */
+function logResendSendRejected(
+  context: string,
+  err: { name: string; message: string; statusCode: number | null },
+) {
+  const safeMsg =
+    err.message.length > 140 ? `${err.message.slice(0, 140)}…` : err.message;
+  console.warn(`[Resend] ${context} rejected:`, {
+    errorName: err.name,
+    statusCode: err.statusCode,
+    message: safeMsg,
+  });
+}
+
 /** Returns null when `RESEND_API_KEY` is unset — callers skip send (no throw). */
 function getResend(): Resend | null {
   const key = process.env.RESEND_API_KEY?.trim();
@@ -27,8 +45,41 @@ function getResend(): Resend | null {
   return resendClient;
 }
 
-const FROM = process.env.RESEND_FROM_EMAIL ?? "orders@razzaqluxe.com";
 const BRAND = "Razzaq Luxe";
+
+/** Resend requires `email@domain` or `Name <email@domain>`; env often has stray quotes/newlines. */
+let warnedInvalidResendFrom = false;
+function getResendFrom(): string {
+  const fallback = "orders@mail.razzaqluxe.com";
+  const raw = process.env.RESEND_FROM_EMAIL;
+  if (!raw?.trim()) return fallback;
+
+  const s = raw
+    .trim()
+    .replace(/\r?\n/g, "")
+    .replace(/^\uFEFF/, "")
+    .replace(/^["']+|["']+$/g, "")
+    .trim();
+
+  const emailRe = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (emailRe.test(s)) return s;
+
+  const named = s.match(/^(.+?)\s*<([^<>]+@[^<>]+)>$/);
+  if (named) {
+    const addr = named[2].trim();
+    if (emailRe.test(addr)) {
+      return `${named[1].trim()} <${addr}>`;
+    }
+  }
+
+  if (!warnedInvalidResendFrom) {
+    warnedInvalidResendFrom = true;
+    console.warn(
+      "[Resend] RESEND_FROM_EMAIL must look like email@domain.com or Name <email@domain.com> — using default.",
+    );
+  }
+  return fallback;
+}
 
 function siteOrigin(): string {
   return (
@@ -126,7 +177,7 @@ export async function sendOrderConfirmationCodeEmail(
   order: Order,
   plainCode: string,
   expiresAtIso: string,
-) {
+): Promise<SendOrderConfirmationCodeEmailResult> {
   const to = order.customer_email;
   const origin = siteOrigin();
   const confirmUrl = `${origin}/order/confirm/${order.id}`;
@@ -134,10 +185,12 @@ export async function sendOrderConfirmationCodeEmail(
   const isBank = order.payment_method === "bank_transfer";
 
   const resend = getResend();
-  if (!resend) return;
+  if (!resend) {
+    return { sent: false, reason: "missing_api_key" };
+  }
 
-  await resend.emails.send({
-    from: FROM,
+  const { error } = await resend.emails.send({
+    from: getResendFrom(),
     to,
     tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.ORDER_CODE),
     subject: `Your Razzaq Luxe Order #${order.order_number} — Confirm Your Order`,
@@ -168,6 +221,13 @@ export async function sendOrderConfirmationCodeEmail(
       }
     `),
   });
+
+  if (error) {
+    logResendSendRejected("order confirmation code email", error);
+    return { sent: false, reason: "resend_rejected" };
+  }
+
+  return { sent: true };
 }
 
 /** Email 2 — after successful code verification. */
@@ -180,7 +240,7 @@ export async function sendOrderVerifiedConfirmationEmail(order: Order) {
   if (!resend) return;
 
   await resend.emails.send({
-    from: FROM,
+    from: getResendFrom(),
     to,
     tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.CONFIRMED_FOLLOWUP),
     subject: `Order Confirmed — Razzaq Luxe #${order.order_number}`,
@@ -211,7 +271,7 @@ export async function sendOrderConfirmationEmail(order: Order) {
   if (!resend) return;
 
   await resend.emails.send({
-    from: FROM,
+    from: getResendFrom(),
     to,
     tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.CONFIRMATION),
     subject: `Payment received — ${order.order_number} | ${BRAND}`,
@@ -244,7 +304,7 @@ export async function sendOrderShippedEmail(order: Order) {
   if (!resend) return;
 
   await resend.emails.send({
-    from: FROM,
+    from: getResendFrom(),
     to: order.customer_email,
     tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.SHIPPED),
     subject: `Your Order Has Been Shipped — Razzaq Luxe #${order.order_number}`,
@@ -269,7 +329,7 @@ export async function sendOrderDeliveredEmail(order: Order) {
   if (!resend) return;
 
   await resend.emails.send({
-    from: FROM,
+    from: getResendFrom(),
     to: order.customer_email,
     tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.DELIVERED_NOTICE),
     subject: `Your Order Has Been Delivered — Razzaq Luxe #${order.order_number}`,
@@ -290,7 +350,7 @@ export async function sendOrderProcessingEmail(order: Order) {
   if (!resend) return;
 
   await resend.emails.send({
-    from: FROM,
+    from: getResendFrom(),
     to: order.customer_email,
     tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.PROCESSING),
     subject: `Your Order is Being Prepared — Razzaq Luxe #${order.order_number}`,
@@ -311,7 +371,7 @@ export async function sendBankPaymentVerifiedEmail(order: Order) {
   if (!resend) return;
 
   await resend.emails.send({
-    from: FROM,
+    from: getResendFrom(),
     to: order.customer_email,
     tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.PAYMENT_VERIFIED),
     subject: `Payment verified · ${order.order_number} | ${BRAND}`,
@@ -336,7 +396,7 @@ export async function sendOrderCancelledEmail(
   if (!resend) return;
 
   await resend.emails.send({
-    from: FROM,
+    from: getResendFrom(),
     to: order.customer_email,
     tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.CANCELLED),
     subject: `Your Order Has Been Cancelled — Razzaq Luxe #${order.order_number}`,
@@ -357,7 +417,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
   if (!resend) return;
 
   await resend.emails.send({
-    from: FROM,
+    from: getResendFrom(),
     to: email,
     subject: `Welcome to ${BRAND}`,
     html: baseHtml(`
@@ -388,7 +448,7 @@ export async function sendContactAutoReply(
   if (!resend) return;
 
   await resend.emails.send({
-    from: FROM,
+    from: getResendFrom(),
     to: email,
     subject: `We received your message — ${BRAND}`,
     html: baseHtml(`

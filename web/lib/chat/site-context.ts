@@ -426,10 +426,10 @@ export async function fetchSiteContextForChat(
 
     if (collections.length) {
       chunks.push(
-        `\n## Matching collections (${siteUrl}/collections/<slug>)\n${collections
+        `\n## Matching catalog groups (collections in DB — browse ${siteUrl}/shop)\n${collections
           .map(
             (c) =>
-              `- **${c.name}** → /collections/${c.slug}\n  ${c.description ?? ""}`,
+              `- **${c.name}** (slug: ${c.slug}) → use Shop search or filters; product group in database.\n  ${c.description ?? ""}`,
           )
           .join("\n\n")}`,
       );

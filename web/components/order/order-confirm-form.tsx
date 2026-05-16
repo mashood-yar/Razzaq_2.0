@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+
+const CONFIRM_EMAIL_STORAGE = "razzaq:confirm-email-missed:";
+
 export function OrderConfirmForm({
   orderId,
   orderNumber,
@@ -24,8 +27,19 @@ export function OrderConfirmForm({
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [attemptsLeft, setAttemptsLeft] = useState(Math.max(0, 5 - attemptsSoFar));
+  const [emailDispatchMissed, setEmailDispatchMissed] = useState(false);
 
-  const waUrl = whatsappUrl;
+  useEffect(() => {
+    try {
+      const key = CONFIRM_EMAIL_STORAGE + orderId;
+      if (sessionStorage.getItem(key)) {
+        setEmailDispatchMissed(true);
+        sessionStorage.removeItem(key);
+      }
+    } catch {
+      /* storage unavailable */
+    }
+  }, [orderId]);
 
   const submit = async () => {
     setErr("");
@@ -100,6 +114,26 @@ export function OrderConfirmForm({
         </p>
       </div>
 
+      {emailDispatchMissed && (
+        <p className="rounded-lg border border-gold/25 bg-gold/10 px-4 py-3 text-sm text-ivory/90">
+          We could not send the confirmation email from our server (configuration or provider issue).
+          Check spam, verify your address at checkout, or{" "}
+          {whatsappUrl ? (
+            <a
+              href={whatsappUrl}
+              className="text-gold underline-offset-4 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              message us on WhatsApp
+            </a>
+          ) : (
+            "contact support"
+          )}{" "}
+          with order <span className="text-gold">{orderNumber}</span> so we can resend the code.
+        </p>
+      )}
+
       {err && (
         <p className="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
           {err}
@@ -131,9 +165,9 @@ export function OrderConfirmForm({
         {busy ? "Verifying…" : "Verify & continue"}
       </Button>
 
-      {waUrl ? (
+      {whatsappUrl ? (
         <Button variant="outline" className="w-full" asChild>
-          <a href={waUrl} target="_blank" rel="noopener noreferrer">
+          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
             Chat on WhatsApp
           </a>
         </Button>

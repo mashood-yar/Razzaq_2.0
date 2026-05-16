@@ -8,7 +8,6 @@ const footerNav = {
     { href: "/shop?category=fragrances", label: "Fragrances" },
     { href: "/shop?category=lawn",       label: "Lawn" },
     { href: "/shop?category=formal",     label: "Formal" },
-    { href: "/collections",              label: "Collections" },
   ],
   account: [
     { href: "/account",          label: "My Account" },

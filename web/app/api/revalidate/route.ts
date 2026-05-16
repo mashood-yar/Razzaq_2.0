@@ -29,8 +29,8 @@ export async function POST(req: NextRequest) {
       }
       break;
     case "collection":
-      revalidatePath("/collections");
-      if (slug) revalidatePath(`/collections/${slug}`);
+      revalidatePath("/");
+      revalidatePath("/shop");
       break;
     case "legalPage":
       if (slug) revalidatePath(`/policies/${slug}`);

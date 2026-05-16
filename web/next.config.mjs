@@ -46,6 +46,12 @@ const nextConfig = {
     ],
   },
   transpilePackages: ["next-sanity", "sanity"],
+  async redirects() {
+    return [
+      { source: "/collections", destination: "/shop", permanent: true },
+      { source: "/collections/:slug", destination: "/shop", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

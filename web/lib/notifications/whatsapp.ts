@@ -1,7 +1,10 @@
+import { WHATSAPP_INTEGRATION_DISABLED } from "@/lib/whatsapp";
+
 /**
  * Deep-link for customers to WhatsApp Razzaq with order context (optional feature).
  */
 export function customerSupportWhatsAppUrl(orderNumber: string): string | null {
+  if (WHATSAPP_INTEGRATION_DISABLED) return null;
   if (process.env.WHATSAPP_ENABLED !== "true") return null;
 
   const raw =

@@ -299,6 +299,12 @@ create table if not exists public.orders (
   updated_at            timestamptz not null default now()
 );
 
+-- Backfill on existing DBs: `CREATE TABLE IF NOT EXISTS` does not add new columns when the table
+-- already exists, but indexes below require these payment columns.
+alter table public.orders add column if not exists safepay_tracker_token text;
+alter table public.orders add column if not exists stripe_payment_intent_id text;
+alter table public.orders add column if not exists jazzcash_txn_ref_no text;
+
 create index if not exists orders_user_id_idx     on public.orders(user_id);
 create index if not exists orders_order_number_idx on public.orders(order_number);
 create index if not exists orders_status_idx       on public.orders(status);
@@ -315,14 +321,12 @@ create unique index if not exists orders_jazzcash_txn_ref_no_uidx
   on public.orders (jazzcash_txn_ref_no)
   where jazzcash_txn_ref_no is not null;
 
--- Auto-generate order number
+-- Auto-generate order number (sequence; matches migrations — new sequences need explicit GRANTs)
+create sequence if not exists public.order_number_seq start with 10000;
+
 create or replace function generate_order_number() returns text as $$
-declare seq int;
-begin
-  select count(*) + 1 into seq from public.orders;
-  return 'RL-' || to_char(now(), 'YYYY') || '-' || lpad(seq::text, 6, '0');
-end;
-$$ language plpgsql;
+  select 'ORD-' || to_char(now(), 'YYYYMMDD') || '-' || lpad(nextval('public.order_number_seq'::regclass)::text, 5, '0');
+$$ language sql;
 
 create or replace function set_order_number() returns trigger as $$
 begin
@@ -587,6 +591,9 @@ grant all on all tables in schema public to service_role;
 
 grant usage, select on all sequences in schema public to anon, authenticated, service_role;
 grant all on all sequences in schema public to service_role;
+
+-- Sequences created after the "ALL SEQUENCES" grant (e.g. order_number_seq) need explicit grants.
+grant usage, select on sequence public.order_number_seq to anon, authenticated, service_role;
 
 alter default privileges in schema public
   grant select, insert, update, delete on tables to authenticated;

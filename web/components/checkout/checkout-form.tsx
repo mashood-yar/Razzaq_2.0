@@ -153,6 +153,7 @@ export function CheckoutForm({
       const data = (await res.json()) as {
         error?: string;
         order?: { id: string };
+        confirmationEmailSent?: boolean;
       };
       if (!res.ok) throw new Error(data.error ?? "Order failed");
 
@@ -160,6 +161,16 @@ export function CheckoutForm({
       setIsSubmitting(false);
 
       if (data.order?.id) {
+        if (data.confirmationEmailSent === false) {
+          try {
+            sessionStorage.setItem(
+              `razzaq:confirm-email-missed:${data.order.id}`,
+              "1",
+            );
+          } catch {
+            /* private mode / quota */
+          }
+        }
         router.push(`/order/confirm/${data.order.id}`);
       } else {
         throw new Error("Order created without id");
