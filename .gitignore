@@ -17,3 +17,8 @@ node_modules/
 web/node_modules/
 web/.next/
 .next/
+.vercel
+
+vercel-build-log*.txt
+vercel-failed.json
+*.log
