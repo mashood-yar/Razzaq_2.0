@@ -17,7 +17,7 @@ export function SearchBar({ initialValue = "" }: { initialValue?: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="relative">
-      <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-ash" />
+      <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
       <input
         ref={inputRef}
         type="search"
@@ -25,8 +25,8 @@ export function SearchBar({ initialValue = "" }: { initialValue?: string }) {
         onChange={(e) => setValue(e.target.value)}
         placeholder="Search products…"
         autoFocus
-        className="w-full rounded-xl border border-graphite bg-charcoal py-4 pl-12 pr-4 text-ivory
-          placeholder:text-ash focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold
+        className="w-full rounded-xl border border-border bg-charcoal py-4 pl-12 pr-4 text-foreground
+          placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold
           transition-colors"
       />
     </form>

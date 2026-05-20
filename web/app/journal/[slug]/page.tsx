@@ -2,7 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ARTICLES, getArticleBySlug } from "@/lib/articles";
+import {
+  ARTICLES,
+  getArticleBySlug,
+  getRelatedArticles,
+  formatArticleDate,
+  authorInitials,
+} from "@/lib/articles";
+import { ArticleReadingProgress } from "@/components/journal/article-reading-progress";
+import { ArticleShareButtons } from "@/components/journal/article-share-buttons";
+import { ArticleRelated } from "@/components/journal/article-related";
 
 export async function generateStaticParams() {
   return ARTICLES.map((a) => ({ slug: a.slug }));
@@ -31,6 +40,14 @@ export async function generateMetadata({
   };
 }
 
+function PullQuote({ text }: { text: string }) {
+  return (
+    <blockquote className="my-8 border-l-4 border-[#0F4C75] py-2 pl-6 font-display text-xl italic leading-snug text-[#3282B8] sm:text-2xl">
+      &ldquo;{text}&rdquo;
+    </blockquote>
+  );
+}
+
 export default async function ArticlePage({
   params,
 }: {
@@ -40,45 +57,90 @@ export default async function ArticlePage({
   const article = getArticleBySlug(slug);
   if (!article) notFound();
 
+  const related = getRelatedArticles(slug, 3);
+  const pullQuotes = article.pullQuotes ?? [];
+  const pullAfterIndex =
+    article.body.length > 1 ? 1 : 0;
+
   return (
-    <article className="mx-auto max-w-3xl px-4 py-14 sm:px-6 lg:px-8">
-      <Link
-        href="/journal"
-        className="text-xs uppercase tracking-[0.2em] text-gold hover:underline"
-      >
-        ← Journal
-      </Link>
-      <p className="mt-8 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
-        {article.category}
-      </p>
-      <h1 className="mt-4 font-serif text-4xl sm:text-5xl">{article.title}</h1>
-      <div className="mt-4 flex gap-4 text-sm text-muted-foreground">
-        <time dateTime={article.date}>{article.date}</time>
-        <span>{article.readTime}</span>
-      </div>
+    <>
+      <ArticleReadingProgress />
 
-      <div className="relative mt-12 aspect-[16/9] overflow-hidden rounded-2xl bg-muted">
-        <Image
-          src={article.image}
-          alt={article.title}
-          fill
-          className="object-cover"
-          priority
-          sizes="(max-width: 768px) 100vw, min(100vw, 48rem)"
+      <article className="relative min-h-screen bg-[#1B262C]">
+        <div
+          className="pointer-events-none absolute inset-0 bg-grain opacity-[0.06] mix-blend-multiply"
+          aria-hidden="true"
         />
-      </div>
 
-      <div className="mt-12 space-y-6 leading-relaxed text-muted-foreground">
-        {article.body.map((p, i) => (
-          <p key={i} className="leading-relaxed">
-            {p}
-          </p>
-        ))}
-        <p>
-          LUMINA compositions reward patience — wear this article’s ideas on skin, not only on
-          screen. Visit our shop to discover fragrances that embody these principles.
-        </p>
-      </div>
-    </article>
+        <div className="relative mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+          <Link
+            href="/journal"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-[#0F4C75] transition-colors hover:text-[#0a3d5c]"
+          >
+            ← Back to Journal
+          </Link>
+
+          <header className="mx-auto mt-10 max-w-2xl text-center">
+            <span className="inline-block -rotate-1 rounded-full bg-[#0F4C75] px-3 py-1 text-xs font-semibold text-white">
+              {article.category}
+            </span>
+            <h1 className="mt-5 font-display text-3xl font-bold leading-tight text-[#F3F4F1] sm:text-4xl lg:text-5xl">
+              {article.title}
+            </h1>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-[#8BA3B5]">
+              <span className="inline-flex items-center gap-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0F4C75]/15 font-display text-xs font-bold text-[#0F4C75]">
+                  {authorInitials(article.author)}
+                </span>
+                <span className="font-medium text-[#F3F4F1]">
+                  {article.author}
+                </span>
+              </span>
+              <span aria-hidden="true">·</span>
+              <time dateTime={article.date}>
+                {formatArticleDate(article.date)}
+              </time>
+              <span aria-hidden="true">·</span>
+              <span>{article.readTime}</span>
+            </div>
+          </header>
+
+          <div className="relative mx-auto mt-12 max-w-3xl">
+            <div
+              className="relative aspect-[16/9] overflow-hidden border-4 border-white shadow-[4px_12px_32px_rgba(44,44,36,0.15)]"
+              style={{ transform: "rotate(-2deg)" }}
+            >
+              <Image
+                src={article.image}
+                alt={article.title}
+                fill
+                className="object-cover"
+                priority
+                sizes="(max-width: 768px) 100vw, min(100vw, 48rem)"
+              />
+            </div>
+          </div>
+
+          <div className="mx-auto mt-12 max-w-2xl space-y-6 font-body text-lg leading-relaxed text-[#BBE1FA]">
+            {article.body.map((paragraph, i) => (
+              <div key={i}>
+                <p>{paragraph}</p>
+                {pullQuotes[0] && i === pullAfterIndex && (
+                  <PullQuote text={pullQuotes[0]} />
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="mx-auto mt-12 max-w-2xl">
+            <ArticleShareButtons title={article.title} slug={article.slug} />
+          </div>
+
+          <div className="mx-auto max-w-5xl">
+            <ArticleRelated articles={related} />
+          </div>
+        </div>
+      </article>
+    </>
   );
 }

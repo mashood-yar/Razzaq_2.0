@@ -93,29 +93,29 @@ export function OrderConfirmForm({
   return (
     <div className="mx-auto max-w-md space-y-8 px-4 py-16">
       <div>
-        <p className="text-xs uppercase tracking-widest text-smoke">Razzaq Luxe</p>
-        <h1 className="mt-2 font-display text-3xl text-ivory">
+        <p className="text-xs uppercase tracking-widest text-muted-foreground">Razzaq Luxe</p>
+        <h1 className="mt-2 font-display text-3xl text-foreground">
           Confirm your order
         </h1>
-        <p className="mt-2 text-sm text-smoke">
+        <p className="mt-2 text-sm text-muted-foreground">
           Order <span className="text-gold">{orderNumber}</span>
         </p>
-        <p className="mt-1 text-xs text-ash">
+        <p className="mt-1 text-xs text-muted-foreground">
           Code expires:{" "}
           {new Date(expiresAtIso).toLocaleString(undefined, {
             dateStyle: "medium",
             timeStyle: "short",
           })}
         </p>
-        <p className="mt-3 text-sm text-smoke">
+        <p className="mt-3 text-sm text-muted-foreground">
           Enter the 6-digit code we emailed to you. You have{" "}
-          <strong className="text-ivory">{attemptsLeft}</strong> attempt
+          <strong className="text-foreground">{attemptsLeft}</strong> attempt
           {attemptsLeft === 1 ? "" : "s"} left.
         </p>
       </div>
 
       {emailDispatchMissed && (
-        <p className="rounded-lg border border-gold/25 bg-gold/10 px-4 py-3 text-sm text-ivory/90">
+        <p className="rounded-lg border border-gold/25 bg-gold/10 px-4 py-3 text-sm text-foreground/90">
           We could not send the confirmation email from our server (configuration or provider issue).
           Check spam, verify your address at checkout, or{" "}
           {whatsappUrl ? (
@@ -173,7 +173,7 @@ export function OrderConfirmForm({
         </Button>
       ) : null}
 
-      <p className="text-center text-xs text-ash">
+      <p className="text-center text-xs text-muted-foreground">
         Wrong email?{" "}
         <Link href="/checkout" className="text-gold hover:underline">
           Return to checkout

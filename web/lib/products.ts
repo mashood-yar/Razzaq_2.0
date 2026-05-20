@@ -26,6 +26,9 @@ export type LegacyProduct = {
   collection: "signature" | "limited" | "atelier";
   /** Present when mapped from Supabase — used for shop “newest” sort */
   created_at?: string;
+  /** Category slug from Supabase join — used for shop category banners/filters */
+  categorySlug?: string;
+  categoryName?: string;
 };
 
 export function getProductBySlugFromList(

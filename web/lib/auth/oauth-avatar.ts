@@ -1,34 +1,5 @@
 import type { User } from "@supabase/supabase-js";
 
-function trimUrl(u: string | null | undefined): string | null {
-  const t = typeof u === "string" ? u.trim() : "";
-  return t.length > 0 ? t : null;
-}
-
-/** Profile photo URL from Google / other OAuth providers (Supabase user object). */
-export function oauthProfileImageUrl(user: User | null): string | null {
-  if (!user) return null;
-
-  const meta = user.user_metadata as Record<string, unknown> | undefined;
-  const fromMeta =
-    trimUrl(typeof meta?.picture === "string" ? meta.picture : null) ||
-    trimUrl(typeof meta?.avatar_url === "string" ? meta.avatar_url : null);
-  if (fromMeta) return fromMeta;
-
-  const oauth = user.identities?.find(
-    (i) =>
-      i.provider === "google" ||
-      i.provider === "apple" ||
-      i.provider === "azure",
-  );
-  const data = oauth?.identity_data as Record<string, unknown> | undefined;
-  if (!data) return null;
-  return (
-    trimUrl(typeof data.picture === "string" ? data.picture : null) ||
-    trimUrl(typeof data.avatar_url === "string" ? data.avatar_url : null)
-  );
-}
-
 function identityDisplayName(user: User): string {
   for (const id of user.identities ?? []) {
     const d = id.identity_data as Record<string, unknown> | undefined;
@@ -49,7 +20,7 @@ function identityDisplayName(user: User): string {
   return "";
 }
 
-/** First character for avatar fallback — works for email/password and OAuth users without picture. */
+/** First character for letter avatar — name from metadata, then identity, then email. */
 export function userAvatarInitial(user: User | null): string {
   if (!user) return "";
 

@@ -1,19 +1,27 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ShoppingBag, Eye } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
-import Tilt from "react-parallax-tilt";
 import type { LegacyProduct as Product } from "@/lib/products";
 import { ListingCardImages } from "@/components/product/listing-card-images";
 import { cn, formatPKR } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { StarRating } from "@/components/product/star-rating";
 import { useCartStore } from "@/stores/cart-store";
 import { QuickViewModal } from "@/components/product/quick-view-modal";
 import { useFlyToCart } from "@/components/motion/fly-to-cart";
+
+const imageVariants = {
+  rest: {},
+  hover: {},
+};
+
+const overlayVariants = {
+  rest: { opacity: 0, y: 10 },
+  hover: { opacity: 1, y: 0 },
+};
 
 function badgeLabel(b: NonNullable<Product["badge"]>) {
   switch (b) {
@@ -29,16 +37,29 @@ function badgeLabel(b: NonNullable<Product["badge"]>) {
 export function ProductCard({
   product,
   className,
+  radiusClass = "rounded-[2rem]",
 }: {
   product: Product;
   className?: string;
+  radiusClass?: string;
 }) {
   const addItem = useCartStore((s) => s.addItem);
   const fly = useFlyToCart();
   const bagRef = useRef<HTMLButtonElement>(null);
   const reduceMotion = useReducedMotion();
   const [quickOpen, setQuickOpen] = useState(false);
+  const [canHover, setCanHover] = useState(false);
   const defaultSize = product.sizes[1] ?? product.sizes[0];
+
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const update = () => setCanHover(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  const showOverlay = !canHover || !!reduceMotion;
 
   function handleAdd(e: React.MouseEvent) {
     e.preventDefault();
@@ -63,70 +84,77 @@ export function ProductCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-48px", amount: 0.12 }}
       transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={reduceMotion ? undefined : { y: -8 }}
     >
-      <Link
-        href={`/products/${product.slug}`}
-        className="relative block aspect-[3/4] overflow-hidden rounded-xl bg-muted"
+      <motion.div
+        className={cn(
+          "relative aspect-[3/4] overflow-hidden rounded-[2rem] border border-border-subtle/60 bg-ocean-surface shadow-card transition-transform duration-300 [@media(hover:hover)]:group-hover:-rotate-2 [@media(hover:hover)]:group-hover:shadow-ocean",
+          radiusClass,
+        )}
+        variants={imageVariants}
+        initial="rest"
+        animate={showOverlay ? "hover" : "rest"}
+        whileHover={canHover && !reduceMotion ? "hover" : undefined}
       >
-        <div className="absolute inset-0">
+        <Link href={`/products/${product.slug}`} className="absolute inset-0 z-0">
           <ListingCardImages
             primarySrc={product.images[0]}
             secondarySrc={product.images[1]}
             alt={product.name}
             sizes="(max-width: 768px) 50vw, 25vw"
           />
-        </div>
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
+        </Link>
         {product.badge && (
-          <Badge className="absolute left-3 top-3 border-gold/30 bg-black/50 text-[10px]">
+          <Badge className="absolute left-3 top-3 z-10" variant="default">
             {badgeLabel(product.badge)}
           </Badge>
         )}
-        <div className="absolute inset-x-0 bottom-0 flex translate-y-2 gap-2 p-3 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-          <Button
-            type="button"
-            size="sm"
-            variant="secondary"
-            className="flex-1 gap-1 text-xs"
-            magnetic={false}
-            onClick={(e) => {
-              e.preventDefault();
-              setQuickOpen(true);
-            }}
-          >
-            <Eye className="h-3.5 w-3.5" />
-            Quick view
-          </Button>
-        </div>
-      </Link>
+        <motion.div
+          variants={overlayVariants}
+          transition={{ duration: 0.2 }}
+          className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/50 to-transparent"
+        >
+          <motion.div className="flex min-w-0 gap-2 px-3 pb-3">
+            <button
+              type="button"
+              className="flex h-9 flex-1 items-center justify-center gap-1 rounded-full bg-ocean-surface/95 text-xs font-semibold text-foreground ring-1 ring-border-subtle/60 backdrop-blur-sm"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setQuickOpen(true);
+              }}
+            >
+              <Eye className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              Quick view
+            </button>
+            <button
+              ref={bagRef}
+              type="button"
+              className="flex h-9 flex-1 items-center justify-center gap-1 rounded-full bg-ocean-primary text-xs font-semibold text-primary-foreground hover:bg-ocean-mid"
+              onClick={handleAdd}
+            >
+              <ShoppingBag className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              Add to cart
+            </button>
+          </motion.div>
+        </motion.div>
+      </motion.div>
 
-      <div className="mt-4 flex flex-1 flex-col">
-        <div className="flex items-start justify-between gap-2">
-          <Link href={`/products/${product.slug}`}>
-            <h3 className="font-serif text-lg leading-tight transition-colors hover:text-gold">
-              {product.name}
-            </h3>
-          </Link>
-          <Button
-            ref={bagRef}
-            size="icon"
-            variant="ghost"
-            className="shrink-0 text-gold hover:bg-gold/10"
-            aria-label={`Add ${product.name} to cart`}
-            onClick={handleAdd}
-          >
-            <ShoppingBag className="h-5 w-5" />
-          </Button>
-        </div>
+      <div className="mt-4 flex flex-1 flex-col px-1">
+        <Link href={`/products/${product.slug}`}>
+          <h3 className="font-display text-lg font-semibold leading-tight text-foreground transition-colors hover:text-primary">
+            {product.name}
+          </h3>
+        </Link>
         <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{product.tagline}</p>
         <div className="mt-2 flex items-center gap-2">
           <StarRating rating={product.rating} />
           <span className="text-xs text-muted-foreground">({product.reviewCount})</span>
         </div>
-        <p className="mt-3 font-medium text-gold">
+        <p className="mt-3 price-gold">
           {formatPKR(defaultSize?.price ?? product.price)}
           {product.compareAtPrice && (
-            <span className="ml-2 text-sm text-muted-foreground line-through">
+            <span className="ml-2 font-body text-sm font-normal text-muted-foreground line-through">
               {formatPKR(product.compareAtPrice)}
             </span>
           )}
@@ -137,25 +165,8 @@ export function ProductCard({
 
   return (
     <>
-      {reduceMotion ? card : (
-        <Tilt
-          tiltMaxAngleX={3}
-          tiltMaxAngleY={3}
-          perspective={1400}
-          scale={1.012}
-          transitionSpeed={1800}
-          glareEnable={false}
-          className="rounded-xl [transform-style:preserve-3d]"
-        >
-          {card}
-        </Tilt>
-      )}
-
-      <QuickViewModal
-        product={product}
-        open={quickOpen}
-        onOpenChange={setQuickOpen}
-      />
+      {card}
+      <QuickViewModal product={product} open={quickOpen} onOpenChange={setQuickOpen} />
     </>
   );
 }

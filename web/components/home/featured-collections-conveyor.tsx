@@ -130,7 +130,7 @@ export function FeaturedCollectionsConveyor({
                 sizes="(max-width: 640px) 25vw, (max-width: 1024px) 22vw, 280px"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              <span className="absolute bottom-6 left-6 font-serif text-2xl text-white">
+              <span className="absolute bottom-6 left-6 font-display text-2xl text-white">
                 {c.title}
               </span>
             </Link>

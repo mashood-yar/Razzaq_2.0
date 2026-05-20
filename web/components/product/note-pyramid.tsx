@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import type { LegacyProduct as Product } from "@/lib/products";
 
 const tierClass =
-  "rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-transparent p-5 backdrop-blur-sm";
+  "rounded-2xl border border-border/50 bg-gradient-to-b from-white/[0.06] to-transparent p-5 backdrop-blur-sm";
 
 export function NotePyramid({ product }: { product: Product }) {
   const tiers = [
@@ -15,7 +15,7 @@ export function NotePyramid({ product }: { product: Product }) {
 
   return (
     <div className="relative mx-auto max-w-md space-y-3">
-      <div className="pointer-events-none absolute inset-x-8 top-1/2 -z-10 h-32 bg-emerald-brand/10 blur-3xl" />
+      <div className="pointer-events-none absolute inset-x-8 top-1/2 -z-10 h-32 bg-navy-brand/10 blur-3xl" />
       {tiers.map((tier) => (
         <motion.div
           key={tier.label}
@@ -32,7 +32,7 @@ export function NotePyramid({ product }: { product: Product }) {
             {tier.notes.map((n) => (
               <li
                 key={n}
-                className="rounded-full border border-white/15 bg-black/30 px-3 py-1 text-sm text-foreground"
+                className="rounded-full border border-white/15 bg-white/50 px-3 py-1 text-sm text-foreground"
               >
                 {n}
               </li>

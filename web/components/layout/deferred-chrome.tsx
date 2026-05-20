@@ -26,12 +26,30 @@ const AIBot = dynamic(
   { ssr: false },
 );
 
+const StickyOfferBanner = dynamic(
+  () =>
+    import("@/components/banners/sticky-offer-banner").then((m) => ({
+      default: m.StickyOfferBanner,
+    })),
+  { ssr: false },
+);
+
+const ScentProfileQuiz = dynamic(
+  () =>
+    import("@/components/quiz/scent-profile-quiz").then((m) => ({
+      default: m.ScentProfileQuiz,
+    })),
+  { ssr: false },
+);
+
 /** Lazy-loaded shell widgets — splits JS off the critical path. */
 export function DeferredChrome() {
   return (
     <>
       <CartDrawer />
       <SearchModal />
+      <StickyOfferBanner />
+      <ScentProfileQuiz />
       <AIBot />
     </>
   );

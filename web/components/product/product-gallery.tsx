@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import { SafeProductImage } from "@/components/product/safe-product-image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Dialog,
@@ -37,7 +37,7 @@ export function ProductGallery({
               transition={{ duration: 0.25 }}
               className="absolute inset-0"
             >
-              <Image
+              <SafeProductImage
                 src={images[main]}
                 alt={productName}
                 fill
@@ -58,7 +58,7 @@ export function ProductGallery({
               aria-label={`View image ${i + 1}`}
               aria-current={main === i}
             >
-              <Image src={src} alt="" fill className="object-cover" sizes="64px" />
+              <SafeProductImage src={src} alt="" fill className="object-cover" sizes="64px" />
             </button>
           ))}
         </div>
@@ -68,7 +68,7 @@ export function ProductGallery({
         <DialogContent className="max-w-5xl border-none bg-transparent p-0 shadow-none">
           <DialogTitle className="sr-only">Enlarged view of {productName}</DialogTitle>
           <div className="relative aspect-[3/4] max-h-[85vh] w-full overflow-hidden rounded-xl bg-black">
-            <Image
+            <SafeProductImage
               src={images[main]}
               alt={productName}
               fill

@@ -1,5 +1,12 @@
 import type { MainNoteCategory, Product as DbProduct, ProductImage } from "@/lib/types";
 import type { LegacyProduct } from "@/lib/products";
+import {
+  PRODUCT_PLACEHOLDER_SRC,
+  getProductImageUrl,
+} from "@/lib/product-image";
+
+/** @deprecated Use `PRODUCT_PLACEHOLDER_SRC` from `@/lib/product-image`. */
+export { PRODUCT_PLACEHOLDER_SRC as PLACEHOLDER_PRODUCT_IMAGE, getProductImageUrl } from "@/lib/product-image";
 
 const MAIN_NOTE_SET = new Set<MainNoteCategory>([
   "Woody",
@@ -12,10 +19,8 @@ const MAIN_NOTE_SET = new Set<MainNoteCategory>([
   "Amber",
 ]);
 
-export const PLACEHOLDER_PRODUCT_IMAGE = "/product-placeholder.svg";
-
 function sortedImageUrls(images: ProductImage[] | undefined): string[] {
-  if (!images?.length) return [PLACEHOLDER_PRODUCT_IMAGE];
+  if (!images?.length) return [PRODUCT_PLACEHOLDER_SRC];
   const sorted = [...images].sort((a, b) => {
     const o = (a.sort_order ?? 0) - (b.sort_order ?? 0);
     if (o !== 0) return o;
@@ -23,8 +28,10 @@ function sortedImageUrls(images: ProductImage[] | undefined): string[] {
     if (!a.is_primary && b.is_primary) return 1;
     return 0;
   });
-  const urls = sorted.map((i) => i.url).filter(Boolean);
-  return urls.length ? urls : [PLACEHOLDER_PRODUCT_IMAGE];
+  const urls = sorted
+    .map((i) => getProductImageUrl(i.url))
+    .filter((u) => u !== PRODUCT_PLACEHOLDER_SRC);
+  return urls.length ? urls : [PRODUCT_PLACEHOLDER_SRC];
 }
 
 function parseMlFromLabel(label: string | null | undefined, fallback: number): number {
@@ -116,6 +123,8 @@ export function mapDbProductToLegacy(row: DbProduct): LegacyProduct {
     sizes: buildSizes(row),
     concentration: "Eau de Parfum",
     collection: "signature",
+    categorySlug: row.categories?.slug,
+    categoryName: row.categories?.name,
   };
 }
 

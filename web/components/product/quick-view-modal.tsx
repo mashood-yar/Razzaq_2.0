@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
+import { SafeProductImage } from "@/components/product/safe-product-image";
 import Link from "next/link";
 import {
   Dialog,
@@ -33,10 +33,10 @@ export function QuickViewModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto gap-6 border-white/10 bg-card p-6 sm:p-8">
+      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto gap-6 border-border/50 bg-card p-6 sm:p-8">
         <div className="grid gap-8 md:grid-cols-2">
           <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-muted">
-            <Image
+            <SafeProductImage
               src={product.images[0]}
               alt={product.name}
               fill
@@ -46,7 +46,7 @@ export function QuickViewModal({
           </div>
           <div>
             <DialogHeader className="text-left">
-              <DialogTitle className="font-serif text-3xl">{product.name}</DialogTitle>
+              <DialogTitle className="font-display text-3xl">{product.name}</DialogTitle>
             </DialogHeader>
             <p className="mt-2 text-muted-foreground">{product.tagline}</p>
             <div className="mt-4 flex items-center gap-3">

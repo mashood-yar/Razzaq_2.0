@@ -69,7 +69,7 @@ export function WishlistView() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-      <h1 className="font-serif text-4xl">Wishlist</h1>
+      <h1 className="font-display text-4xl">Wishlist</h1>
       <p className="mt-4 text-muted-foreground">
         Curated desires — move them to your bag when the moment is right.
       </p>
@@ -87,7 +87,7 @@ export function WishlistView() {
           {saved.map((p) => (
             <li
               key={p.id}
-              className="overflow-hidden rounded-2xl border border-white/10 bg-card/40 backdrop-blur-md"
+              className="overflow-hidden rounded-2xl border border-border/50 bg-card/40 backdrop-blur-md"
             >
               <Link href={`/products/${p.slug}`} className="relative block aspect-[3/4] bg-muted">
                 <Image
@@ -99,7 +99,7 @@ export function WishlistView() {
                 />
               </Link>
               <div className="p-4">
-                <Link href={`/products/${p.slug}`} className="font-serif text-lg hover:text-gold">
+                <Link href={`/products/${p.slug}`} className="font-display text-lg hover:text-gold">
                   {p.name}
                 </Link>
                 <p className="mt-2 text-sm text-gold">{formatPKR(p.price)}</p>

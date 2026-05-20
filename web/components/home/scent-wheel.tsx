@@ -18,14 +18,14 @@ export function ScentWheel() {
       <div className="relative aspect-square w-full max-w-[320px]">
         <div className="absolute inset-0 rounded-full border border-gold/30 bg-gradient-to-br from-brand-mist/60 via-brand-slate/50 to-gold/10 shadow-[inset_0_0_60px_rgba(184,227,233,0.14)]" />
         <motion.div
-          className="absolute inset-8 rounded-full border border-white/10"
+          className="absolute inset-8 rounded-full border border-border/50"
           animate={{ rotate: 360 }}
           transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
         />
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="rounded-full bg-black/60 px-6 py-8 text-center backdrop-blur-md">
+          <div className="rounded-full bg-foreground/20 px-6 py-8 text-center backdrop-blur-md">
             <p className="text-xs uppercase tracking-[0.35em] text-gold">Palette</p>
-            <p className="mt-2 font-serif text-lg text-foreground">Signature notes</p>
+            <p className="mt-2 font-display text-lg text-foreground">Signature notes</p>
           </div>
         </div>
         {notes.map((n) => (

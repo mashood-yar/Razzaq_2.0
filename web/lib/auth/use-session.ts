@@ -3,8 +3,6 @@
 import { useMemo } from "react";
 import type { User } from "@supabase/supabase-js";
 import { useAuth } from "@/components/providers/auth-provider";
-import { oauthProfileImageUrl } from "@/lib/auth/oauth-avatar";
-import { getNavAuthVisualMode } from "@/lib/auth/nav-account-model";
 
 /**
  * NextAuth-shaped session readout backed by Supabase.
@@ -14,7 +12,6 @@ export type SessionUser = {
   name: string | null;
   email: string | null;
   image: string | null;
-  provider: "google" | "email";
 };
 
 export type SessionData = { user: SessionUser };
@@ -35,22 +32,18 @@ export function useSession(): {
       return { data: null, status: "unauthenticated", user: null };
     }
 
-    const provider = getNavAuthVisualMode(user);
     const meta = user.user_metadata as Record<string, unknown> | undefined;
     const name =
       (typeof meta?.full_name === "string" && meta.full_name.trim()) ||
       (typeof meta?.name === "string" && meta.name.trim()) ||
       null;
 
-    const image = provider === "google" ? oauthProfileImageUrl(user) : null;
-
     return {
       data: {
         user: {
           name,
           email: user.email ?? null,
-          image,
-          provider,
+          image: null,
         },
       },
       status: "authenticated",

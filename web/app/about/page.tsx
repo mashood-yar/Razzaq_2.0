@@ -32,7 +32,7 @@ export default function AboutPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.35em] text-gold">
             Our story
           </p>
-          <h1 className="mt-4 max-w-3xl font-serif text-5xl sm:text-6xl">
+          <h1 className="mt-4 max-w-3xl font-display text-5xl sm:text-6xl">
             Fragrance from Quetta
           </h1>
         </div>
@@ -40,14 +40,14 @@ export default function AboutPage() {
 
       <div className="mx-auto max-w-3xl space-y-16 px-4 py-20 sm:px-6 lg:px-8">
         <section>
-          <h2 className="font-serif text-3xl">Brand story</h2>
+          <h2 className="font-display text-3xl">Brand story</h2>
           <p className="mt-6 leading-relaxed text-muted-foreground">
             <GoldBrandText text={"Razzaq Luxe is a Pakistan fragrance house built around four signatures — Sporty, Habibi, Flourine, and Khan\u2019s Aura. We blend for presence and longevity, with a physical boutique in Quetta and the same care whether you walk in or order online."} />
           </p>
         </section>
 
         <section>
-          <h2 className="font-serif text-3xl">Timeline</h2>
+          <h2 className="font-display text-3xl">Timeline</h2>
           <ol className="mt-10 space-y-8 border-l border-white/15 pl-8">
             {milestones.map((m) => (
               <li key={m.year} className="relative">
@@ -63,8 +63,8 @@ export default function AboutPage() {
           </ol>
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-card/40 p-8 backdrop-blur-md">
-          <h2 className="font-serif text-3xl">Philosophy & craftsmanship</h2>
+        <section className="rounded-2xl border border-border/50 bg-card/40 p-8 backdrop-blur-md">
+          <h2 className="font-display text-3xl">Philosophy & craftsmanship</h2>
           <p className="mt-6 leading-relaxed text-muted-foreground">
             Each composition is balanced for our climate and occasions — bright openings, durable
             hearts, and bases that stay close without overwhelming. We listen to customers in-store
@@ -73,7 +73,7 @@ export default function AboutPage() {
         </section>
 
         <section>
-          <h2 className="font-serif text-3xl">Visit us</h2>
+          <h2 className="font-display text-3xl">Visit us</h2>
           <p className="mt-6 leading-relaxed text-muted-foreground">
             Our flagship boutique is in <strong className="text-foreground">Quetta, Balochistan</strong>.
             Try the full signature line, ask for layering tips, or pick up your order in person.
@@ -85,7 +85,7 @@ export default function AboutPage() {
           </p>
         </section>
 
-        <section className="relative overflow-hidden rounded-2xl border border-white/10">
+        <section className="relative overflow-hidden rounded-2xl border border-border/50">
           <div className="relative aspect-video bg-muted">
             <video
               className="absolute inset-0 h-full w-full object-cover"

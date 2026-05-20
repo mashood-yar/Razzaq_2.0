@@ -158,7 +158,7 @@ export function IntroAnimation() {
       />
 
       <div className="relative z-[1] flex flex-col items-center px-6 text-center">
-        <h1 className="m-0 flex flex-nowrap justify-center font-serif font-normal tracking-normal text-[clamp(2.25rem,10vw,4.5rem)] leading-none max-sm:px-1">
+        <h1 className="m-0 flex flex-nowrap justify-center font-display font-normal tracking-normal text-[clamp(2.25rem,10vw,4.5rem)] leading-none max-sm:px-1">
           {lettersRazzaq.map((ch, i) => (
             <span
               key={`r-${i}`}
@@ -173,7 +173,7 @@ export function IntroAnimation() {
           ))}
         </h1>
 
-        <h2 className="mt-[clamp(0.5rem,2vw,0.75rem)] flex justify-center gap-x-[0.06em] font-serif text-[clamp(1.25rem,5.5vw,2.25rem)] font-light uppercase leading-none tracking-[0.42em] text-white sm:tracking-[0.52em]">
+        <h2 className="mt-[clamp(0.5rem,2vw,0.75rem)] flex justify-center gap-x-[0.06em] font-display text-[clamp(1.25rem,5.5vw,2.25rem)] font-light uppercase leading-none tracking-[0.42em] text-white sm:tracking-[0.52em]">
           {lettersLuxe.map((ch, i) => (
             <span
               key={`l-${i}`}

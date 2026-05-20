@@ -23,21 +23,24 @@ export async function GET(req: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (user) {
-    // Upsert profile — idempotent for both OAuth sign-ups and existing users.
-    // The DB trigger handles brand-new users; this upsert fills in any gaps
-    // and keeps avatar/full_name in sync with the provider's latest data.
+    // Upsert profile after magic-link / email confirmation callbacks.
+    const meta = user.user_metadata as Record<string, unknown> | undefined;
+    const genderRaw =
+      typeof meta?.gender === "string" ? meta.gender.trim() : "";
+    const gender =
+      genderRaw === "male" || genderRaw === "female" || genderRaw === "other"
+        ? genderRaw
+        : null;
+
     await supabase.from("profiles").upsert(
       {
         id: user.id,
         email: user.email ?? null,
         full_name:
-          (user.user_metadata?.full_name as string | undefined) ??
-          (user.user_metadata?.name as string | undefined) ??
+          (meta?.full_name as string | undefined) ??
+          (meta?.name as string | undefined) ??
           null,
-        avatar_url:
-          (user.user_metadata?.avatar_url as string | undefined) ??
-          (user.user_metadata?.picture as string | undefined) ??
-          null,
+        gender,
         role: "customer",
         updated_at: new Date().toISOString(),
       },

@@ -33,6 +33,7 @@ create table if not exists public.profiles (
   role        text not null default 'customer'
                 check (role in ('customer', 'staff', 'admin')),
   is_banned   boolean not null default false,
+  scent_profile jsonb,
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
 );

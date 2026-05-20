@@ -3,8 +3,8 @@
 import RLSkeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { cn } from "@/lib/utils";
 
-const base = "hsl(187 32% 14%)";
-const highlight = "hsl(186 22% 22%)";
+const base = "#16213E";
+const highlight = "#3282B8";
 
 export function AppSkeletonTheme({ children }: { children: React.ReactNode }) {
   return (

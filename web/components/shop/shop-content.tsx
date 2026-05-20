@@ -25,14 +25,23 @@ import {
   FilterSidebar,
   type ShopFiltersState,
 } from "@/components/shop/filter-sidebar";
+import { CategoryBanner } from "@/components/banners/category-banner";
 
 const PAGE_SIZE = 8;
 
 type SortKey = "featured" | "price-asc" | "price-desc" | "bestselling" | "newest";
 
-function applyFilters(products: Product[], q: string, f: ShopFiltersState): Product[] {
+function applyFilters(
+  products: Product[],
+  q: string,
+  f: ShopFiltersState,
+  categorySlug: string | null,
+  saleOnly: boolean,
+): Product[] {
   const term = q.trim().toLowerCase();
   return products.filter((p) => {
+    if (categorySlug && p.categorySlug !== categorySlug) return false;
+    if (saleOnly && !(p.compareAtPrice && p.compareAtPrice > p.price)) return false;
     if (term) {
       const hit =
         p.name.toLowerCase().includes(term) ||
@@ -103,6 +112,9 @@ export function ShopContent({ initialProducts }: { initialProducts: Product[] })
   const [filters, setFilters] = useState<ShopFiltersState>(defaultFilters);
   const [visible, setVisible] = useState(PAGE_SIZE);
 
+  const categorySlug = searchParams.get("category");
+  const saleOnly = searchParams.get("sale") === "true";
+
   useEffect(() => {
     const g = searchParams.get("gender");
     if (g === "men" || g === "women" || g === "unisex") {
@@ -117,9 +129,9 @@ export function ShopContent({ initialProducts }: { initialProducts: Product[] })
   }, [filters, query, sort]);
 
   const filtered = useMemo(() => {
-    const f = applyFilters(initialProducts, query, filters);
+    const f = applyFilters(initialProducts, query, filters, categorySlug, saleOnly);
     return sortProducts(f, sort);
-  }, [initialProducts, query, filters, sort]);
+  }, [initialProducts, query, filters, sort, categorySlug, saleOnly]);
 
   const slice = filtered.slice(0, visible);
   const hasMore = visible < filtered.length;
@@ -132,6 +144,9 @@ export function ShopContent({ initialProducts }: { initialProducts: Product[] })
       </div>
 
       <div className="min-w-0 flex-1">
+        {categorySlug && (
+          <CategoryBanner categorySlug={categorySlug} productCount={filtered.length} />
+        )}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

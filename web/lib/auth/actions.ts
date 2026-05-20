@@ -67,16 +67,33 @@ export async function signUp(
     return { error: "Passwords do not match." };
   }
 
+  const site =
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    "http://localhost:3000";
+  const origin = site.replace(/\/$/, "");
+  const emailRedirectTo = `${origin}/auth/callback?next=${encodeURIComponent("/account/orders")}`;
+
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { full_name: fullName, gender } },
+    options: {
+      data: { full_name: fullName, gender },
+      emailRedirectTo,
+    },
   });
   if (error) return { error: friendlyAuthMessage(error, "sign_up") };
 
-  if (data.user) {
-    await supabase.from("profiles").upsert(
+  if (data.user?.identities?.length === 0) {
+    return {
+      error:
+        "An account with this email already exists. Sign in instead, or reset your password.",
+    };
+  }
+
+  if (data.session && data.user) {
+    const { error: profileErr } = await supabase.from("profiles").upsert(
       {
         id: data.user.id,
         email,
@@ -86,22 +103,29 @@ export async function signUp(
       },
       { onConflict: "id" },
     );
+    if (profileErr) {
+      console.warn("[auth/signUp] profile upsert:", profileErr.message);
+    }
     try {
       await sendWelcomeEmail(email, fullName);
     } catch (e) {
       console.warn("[auth/signUp] welcome email:", e);
     }
+    revalidatePath("/", "layout");
+    redirect("/account/orders");
   }
 
-  if (data.user && !data.session) {
+  if (data.user) {
     return {
       success:
         "Check your email to confirm your account, then sign in.",
     };
   }
 
-  revalidatePath("/", "layout");
-  redirect("/account/orders");
+  return {
+    error:
+      "We couldn't create your account. Please try again or use a different email.",
+  };
 }
 
 export async function signOut() {

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Jost } from "next/font/google";
+import { Fraunces, Nunito } from "next/font/google";
 import "./globals.css";
 import "react-loading-skeleton/dist/skeleton.css";
 import { siteConfig } from "@/lib/site";
@@ -12,17 +12,19 @@ import { AccessDeniedBanner } from "@/components/layout/access-denied-banner";
 import { FlyToCartProvider } from "@/components/motion/fly-to-cart";
 import { AppToaster } from "@/components/providers/app-toaster";
 import { IntroAnimation } from "@/components/ui/intro-animation";
+import { CustomCursorProvider } from "@/components/ui/custom-cursor-provider";
 
-const cormorant = Cormorant_Garamond({
+const fraunces = Fraunces({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-cormorant",
+  weight: ["600", "700", "800"],
+  variable: "--font-fraunces",
   display: "swap",
 });
 
-const jost = Jost({
+const nunito = Nunito({
   subsets: ["latin"],
-  variable: "--font-jost",
+  weight: ["400", "500", "600"],
+  variable: "--font-nunito",
   display: "swap",
 });
 
@@ -62,7 +64,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0B2E33",
+  themeColor: "#1B262C",
   colorScheme: "dark",
 };
 
@@ -74,22 +76,18 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${cormorant.variable} ${jost.variable} min-h-screen bg-background font-body antialiased`}
+        className={`${fraunces.variable} ${nunito.variable} min-h-screen bg-background font-body antialiased`}
       >
         <AuthProvider>
           <AppToaster />
           <AccessDeniedBanner />
           <IntroAnimation />
+          <CustomCursorProvider />
           <StoreHydration />
           <FlyToCartProvider>
-            {/* Grain sits below page UI so it never composites over sharp SVG/text (Visa, etc.). */}
-            <div
-              className="grain-overlay pointer-events-none fixed inset-0 z-0 opacity-[0.22]"
-              aria-hidden
-            />
             <div className="relative z-10">
               <SiteHeader />
-              <main className="min-h-screen pt-16">{children}</main>
+              <main className="min-h-screen pt-28 sm:pt-32">{children}</main>
               <SiteFooter />
               <DeferredChrome />
             </div>

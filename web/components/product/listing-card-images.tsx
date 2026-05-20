@@ -1,5 +1,7 @@
-import Image from "next/image";
+"use client";
+
 import { cn } from "@/lib/utils";
+import { SafeProductImage } from "@/components/product/safe-product-image";
 
 /** Dual-image listing thumb: secondary fades in on hover when distinct from primary (listing cards / grids). */
 export function ListingCardImages({
@@ -21,7 +23,7 @@ export function ListingCardImages({
   return (
     <div className={cn("relative h-full w-full overflow-hidden bg-muted", className)}>
       <div className="absolute inset-0 motion-safe:transition-transform motion-safe:duration-700 motion-safe:group-hover:scale-105">
-        <Image
+        <SafeProductImage
           src={primarySrc}
           alt={alt}
           fill
@@ -29,7 +31,7 @@ export function ListingCardImages({
           className="object-cover"
         />
         {secondary ? (
-          <Image
+          <SafeProductImage
             src={secondary}
             alt=""
             fill

@@ -9,7 +9,7 @@ export function GoldBrandText({ text }: { text: string }) {
         part === "Razzaq Luxe" ||
         part === "RazzaqLuxe" ||
         part === "#RazzaqLuxe" ? (
-          <span key={i} className="text-luxe-gold">
+          <span key={i} className="text-gold font-display">
             {part}
           </span>
         ) : (

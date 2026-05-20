@@ -18,7 +18,7 @@ function Chip({
   return (
     <span
       className={cn(
-        "inline-flex overflow-hidden rounded border border-graphite p-0",
+        "inline-flex overflow-hidden rounded border border-border p-0",
         className,
       )}
       style={{ position: "relative", ...style }}

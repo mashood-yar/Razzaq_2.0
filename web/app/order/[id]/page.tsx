@@ -90,8 +90,8 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
     <div className="mx-auto max-w-3xl px-4 py-16">
       {success === "true" && (
         <div className="mb-8 rounded-xl border border-success/30 bg-success/10 p-6">
-          <p className="font-display text-xl text-ivory">Thank you</p>
-          <p className="mt-1 text-sm text-smoke">
+          <p className="font-display text-xl text-foreground">Thank you</p>
+          <p className="mt-1 text-sm text-muted-foreground">
             {order.status === "pending_confirmation"
               ? "Your order is waiting for email confirmation."
               : "Your order was updated successfully."}
@@ -99,11 +99,11 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
         </div>
       )}
 
-      <p className="text-xs uppercase tracking-widest text-smoke">Order</p>
-      <h1 className="mt-1 font-display text-4xl text-ivory">
+      <p className="text-xs uppercase tracking-widest text-muted-foreground">Order</p>
+      <h1 className="mt-1 font-display text-4xl text-foreground">
         {order.order_number}
       </h1>
-      <p className="mt-2 text-sm text-smoke">
+      <p className="mt-2 text-sm text-muted-foreground">
         Placed {formatDate(order.created_at)} ·{" "}
         {PAYMENT_METHOD_LABELS[
           order.payment_method as keyof typeof PAYMENT_METHOD_LABELS
@@ -114,7 +114,7 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
       </p>
 
       {order.status === "pending_confirmation" && (
-        <div className="mt-6 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-ivory">
+        <div className="mt-6 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-foreground">
           <p>
             Confirm your order with the 6-digit code we emailed you:{" "}
             <Link
@@ -143,19 +143,19 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
                       ? "bg-error"
                       : done
                         ? "bg-gold"
-                        : "bg-graphite"
-                  } ${active && !isCancelled ? "ring-2 ring-gold ring-offset-2 ring-offset-obsidian" : ""}`}
+                        : "bg-border"
+                  } ${active && !isCancelled ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""}`}
                 />
                 {i < TRACK_STEPS.length - 1 && (
                   <div
                     className={`hidden h-0.5 w-full md:block ${
-                      done && !isCancelled ? "bg-gold/50" : "bg-graphite"
+                      done && !isCancelled ? "bg-primary/40" : "bg-border"
                     }`}
                   />
                 )}
                 <p
                   className={`mt-2 text-center text-xs ${
-                    active ? "font-medium text-gold" : "text-ash"
+                    active ? "font-medium text-gold" : "text-muted-foreground"
                   }`}
                 >
                   {labelForStep(step)}
@@ -171,7 +171,7 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
               Order cancelled
             </p>
             {order.cancellation_reason && (
-              <p className="mt-1 text-sm text-smoke">{order.cancellation_reason}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{order.cancellation_reason}</p>
             )}
           </div>
         )}
@@ -180,11 +180,11 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
       {order.status === "shipped" &&
         (order.tracking_number || order.courier_name) && (
           <div className="mb-8 rounded-xl border border-gold/30 bg-gold/10 p-5">
-            <p className="text-xs uppercase tracking-widest text-smoke">
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">
               Shipment
             </p>
             {order.courier_name && (
-              <p className="mt-1 text-sm text-ivory">
+              <p className="mt-1 text-sm text-foreground">
                 Courier: <strong>{order.courier_name}</strong>
               </p>
             )}
@@ -208,7 +208,7 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
 
       {order.tracking_number && order.status !== "shipped" && (
         <div className="mb-8 rounded-xl border border-gold/20 bg-gold/5 p-5">
-          <p className="text-xs uppercase tracking-widest text-smoke">
+          <p className="text-xs uppercase tracking-widest text-muted-foreground">
             Tracking number
           </p>
           <p className="mt-1 font-mono text-lg text-gold">{order.tracking_number}</p>
@@ -225,11 +225,11 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
         </div>
       )}
 
-      <div className="rounded-xl border border-graphite bg-charcoal p-5">
-        <p className="text-xs uppercase tracking-widest text-smoke">
+      <div className="rounded-[2rem] border border-border/50 bg-accent/40 p-5">
+        <p className="text-xs uppercase tracking-widest text-muted-foreground">
           Shipping address
         </p>
-        <p className="mt-2 text-sm text-ivory">
+        <p className="mt-2 text-sm text-foreground">
           {order.ship_first_name} {order.ship_last_name}
           <br />
           {order.ship_address1}
@@ -242,9 +242,9 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
         </p>
       </div>
 
-      <div className="mt-6 rounded-xl border border-graphite bg-charcoal">
-        <div className="border-b border-graphite px-5 py-4">
-          <p className="text-xs uppercase tracking-widest text-smoke">Items</p>
+      <div className="mt-6 rounded-xl border border-border bg-charcoal">
+        <div className="border-b border-border px-5 py-4">
+          <p className="text-xs uppercase tracking-widest text-muted-foreground">Items</p>
         </div>
         <ul className="divide-y divide-graphite/50 px-5">
           {(order.order_items ?? []).map(
@@ -269,23 +269,23 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
                   <div className="h-14 w-14 rounded-lg bg-graphite" />
                 )}
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-ivory">
+                  <p className="text-sm font-medium text-foreground">
                     {item.product_name}
                   </p>
                   {item.variant_label && (
-                    <p className="text-xs text-smoke">{item.variant_label}</p>
+                    <p className="text-xs text-muted-foreground">{item.variant_label}</p>
                   )}
-                  <p className="text-xs text-ash">× {item.quantity}</p>
+                  <p className="text-xs text-muted-foreground">× {item.quantity}</p>
                 </div>
-                <p className="text-sm text-ivory">
+                <p className="text-sm text-foreground">
                   {formatPKR(Number(item.total_price))}
                 </p>
               </li>
             ),
           )}
         </ul>
-        <div className="space-y-1 border-t border-graphite px-5 py-4 text-sm">
-          <div className="flex justify-between text-smoke">
+        <div className="space-y-1 border-t border-border px-5 py-4 text-sm">
+          <div className="flex justify-between text-muted-foreground">
             <span>Subtotal</span>
             <span>{formatPKR(Number(order.subtotal_pkr))}</span>
           </div>
@@ -295,7 +295,7 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
               <span>− {formatPKR(Number(order.discount_pkr))}</span>
             </div>
           )}
-          <div className="flex justify-between text-smoke">
+          <div className="flex justify-between text-muted-foreground">
             <span>Shipping</span>
             <span>
               {Number(order.shipping_pkr) === 0

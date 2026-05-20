@@ -31,6 +31,8 @@ const CODE_MESSAGES: Record<string, string> = {
     "New registrations are temporarily unavailable. Please try again later.",
   user_already_exists:
     "An account with this email already exists. Sign in instead, or reset your password.",
+  database_error_saving_new_user:
+    "We couldn't finish setting up your account. Please try again in a moment.",
   over_request_rate_limit:
     "Too many attempts from this location. Wait a minute and try again.",
   unexpected_failure: SERVICE_TRY_AGAIN,
@@ -78,6 +80,10 @@ export function friendlyAuthMessage(
 
   if (errorCode && CODE_MESSAGES[errorCode]) {
     return withDevDetail(CODE_MESSAGES[errorCode], error);
+  }
+
+  if (message.includes("database error saving new user")) {
+    return withDevDetail(CODE_MESSAGES.database_error_saving_new_user, error);
   }
 
   if (looksLikeConnectivityIssue(message)) {

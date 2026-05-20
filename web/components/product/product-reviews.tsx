@@ -32,7 +32,7 @@ export function ProductReviews({ productName }: { productName: string }) {
   return (
     <div className="space-y-12">
       <div>
-        <h2 className="font-serif text-2xl">Reviews</h2>
+        <h2 className="font-display text-2xl">Reviews</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Verified impressions from LUMINA collectors.
         </p>
@@ -40,7 +40,7 @@ export function ProductReviews({ productName }: { productName: string }) {
 
       <ul className="space-y-8">
         {MOCK.map((r) => (
-          <li key={r.id} className="border-b border-white/10 pb-8 last:border-0">
+          <li key={r.id} className="border-b border-border/50 pb-8 last:border-0">
             <div className="flex flex-wrap items-center gap-3">
               <StarRating rating={r.rating} />
               <span className="font-medium">{r.title}</span>
@@ -52,8 +52,8 @@ export function ProductReviews({ productName }: { productName: string }) {
         ))}
       </ul>
 
-      <div className="rounded-2xl border border-white/10 bg-card/40 p-6 backdrop-blur-md">
-        <h3 className="font-serif text-xl">Write a review</h3>
+      <div className="rounded-2xl border border-border/50 bg-card/40 p-6 backdrop-blur-md">
+        <h3 className="font-display text-xl">Write a review</h3>
         {!submitted ? (
           <form
             className="mt-6 space-y-4"
@@ -80,7 +80,7 @@ export function ProductReviews({ productName }: { productName: string }) {
             <Button type="submit">Submit review</Button>
           </form>
         ) : (
-          <p className="mt-6 text-sm text-emerald-brand">
+          <p className="mt-6 text-sm text-navy-brand">
             Thank you — your note will appear after moderation.
           </p>
         )}

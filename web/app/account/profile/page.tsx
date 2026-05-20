@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Profile } from "@/lib/types";
+import { ScentProfileResults } from "@/components/account/scent-profile-results";
+import { parseScentProfile } from "@/lib/quiz/scent-profile";
 
 export default function AccountProfilePage() {
   const [loading, setLoading] = useState(true);
@@ -15,6 +17,7 @@ export default function AccountProfilePage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [scentProfile, setScentProfile] = useState<ReturnType<typeof parseScentProfile>>(null);
 
   useEffect(() => {
     void (async () => {
@@ -29,6 +32,12 @@ export default function AccountProfilePage() {
         if (data.profile) {
           setFullName(data.profile.full_name ?? "");
           setPhone(data.profile.phone ?? "");
+          setScentProfile(
+            data.profile.scent_profile ??
+              parseScentProfile(
+                (data.profile as { scent_profile?: unknown }).scent_profile,
+              ),
+          );
         }
         if (data.email) setEmail(data.email);
       } catch {
@@ -71,7 +80,10 @@ export default function AccountProfilePage() {
 
   return (
     <div className="mx-auto max-w-lg px-4 py-16">
-      <h1 className="font-serif text-4xl">Profile</h1>
+      <h1 className="font-display text-4xl">Profile</h1>
+      <div className="mt-8">
+        <ScentProfileResults initialProfile={scentProfile} />
+      </div>
       <div className="mt-10 space-y-4">
         <div>
           <Label htmlFor="nm">Full name</Label>

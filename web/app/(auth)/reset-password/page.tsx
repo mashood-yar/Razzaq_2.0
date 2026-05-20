@@ -31,7 +31,7 @@ export default function ResetPasswordPage() {
   if (!hasSession) {
     return (
       <>
-        <h1 className="font-serif text-3xl tracking-tight">Set new password</h1>
+        <h1 className="font-display text-3xl tracking-tight">Set new password</h1>
         <p className="mt-4 text-sm text-muted-foreground">
           Open this page from the password reset email link. If you already
           requested a link, check your inbox.
@@ -42,7 +42,7 @@ export default function ResetPasswordPage() {
 
   return (
     <>
-      <h1 className="font-serif text-3xl tracking-tight">Set new password</h1>
+      <h1 className="font-display text-3xl tracking-tight">Set new password</h1>
       <p className="mt-2 text-sm text-muted-foreground">
         Choose a strong password for your account.
       </p>

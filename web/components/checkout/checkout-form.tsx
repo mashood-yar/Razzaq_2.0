@@ -17,8 +17,9 @@ import {
   cartTotal,
   formatPKR,
 } from "@/stores/cart-store";
-import { PK_PROVINCES } from "@/lib/utils";
+import { PK_CITIES_BY_PROVINCE, PK_PROVINCES } from "@/lib/utils";
 import { publicBankTransferDisplay } from "@/lib/checkout/bank-transfer-public";
+import { TrustBadges } from "@/components/layout/trust-badges";
 
 const detailsSchema = z.object({
   fullName:     z.string().min(2, "Full name required"),
@@ -95,7 +96,7 @@ export function CheckoutForm({
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-xl px-4 py-24 text-center">
-        <p className="font-display text-3xl italic text-ivory">Your bag is empty.</p>
+        <p className="font-display text-3xl italic text-foreground">Your bag is empty.</p>
         <Button asChild className="mt-8">
           <Link href="/shop">Continue Shopping</Link>
         </Button>
@@ -199,8 +200,8 @@ export function CheckoutForm({
                   step === idx + 1
                     ? "font-medium text-gold"
                     : step > idx + 1
-                      ? "text-smoke line-through"
-                      : "text-ash"
+                      ? "text-muted-foreground line-through"
+                      : "text-muted-foreground"
                 }
               >
                 {idx + 1}. {label}
@@ -221,7 +222,7 @@ export function CheckoutForm({
               })}
               className="space-y-6"
             >
-              <h2 className="font-display text-3xl text-ivory">
+              <h2 className="font-display text-3xl text-foreground">
                 Shipping details
               </h2>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -264,7 +265,18 @@ export function CheckoutForm({
                 </div>
                 <div>
                   <Label htmlFor="city">City</Label>
-                  <Input id="city" className="mt-1.5" {...register("city")} />
+                  <select id="city" {...register("city")} className="input-luxe mt-1.5">
+                    <option value="">Select city</option>
+                    {Object.entries(PK_CITIES_BY_PROVINCE).map(([province, cities]) => (
+                      <optgroup key={province} label={province}>
+                        {cities.map((city) => (
+                          <option key={city} value={city}>
+                            {city}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
                   {errors.city && (
                     <p className="mt-1 text-xs text-error">{errors.city.message}</p>
                   )}
@@ -274,7 +286,7 @@ export function CheckoutForm({
                   <select
                     id="province"
                     {...register("province")}
-                    className="mt-1.5 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-gold/60 focus:outline-none"
+                    className="input-luxe mt-1.5"
                   >
                     <option value="">Select province</option>
                     {PK_PROVINCES.map((p) => (
@@ -335,7 +347,7 @@ export function CheckoutForm({
               transition={{ duration: 0.25 }}
               className="space-y-6"
             >
-              <h2 className="font-display text-3xl text-ivory">
+              <h2 className="font-display text-3xl text-foreground">
                 Shipping method
               </h2>
               <div className="space-y-3">
@@ -360,12 +372,12 @@ export function CheckoutForm({
                     className={`flex w-full items-center justify-between rounded-xl border p-4 text-left transition-colors ${
                       shippingMethod === opt.value
                         ? "border-gold/60 bg-gold/5"
-                        : "border-graphite hover:border-graphite/80"
+                        : "border-border hover:border-border/80"
                     }`}
                   >
                     <div>
-                      <p className="text-sm font-medium text-ivory">{opt.label}</p>
-                      <p className="text-xs text-smoke">{opt.sub}</p>
+                      <p className="text-sm font-medium text-foreground">{opt.label}</p>
+                      <p className="text-xs text-muted-foreground">{opt.sub}</p>
                     </div>
                     <span className="text-sm font-medium text-gold">{opt.price}</span>
                   </button>
@@ -393,7 +405,7 @@ export function CheckoutForm({
               transition={{ duration: 0.25 }}
               className="space-y-6"
             >
-              <h2 className="font-display text-3xl text-ivory">
+              <h2 className="font-display text-3xl text-foreground">
                 Payment
               </h2>
               <div className="space-y-3">
@@ -413,26 +425,30 @@ export function CheckoutForm({
                     key={opt.value}
                     type="button"
                     onClick={() => setPaymentMethod(opt.value)}
-                    className={`flex w-full items-center gap-4 rounded-xl border p-4 text-left transition-colors ${
+                    className={`flex w-full items-center gap-4 rounded-[2rem] border p-4 text-left transition-colors ${
                       paymentMethod === opt.value
-                        ? "border-gold/60 bg-gold/5"
-                        : "border-graphite hover:border-graphite/80"
+                        ? "border-[#0F4C75] bg-[#0F4C75]/5 ring-2 ring-[#0F4C75]/20"
+                        : "border-border hover:border-[#1B3A4B]"
                     }`}
                   >
                     <div
                       className={`h-4 w-4 shrink-0 rounded-full border-2 ${
                         paymentMethod === opt.value
                           ? "border-gold bg-gold"
-                          : "border-graphite"
+                          : "border-border"
                       }`}
                     />
                     <div>
-                      <p className="text-sm font-medium text-ivory">{opt.label}</p>
-                      <p className="text-xs text-smoke">{opt.sub}</p>
+                      <p className="flex flex-wrap items-center gap-2 text-sm font-medium text-foreground">
+                        {opt.label}
+                        {opt.value === "cod" ? <span className="cod-badge">COD</span> : null}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{opt.sub}</p>
                     </div>
                   </button>
                 ))}
               </div>
+              <TrustBadges className="justify-start" />
 
               {submitError && (
                 <p className="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
@@ -441,29 +457,29 @@ export function CheckoutForm({
               )}
 
               {paymentMethod === "bank_transfer" && (
-                <div className="space-y-4 rounded-xl border border-graphite bg-charcoal/40 p-4 text-sm">
+                <div className="space-y-4 rounded-xl border border-border bg-muted/50 p-4 text-sm">
                   <p className="text-xs uppercase tracking-widest text-muted-foreground">
                     Transfer exactly {formatPKR(total)}
                   </p>
-                  <dl className="grid gap-2 text-ivory">
+                  <dl className="grid gap-2 text-foreground">
                     <div>
-                      <dt className="text-smoke text-xs">Bank</dt>
+                      <dt className="text-muted-foreground text-xs">Bank</dt>
                       <dd className="font-medium">{bankDisplay.bankName}</dd>
                     </div>
                     <div>
-                      <dt className="text-smoke text-xs">Account title</dt>
+                      <dt className="text-muted-foreground text-xs">Account title</dt>
                       <dd className="font-medium">{bankDisplay.accountTitle}</dd>
                     </div>
                     <div>
-                      <dt className="text-smoke text-xs">Account number</dt>
+                      <dt className="text-muted-foreground text-xs">Account number</dt>
                       <dd className="font-mono tracking-wide">{bankDisplay.accountNumber}</dd>
                     </div>
                     <div>
-                      <dt className="text-smoke text-xs">Upaisa number</dt>
+                      <dt className="text-muted-foreground text-xs">Upaisa number</dt>
                       <dd className="font-mono tracking-wide">{bankDisplay.upaisaNumber}</dd>
                     </div>
                   </dl>
-                  <p className="text-xs leading-relaxed text-smoke">
+                  <p className="text-xs leading-relaxed text-muted-foreground">
                     Use your checkout email ({shippingDetails?.email}) in the transfer narration when possible. After payment, enter your transaction ID below.
                   </p>
                   <div>
@@ -500,40 +516,40 @@ export function CheckoutForm({
         </AnimatePresence>
       </div>
 
-      <aside className="h-fit rounded-2xl border border-graphite bg-charcoal/60 p-6 backdrop-blur-md lg:sticky lg:top-28">
-        <h2 className="font-display text-xl text-ivory">Order summary</h2>
+      <aside className="h-fit rounded-2xl border border-border bg-charcoal/60 p-6 backdrop-blur-md lg:sticky lg:top-28">
+        <h2 className="font-display text-xl text-foreground">Order summary</h2>
         <ul className="mt-6 space-y-4">
           {items.map((i) => (
             <li key={i.id} className="flex justify-between gap-4 text-sm">
-              <span className="truncate text-smoke">
+              <span className="truncate text-muted-foreground">
                 {i.name}
                 {i.variantLabel && ` (${i.variantLabel})`} × {i.quantity}
               </span>
-              <span className="shrink-0 text-ivory">
+              <span className="shrink-0 text-foreground">
                 {formatPKR(i.price * i.quantity)}
               </span>
             </li>
           ))}
         </ul>
-        <div className="mt-6 space-y-2 border-t border-graphite pt-6 text-sm">
+        <div className="mt-6 space-y-2 border-t border-border pt-6 text-sm">
           <div className="flex justify-between">
-            <span className="text-smoke">Subtotal</span>
-            <span className="text-ivory">{formatPKR(sub)}</span>
+            <span className="text-muted-foreground">Subtotal</span>
+            <span className="text-foreground">{formatPKR(sub)}</span>
           </div>
           {promoDiscount > 0 && (
             <div className="flex justify-between">
-              <span className="text-smoke">Discount ({promoCode})</span>
+              <span className="text-muted-foreground">Discount ({promoCode})</span>
               <span className="text-success">− {formatPKR(promoDiscount)}</span>
             </div>
           )}
           <div className="flex justify-between">
-            <span className="text-smoke">Shipping</span>
-            <span className="text-ivory">
+            <span className="text-muted-foreground">Shipping</span>
+            <span className="text-foreground">
               {shipCost === 0 ? "Free" : formatPKR(shipCost)}
             </span>
           </div>
           <div className="flex justify-between pt-2 text-base font-medium">
-            <span className="text-ivory">Total</span>
+            <span className="text-foreground">Total</span>
             <span className="text-gold">{formatPKR(total)}</span>
           </div>
         </div>

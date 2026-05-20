@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
+import { SafeProductImage } from "@/components/product/safe-product-image";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import {
@@ -65,7 +65,7 @@ export function SearchModal() {
       }}
     >
       <DialogContent className="max-w-xl gap-0 overflow-hidden p-0">
-        <DialogHeader className="border-b border-white/10 p-4 pb-3">
+        <DialogHeader className="border-b border-border/50 p-4 pb-3">
           <DialogTitle className="sr-only">Search fragrances</DialogTitle>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -87,11 +87,11 @@ export function SearchModal() {
             <li key={p.id}>
               <Link
                 href={`/products/${p.slug}`}
-                className="flex gap-3 rounded-lg p-2 transition-colors hover:bg-white/5"
+                className="flex gap-3 rounded-lg p-2 transition-colors hover:bg-muted"
                 onClick={() => setOpen(false)}
               >
                 <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-muted">
-                  <Image
+                  <SafeProductImage
                     src={p.images[0]}
                     alt=""
                     fill

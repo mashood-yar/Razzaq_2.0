@@ -1,5 +1,7 @@
 // ─── Razzaq Luxe — App-level types ────────────────────────────────────────
 
+import type { ScentProfile } from "@/lib/quiz/scent-profile";
+
 export type ProductStatus = "draft" | "active" | "archived";
 export type OrderStatus =
   | "pending_confirmation"
@@ -32,6 +34,7 @@ export interface Profile {
   email: string | null;
   full_name: string | null;
   phone: string | null;
+  scent_profile?: ScentProfile | null;
   /** Last-used address fields from checkout when logged in */
   address_line: string | null;
   city: string | null;
@@ -277,5 +280,7 @@ export type Article = {
   readTime: string;
   image: string;
   category: string;
+  author: string;
   body: string[];
+  pullQuotes?: string[];
 };

@@ -37,12 +37,6 @@ const nextConfig = {
         hostname: "*.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
-      /* Google profile photos — wildcard covers lh3… and regional hosts */
-      {
-        protocol: "https",
-        hostname: "*.googleusercontent.com",
-        pathname: "/**",
-      },
     ],
   },
   transpilePackages: ["next-sanity", "sanity"],

@@ -34,7 +34,7 @@ export default async function BlogPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
-      <h1 className="font-serif text-4xl">Blog</h1>
+      <h1 className="font-display text-4xl">Blog</h1>
       <p className="mt-2 text-muted-foreground">
         Stories from the studio — powered by Sanity.
       </p>
@@ -42,7 +42,7 @@ export default async function BlogPage() {
         {(posts ?? []).map((p) => (
           <li key={p._id}>
             <Link href={`/blog/${p.slug}`} className="group block">
-              <h2 className="font-serif text-2xl group-hover:text-gold">
+              <h2 className="font-display text-2xl group-hover:text-gold">
                 {p.title}
               </h2>
               {p.excerpt ? (

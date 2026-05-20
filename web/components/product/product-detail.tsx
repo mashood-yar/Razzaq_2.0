@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useFlyToCart } from "@/components/motion/fly-to-cart";
 import { ListingCardImages } from "@/components/product/listing-card-images";
 import { PLACEHOLDER_PRODUCT_IMAGE } from "@/lib/catalog/map-db-product";
+import { ProductSocialProof } from "@/components/product/product-social-proof";
 
 interface ProductImage {
   id: string;
@@ -55,20 +56,20 @@ interface RelatedProduct {
 function AccordionSection({ title, children }: { title: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border-b border-graphite">
+    <div className="border-b border-border">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
         className="flex w-full items-center justify-between py-4 text-left"
       >
-        <span className="font-body text-sm font-medium uppercase tracking-widest text-ivory">
+        <span className="font-body text-sm font-medium uppercase tracking-widest text-foreground">
           {title}
         </span>
         <ChevronDown
-          className={`h-4 w-4 text-smoke transition-transform ${open ? "rotate-180" : ""}`}
+          className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
-      {open && <div className="pb-4 text-sm text-smoke leading-relaxed">{children}</div>}
+      {open && <div className="pb-4 text-sm text-muted-foreground leading-relaxed">{children}</div>}
     </div>
   );
 }
@@ -125,7 +126,7 @@ export function ProductDetail({ product, related }: { product: DbProduct; relate
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <Link
         href="/shop"
-        className="mb-8 inline-flex items-center gap-2 text-sm text-smoke transition-colors hover:text-gold"
+        className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-gold"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden />
         Back to shop
@@ -145,7 +146,7 @@ export function ProductDetail({ product, related }: { product: DbProduct; relate
               />
             )}
             {product.compare_at_price && product.compare_at_price > price && (
-              <span className="absolute left-4 top-4 rounded-full bg-error/90 px-3 py-1 text-xs font-medium uppercase tracking-wider text-ivory">
+              <span className="absolute left-4 top-4 rounded-full bg-error/90 px-3 py-1 text-xs font-medium uppercase tracking-wider text-foreground">
                 Sale
               </span>
             )}
@@ -173,22 +174,22 @@ export function ProductDetail({ product, related }: { product: DbProduct; relate
           {product.categories && (
             <Link
               href={`/shop?category=${product.categories.slug}`}
-              className="text-xs uppercase tracking-widest text-gold hover:text-gold-light transition-colors"
+              className="text-xs uppercase tracking-widest text-gold hover:text-gold transition-colors"
             >
               {product.categories.name}
             </Link>
           )}
-          <h1 className="mt-2 font-display text-4xl text-ivory sm:text-5xl">{product.name}</h1>
+          <h1 className="mt-2 font-display text-4xl text-foreground sm:text-5xl">{product.name}</h1>
           <div className="mt-4 flex items-center gap-3">
             <span className="text-2xl font-medium text-gold">{formatPKR(price)}</span>
             {product.compare_at_price && product.compare_at_price > price && (
-              <span className="text-lg text-smoke line-through">{formatPKR(product.compare_at_price)}</span>
+              <span className="text-lg text-muted-foreground line-through">{formatPKR(product.compare_at_price)}</span>
             )}
           </div>
 
           {uniqueColors.length > 0 && (
             <div className="mt-8">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-smoke">Colour</p>
+              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Colour</p>
               <div className="flex flex-wrap gap-2">
                 {uniqueColors.map((color) => (
                   <button
@@ -198,7 +199,7 @@ export function ProductDetail({ product, related }: { product: DbProduct; relate
                     className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
                       selectedColor === color
                         ? "border-gold bg-gold/10 text-gold"
-                        : "border-graphite text-smoke hover:border-gold/40"
+                        : "border-border text-muted-foreground hover:border-gold/40"
                     }`}
                   >
                     {color}
@@ -210,7 +211,7 @@ export function ProductDetail({ product, related }: { product: DbProduct; relate
 
           {uniqueSizes.length > 0 && (
             <div className="mt-6">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-smoke">Size</p>
+              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Size</p>
               <div className="flex flex-wrap gap-2">
                 {uniqueSizes.map((size) => (
                   <button
@@ -220,7 +221,7 @@ export function ProductDetail({ product, related }: { product: DbProduct; relate
                     className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
                       selectedSize === size
                         ? "border-gold bg-gold/10 text-gold"
-                        : "border-graphite text-smoke hover:border-gold/40"
+                        : "border-border text-muted-foreground hover:border-gold/40"
                     }`}
                   >
                     {size}
@@ -232,19 +233,19 @@ export function ProductDetail({ product, related }: { product: DbProduct; relate
 
           {/* Quantity + Add */}
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            <div className="flex items-center rounded-lg border border-graphite">
+            <div className="flex items-center rounded-lg border border-border">
               <button
                 type="button"
                 onClick={() => setQty((q) => Math.max(1, q - 1))}
-                className="p-3 text-smoke hover:text-gold transition-colors"
+                className="p-3 text-muted-foreground hover:text-gold transition-colors"
               >
                 <Minus className="h-4 w-4" />
               </button>
-              <span className="w-10 text-center tabular-nums text-ivory">{qty}</span>
+              <span className="w-10 text-center tabular-nums text-foreground">{qty}</span>
               <button
                 type="button"
                 onClick={() => setQty((q) => q + 1)}
-                className="p-3 text-smoke hover:text-gold transition-colors"
+                className="p-3 text-muted-foreground hover:text-gold transition-colors"
               >
                 <Plus className="h-4 w-4" />
               </button>
@@ -255,10 +256,10 @@ export function ProductDetail({ product, related }: { product: DbProduct; relate
             <button
               type="button"
               onClick={() => setWishlisted((w) => !w)}
-              className="rounded-lg border border-graphite p-3 hover:border-gold/40 transition-colors"
+              className="rounded-lg border border-border p-3 hover:border-gold/40 transition-colors"
               aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
             >
-              <Heart className={`h-5 w-5 ${wishlisted ? "fill-gold text-gold" : "text-smoke"}`} />
+              <Heart className={`h-5 w-5 ${wishlisted ? "fill-gold text-gold" : "text-muted-foreground"}`} />
             </button>
           </div>
 
@@ -266,7 +267,9 @@ export function ProductDetail({ product, related }: { product: DbProduct; relate
             {inStock ? "In stock · Ships in 2–3 business days" : "Currently out of stock"}
           </p>
 
-          <div className="mt-10 border-t border-graphite">
+          <ProductSocialProof />
+
+          <div className="mt-10 border-t border-border">
             <AccordionSection title="Description">
               <p>{product.description ?? "No description available."}</p>
             </AccordionSection>
@@ -283,7 +286,7 @@ export function ProductDetail({ product, related }: { product: DbProduct; relate
           {product.tags && product.tags.length > 0 && (
             <div className="mt-8 flex flex-wrap gap-2">
               {product.tags.map((tag) => (
-                <span key={tag} className="rounded-full border border-graphite px-3 py-1 text-xs text-smoke">
+                <span key={tag} className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
                   {tag}
                 </span>
               ))}
@@ -295,7 +298,7 @@ export function ProductDetail({ product, related }: { product: DbProduct; relate
       {/* Related Products */}
       {related.length > 0 && (
         <div className="mt-24">
-          <h2 className="font-display text-3xl text-ivory">You may also like</h2>
+          <h2 className="font-display text-3xl text-foreground">You may also like</h2>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {related.map((rp) => {
               const imgs = [...rp.product_images].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
@@ -313,7 +316,7 @@ export function ProductDetail({ product, related }: { product: DbProduct; relate
                       className="absolute inset-0"
                     />
                   </div>
-                  <h3 className="mt-3 font-body text-sm text-ivory group-hover:text-gold transition-colors">
+                  <h3 className="mt-3 font-body text-sm text-foreground group-hover:text-gold transition-colors">
                     {rp.name}
                   </h3>
                   <p className="text-gold text-sm">{formatPKR(rp.price_pkr)}</p>

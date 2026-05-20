@@ -80,10 +80,10 @@ export function HeaderAccountDropdown() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute right-0 top-[calc(100%+10px)] z-[60] w-64 overflow-hidden rounded-xl border border-white/10 bg-background/95 shadow-xl backdrop-blur-xl"
+            className="absolute right-0 top-[calc(100%+10px)] z-[60] w-64 overflow-hidden rounded-xl border border-border/50 bg-background/95 shadow-xl backdrop-blur-xl"
           >
-            <div className="border-b border-white/10 px-4 py-3">
-              <p className="truncate font-serif text-base text-foreground">{displayName}</p>
+            <div className="border-b border-border/50 px-4 py-3">
+              <p className="truncate font-display text-base text-foreground">{displayName}</p>
               {session.user.email ? (
                 <p className="mt-0.5 truncate text-xs text-muted-foreground">{session.user.email}</p>
               ) : null}
@@ -92,17 +92,17 @@ export function HeaderAccountDropdown() {
               <Link
                 href="/account"
                 role="menuitem"
-                className="rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-white/5"
+                className="rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted"
                 onClick={() => setOpen(false)}
               >
                 My account
               </Link>
-              <form action={signOut} className="mt-1 border-t border-white/10 pt-2">
+              <form action={signOut} className="mt-1 border-t border-border/50 pt-2">
                 <Button
                   type="submit"
                   variant="ghost"
                   role="menuitem"
-                  className="h-auto w-full justify-start px-3 py-2 text-sm text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                  className="h-auto w-full justify-start px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
                   magnetic={false}
                 >
                   Sign out

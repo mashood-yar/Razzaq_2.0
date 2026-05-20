@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import type { User } from "@supabase/supabase-js";
 import type { ProfileGender } from "@/lib/types";
-import { oauthProfileImageUrl, userAvatarInitial } from "@/lib/auth/oauth-avatar";
+import { userAvatarInitial } from "@/lib/auth/oauth-avatar";
 import { getNavLetterSeed } from "@/lib/auth/nav-account-model";
 import { letterAvatarSwatch } from "@/lib/auth/letter-avatar-hash";
 
@@ -39,32 +38,10 @@ export function NavPersonOutlineIcon({ className }: { className?: string }) {
 }
 
 /**
- * Navbar avatar: remote OAuth avatar when present; else gender PNG from signup;
- * else hashed letter for `other` / unset.
+ * Navbar avatar: gender PNG from signup when set; else hashed letter circle.
  */
 export function AccountAvatarGlyph({ user }: { user: User }) {
-  const remotePhoto = oauthProfileImageUrl(user);
-  const [remoteFailed, setRemoteFailed] = useState(false);
-
-  useEffect(() => {
-    setRemoteFailed(false);
-  }, [user.id, remotePhoto]);
-
   const gender = profileGenderFromUser(user);
-
-  if (remotePhoto && !remoteFailed) {
-    return (
-      <Image
-        src={remotePhoto}
-        alt=""
-        width={36}
-        height={36}
-        className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-white/15"
-        draggable={false}
-        onError={() => setRemoteFailed(true)}
-      />
-    );
-  }
 
   if (gender === "male") {
     return (
@@ -98,7 +75,7 @@ export function AccountAvatarGlyph({ user }: { user: User }) {
 
   return (
     <span
-      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-serif text-[15px] font-semibold uppercase leading-none shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] ring-1 ring-white/10"
+      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-display text-[15px] font-semibold uppercase leading-none shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] ring-1 ring-white/10"
       style={{ backgroundColor: swatch.bg, color: swatch.fg }}
       aria-hidden
     >

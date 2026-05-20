@@ -73,12 +73,20 @@ export function TestimonialCarousel() {
           transition={{ duration: 0.35 }}
           className="relative px-4 pt-8 text-center sm:px-12"
         >
-          <blockquote className="font-serif text-xl italic leading-relaxed text-foreground sm:text-2xl">
+          <blockquote className="font-display text-xl italic leading-relaxed text-foreground sm:text-2xl">
             “<GoldBrandText text={cur.quote} />”
           </blockquote>
           <figcaption className="mt-10 flex flex-col items-center gap-3">
             <div className="relative h-14 w-14 overflow-hidden rounded-full ring-2 ring-gold/40">
-              <Image src={cur.image} alt="" fill className="object-cover" sizes="56px" />
+              <Image
+                src={cur.image}
+                alt=""
+                fill
+                className="object-cover"
+                sizes="56px"
+                /** Direct CDN avoids `/_next/image` fetch timeouts/404 when dev/proxy drops optimizer fetches */
+                unoptimized
+              />
             </div>
             <div>
               <p className="font-medium">{cur.name}</p>

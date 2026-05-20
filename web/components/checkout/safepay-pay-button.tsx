@@ -27,7 +27,7 @@ export function SafepayPayButton({
       type="button"
       size="lg"
       className={cn(
-        "w-full bg-[#004b3d] text-white hover:bg-[#003829]",
+        "w-full bg-[#0F4C75] text-white hover:bg-[#0a3d5c]",
         className,
       )}
       disabled={disabled || loading}

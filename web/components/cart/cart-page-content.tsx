@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import { SafeProductImage } from "@/components/product/safe-product-image";
 import Link from "next/link";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import {
   cartTotal,
   formatPKR,
 } from "@/stores/cart-store";
+import { EmptyCartCta } from "@/components/cart/empty-cart-cta";
+import { ShippingProgress } from "@/components/cart/shipping-progress";
 
 export function CartPageContent() {
   const items = useCartStore((s) => s.items);
@@ -62,55 +64,48 @@ export function CartPageContent() {
   return (
     <div className="mx-auto grid max-w-6xl gap-12 px-4 py-12 lg:grid-cols-3 lg:px-8">
       <div className="lg:col-span-2">
-        <h1 className="font-display text-4xl text-ivory">Your Bag</h1>
+        <h1 className="font-display text-4xl text-foreground">Your Bag</h1>
         {items.length === 0 ? (
-          <p className="mt-8 text-smoke">
-            Your bag is empty.{" "}
-            <Link href="/shop" className="text-gold underline">
-              Continue shopping
-            </Link>
-          </p>
+          <div className="mt-8">
+            <EmptyCartCta />
+          </div>
         ) : (
           <ul className="mt-10 space-y-6">
             {items.map((item) => (
               <li
                 key={item.id}
-                className="flex gap-6 rounded-xl border border-graphite bg-charcoal/40 p-4 backdrop-blur-sm"
+                className="flex gap-6 rounded-xl border border-border bg-muted/50 p-4 backdrop-blur-sm"
               >
                 <div className="relative h-32 w-24 shrink-0 overflow-hidden rounded-lg bg-muted">
-                  {item.imageUrl ? (
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.name}
-                      fill
-                      className="object-cover"
-                      sizes="96px"
-                    />
-                  ) : (
-                    <div className="h-full w-full bg-graphite" />
-                  )}
+                  <SafeProductImage
+                    src={item.imageUrl}
+                    alt={item.name}
+                    fill
+                    className="object-cover"
+                    sizes="96px"
+                  />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="font-medium text-ivory">{item.name}</p>
+                  <p className="font-medium text-foreground">{item.name}</p>
                   {item.variantLabel && (
-                    <p className="text-sm text-smoke">{item.variantLabel}</p>
+                    <p className="text-sm text-muted-foreground">{item.variantLabel}</p>
                   )}
                   <p className="mt-2 text-gold">{formatPKR(item.price)}</p>
                   <div className="mt-4 flex items-center gap-3">
                     <button
                       type="button"
-                      className="rounded border border-graphite p-1.5 hover:bg-graphite"
+                      className="rounded border border-border p-1.5 hover:bg-graphite"
                       aria-label="Decrease"
                       onClick={() => setQuantity(item.id, item.quantity - 1)}
                     >
                       <Minus className="h-4 w-4" />
                     </button>
-                    <span className="w-8 text-center tabular-nums text-ivory">
+                    <span className="w-8 text-center tabular-nums text-foreground">
                       {item.quantity}
                     </span>
                     <button
                       type="button"
-                      className="rounded border border-graphite p-1.5 hover:bg-graphite"
+                      className="rounded border border-border p-1.5 hover:bg-graphite"
                       aria-label="Increase"
                       onClick={() => setQuantity(item.id, item.quantity + 1)}
                     >
@@ -118,7 +113,7 @@ export function CartPageContent() {
                     </button>
                     <button
                       type="button"
-                      className="ml-auto text-smoke hover:text-error"
+                      className="ml-auto text-muted-foreground hover:text-error"
                       aria-label="Remove"
                       onClick={() => removeItem(item.id)}
                     >
@@ -132,12 +127,13 @@ export function CartPageContent() {
         )}
       </div>
 
-      <aside className="h-fit rounded-2xl border border-graphite bg-charcoal/60 p-6 backdrop-blur-md lg:sticky lg:top-28">
-        <h2 className="font-display text-xl text-ivory">Summary</h2>
+      <aside className="h-fit rounded-2xl border border-border bg-charcoal/60 p-6 backdrop-blur-md lg:sticky lg:top-28">
+        <h2 className="font-display text-xl text-foreground">Summary</h2>
+        {items.length > 0 && <ShippingProgress subtotal={sub} className="mt-6" />}
         <div className="mt-6 space-y-3 text-sm">
           <div className="flex justify-between">
-            <span className="text-smoke">Subtotal</span>
-            <span className="text-ivory">{formatPKR(sub)}</span>
+            <span className="text-muted-foreground">Subtotal</span>
+            <span className="text-foreground">{formatPKR(sub)}</span>
           </div>
           {promoDiscount > 0 && (
             <div className="flex justify-between text-success">
@@ -146,14 +142,14 @@ export function CartPageContent() {
             </div>
           )}
           <div className="flex justify-between">
-            <span className="text-smoke">Shipping</span>
-            <span className="text-ivory">
+            <span className="text-muted-foreground">Shipping</span>
+            <span className="text-foreground">
               {shipping === 0 ? "Free" : formatPKR(shipping)}
             </span>
           </div>
           <Separator className="bg-graphite" />
           <div className="flex justify-between text-lg font-medium">
-            <span className="text-ivory">Total</span>
+            <span className="text-foreground">Total</span>
             <span className="text-gold">{formatPKR(total)}</span>
           </div>
         </div>

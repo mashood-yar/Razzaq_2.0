@@ -72,7 +72,7 @@ export function ProductAddForm({ product }: { product: Product }) {
           <div className="mt-2 flex items-center gap-3">
             <button
               type="button"
-              className="rounded-lg border border-white/15 p-2 hover:bg-white/5"
+              className="rounded-lg border border-white/15 p-2 hover:bg-muted"
               aria-label="Decrease quantity"
               onClick={() => setQty((q) => Math.max(1, q - 1))}
             >
@@ -81,7 +81,7 @@ export function ProductAddForm({ product }: { product: Product }) {
             <span className="w-8 text-center tabular-nums">{qty}</span>
             <button
               type="button"
-              className="rounded-lg border border-white/15 p-2 hover:bg-white/5"
+              className="rounded-lg border border-white/15 p-2 hover:bg-muted"
               aria-label="Increase quantity"
               onClick={() => setQty((q) => q + 1)}
             >

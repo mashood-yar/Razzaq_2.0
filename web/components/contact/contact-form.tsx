@@ -57,11 +57,11 @@ export function ContactForm() {
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl border border-graphite bg-charcoal/60 p-8 backdrop-blur-md"
+      className="rounded-2xl border border-border bg-charcoal/60 p-8 backdrop-blur-md"
     >
       {!sent ? (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <h2 className="font-display text-2xl text-ivory">Send a Message</h2>
+          <h2 className="font-display text-2xl text-foreground">Send a Message</h2>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
@@ -121,7 +121,7 @@ export function ContactForm() {
       ) : (
         <div className="py-8 text-center">
           <p className="font-display text-3xl italic text-gold">Thank you.</p>
-          <p className="mt-3 text-sm text-smoke">
+          <p className="mt-3 text-sm text-muted-foreground">
             We received your message and will get back to you within 24 hours.
           </p>
         </div>

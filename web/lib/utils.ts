@@ -72,7 +72,7 @@ export const STATUS_COLORS: Record<OrderStatus, string> = {
   confirmed:           "bg-blue-900/30 text-blue-400 border-blue-700/30",
   processing:          "bg-purple-900/30 text-purple-400 border-purple-700/30",
   shipped:             "bg-indigo-900/30 text-indigo-400 border-indigo-700/30",
-  delivered:           "bg-green-900/30 text-green-400 border-green-700/30",
+  delivered:           "bg-[#1E3A5F]/15 text-[#1E3A5F] border-[#1E3A5F]/30",
   cancelled:           "bg-red-900/30 text-red-400 border-red-700/30",
 };
 
@@ -98,8 +98,8 @@ export const PAYMENT_STATUS_COLORS: Record<PaymentStatus, string> = {
   pending: "bg-yellow-900/30 text-yellow-400 border-yellow-700/30",
   pending_verification:
     "bg-orange-900/30 text-orange-300 border-orange-700/30",
-  paid: "bg-green-900/30 text-green-400 border-green-700/30",
-  verified: "bg-emerald-900/30 text-emerald-300 border-emerald-700/30",
+  paid: "bg-[#1E3A5F]/15 text-[#1E3A5F] border-[#1E3A5F]/30",
+  verified: "bg-[#1E3A5F]/15 text-[#1E3A5F] border-[#1E3A5F]/30",
   failed: "bg-red-900/30 text-red-400 border-red-700/30",
   refunded: "bg-gray-900/30 text-gray-400 border-gray-700/30",
 };
@@ -125,4 +125,23 @@ export const PK_PROVINCES = [
   "Azad Kashmir",
   "Gilgit-Baltistan",
   "Islamabad Capital Territory",
-];
+] as const;
+
+/** Major cities grouped by province for checkout / address dropdowns */
+export const PK_CITIES_BY_PROVINCE: Record<string, string[]> = {
+  Punjab: [
+    "Lahore",
+    "Faisalabad",
+    "Rawalpindi",
+    "Multan",
+    "Gujranwala",
+    "Sialkot",
+    "Bahawalpur",
+  ],
+  Sindh: ["Karachi", "Hyderabad", "Sukkur", "Larkana", "Mirpur Khas"],
+  KPK: ["Peshawar", "Mardan", "Abbottabad", "Swat", "Kohat"],
+  Balochistan: ["Quetta", "Gwadar", "Turbat", "Khuzdar"],
+  "Azad Kashmir": ["Muzaffarabad", "Mirpur", "Rawalakot"],
+  "Gilgit-Baltistan": ["Gilgit", "Skardu", "Hunza"],
+  "Islamabad Capital Territory": ["Islamabad"],
+};

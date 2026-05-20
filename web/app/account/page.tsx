@@ -16,7 +16,7 @@ export default async function AccountPage() {
 
   return (
     <div className="mx-auto max-w-xl px-4 py-20 text-center sm:px-6">
-      <h1 className="font-serif text-4xl">Account</h1>
+      <h1 className="font-display text-4xl">Account</h1>
       {user ? (
         <>
           <p className="mt-6 text-muted-foreground">

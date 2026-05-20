@@ -15,7 +15,7 @@ function MarqueeTrack({ reverse }: { reverse?: boolean }) {
         cell.type === "dot" ? (
           <span
             key={`d-${idx}`}
-            className="mx-6 shrink-0 align-middle text-2xl text-ash sm:mx-10 sm:text-[1.65rem]"
+            className="mx-6 shrink-0 align-middle text-2xl text-muted-foreground sm:mx-10 sm:text-[1.65rem]"
             aria-hidden
           >
             ·
@@ -51,7 +51,7 @@ function ProductLink({
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group relative shrink-0 align-middle font-body text-[clamp(1.65rem,4.8vw,2.75rem)] font-normal tracking-tight text-ivory outline-none transition-[transform,color] duration-300 ease-out hover:z-10 hover:text-gold focus-visible:z-10 focus-visible:text-gold motion-safe:hover:scale-105 motion-reduce:hover:scale-100"
+      className="group relative shrink-0 align-middle font-body text-[clamp(1.65rem,4.8vw,2.75rem)] font-normal tracking-tight text-foreground outline-none transition-[transform,color] duration-300 ease-out hover:z-10 hover:text-gold focus-visible:z-10 focus-visible:text-gold motion-safe:hover:scale-105 motion-reduce:hover:scale-100"
     >
       <span>{product.name}</span>
       <span
@@ -93,7 +93,7 @@ export function SignatureScentsMarquee() {
           {HOUSE_PRODUCTS.map((p, i) => (
             <span key={p.slug} className="flex items-center gap-x-3 md:gap-x-6">
               {i > 0 ? (
-                <span className="select-none text-ash" aria-hidden>
+                <span className="select-none text-muted-foreground" aria-hidden>
                   ·
                 </span>
               ) : null}

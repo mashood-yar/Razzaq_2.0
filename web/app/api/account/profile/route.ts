@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { parseScentProfile } from "@/lib/quiz/scent-profile";
 
 export async function GET() {
   const supabase = await createClient();
@@ -15,7 +16,15 @@ export async function GET() {
     .eq("id", user.id)
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ profile: data, email: user.email });
+  const profile = data
+    ? {
+        ...data,
+        scent_profile: parseScentProfile(
+          (data as { scent_profile?: unknown }).scent_profile,
+        ),
+      }
+    : data;
+  return NextResponse.json({ profile, email: user.email });
 }
 
 export async function PATCH(req: NextRequest) {
@@ -34,6 +43,7 @@ export async function PATCH(req: NextRequest) {
     address_line?: string;
     city?: string;
     province?: string;
+    scent_profile?: unknown;
   };
 
   if (typeof body.newPassword === "string" && body.newPassword.length >= 8) {
@@ -63,11 +73,20 @@ export async function PATCH(req: NextRequest) {
   if (typeof body.province === "string")
     updates.province = body.province.trim();
 
-  if (Object.keys(updates).length > 0) {
+  const patch: Record<string, unknown> = { ...updates };
+  if (body.scent_profile !== undefined) {
+    const parsed = parseScentProfile(body.scent_profile);
+    if (!parsed) {
+      return NextResponse.json({ error: "Invalid scent profile" }, { status: 400 });
+    }
+    patch.scent_profile = parsed;
+  }
+
+  if (Object.keys(patch).length > 0) {
     const { error } = await supabase
       .from("profiles")
       .update({
-        ...updates,
+        ...patch,
         updated_at: new Date().toISOString(),
       })
       .eq("id", user.id);

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 export default function RegisterPage() {
   return (
     <>
-      <h1 className="font-serif text-3xl tracking-tight">Create account</h1>
+      <h1 className="font-display text-3xl tracking-tight">Create account</h1>
       <p className="mt-2 text-sm text-muted-foreground">
         Join LUMINA for faster checkout and order history.
       </p>

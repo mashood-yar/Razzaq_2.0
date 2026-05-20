@@ -45,13 +45,13 @@ export default async function AccountOrdersPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
-      <h1 className="font-serif text-4xl">Your orders</h1>
+      <h1 className="font-display text-4xl">Your orders</h1>
       <p className="mt-2 text-muted-foreground">
         Signed in as {user.email}
       </p>
       <ul className="mt-10 space-y-4">
         {(orders ?? []).length === 0 ? (
-          <li className="rounded-lg border border-white/10 p-6 text-muted-foreground">
+          <li className="rounded-lg border border-border/50 p-6 text-muted-foreground">
             No orders yet.{" "}
             <Link href="/shop" className="text-gold hover:underline">
               Browse the shop
@@ -61,7 +61,7 @@ export default async function AccountOrdersPage() {
           (orders ?? []).map((o) => (
             <li
               key={o.id}
-              className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-white/10 p-4"
+              className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-border/50 p-4"
             >
               <div>
                 <p className="font-medium">{o.order_number}</p>

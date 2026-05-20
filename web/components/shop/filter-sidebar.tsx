@@ -111,7 +111,7 @@ export function FilterSidebar({
                 "rounded-lg border px-2 py-2 text-left text-xs transition-colors",
                 value.notes.includes(n)
                   ? "border-gold/50 bg-gold/10 text-foreground"
-                  : "border-white/10 text-muted-foreground hover:border-white/25",
+                  : "border-border/50 text-muted-foreground hover:border-white/25",
               )}
             >
               {n}

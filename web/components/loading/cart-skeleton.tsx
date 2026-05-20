@@ -19,7 +19,7 @@ export function CartLoadingSkeleton() {
             </div>
           ))}
         </div>
-        <div className="mt-12 space-y-3 border-t border-white/10 pt-8">
+        <div className="mt-12 space-y-3 border-t border-border/50 pt-8">
           <LoadingSkeleton height={20} className="rounded-md" />
           <LoadingSkeleton height={48} className="rounded-md" />
         </div>

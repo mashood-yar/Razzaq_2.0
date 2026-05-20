@@ -36,17 +36,17 @@ export function NewsletterSection() {
   };
 
   return (
-    <section className="rounded-3xl border border-graphite bg-charcoal/50 px-8 py-14 text-center backdrop-blur-md">
+    <section className="rounded-3xl border border-border bg-charcoal/50 px-8 py-14 text-center backdrop-blur-md">
       <p className="text-xs uppercase tracking-widest text-gold">Newsletter</p>
-      <h2 className="mt-3 font-display text-3xl text-ivory sm:text-4xl">
+      <h2 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
         First to know, first to wear.
       </h2>
-      <p className="mx-auto mt-4 max-w-md text-sm text-smoke">
+      <p className="mx-auto mt-4 max-w-md text-sm text-muted-foreground">
         New arrivals, exclusive offers, and editorial content — delivered to your inbox.
       </p>
 
       {status === "success" ? (
-        <p className="mt-8 font-display text-xl italic text-ivory">
+        <p className="mt-8 font-display text-xl italic text-foreground">
           <GoldBrandText text={"You're on the list. Welcome to Razzaq Luxe."} />
         </p>
       ) : (
@@ -60,7 +60,7 @@ export function NewsletterSection() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Your email address"
-            className="flex-1 rounded-lg border border-graphite bg-obsidian px-4 py-3 text-sm text-ivory placeholder:text-ash focus:border-gold/60 focus:outline-none"
+            className="flex-1 rounded-lg border border-border bg-obsidian px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-gold/60 focus:outline-none"
           />
           <Button type="submit" disabled={status === "loading"}>
             {status === "loading" ? "…" : "Subscribe"}
@@ -71,7 +71,7 @@ export function NewsletterSection() {
       {status === "error" && (
         <p className="mt-3 text-xs text-error">{message}</p>
       )}
-      <p className="mt-4 text-xs text-ash">
+      <p className="mt-4 text-xs text-muted-foreground">
         No spam. Unsubscribe anytime.
       </p>
     </section>

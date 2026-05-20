@@ -40,7 +40,7 @@ export function ResetPasswordForm() {
         />
       </div>
       {state?.error ? (
-        <p className="text-sm text-red-400">{state.error}</p>
+        <p className="text-sm text-destructive">{state.error}</p>
       ) : null}
       <Button type="submit" className="w-full gap-2" disabled={pending}>
         {pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}

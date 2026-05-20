@@ -31,13 +31,13 @@ export default async function BlogPostPage({ params }: Props) {
       <Link href="/blog" className="text-xs uppercase tracking-widest text-gold hover:underline">
         ← Blog
       </Link>
-      <h1 className="mt-6 font-serif text-4xl">{post.title}</h1>
+      <h1 className="mt-6 font-display text-4xl">{post.title}</h1>
       {post.publishedAt ? (
         <p className="mt-4 text-xs uppercase tracking-widest text-muted-foreground">
           {new Date(post.publishedAt).toLocaleDateString()}
         </p>
       ) : null}
-      <div className="prose prose-invert mt-10 max-w-none prose-headings:font-serif prose-a:text-gold">
+      <div className="prose prose-invert mt-10 max-w-none prose-headings:font-display prose-a:text-gold">
         {post.body ? <PortableText value={post.body} /> : null}
       </div>
     </article>

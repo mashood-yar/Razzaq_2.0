@@ -52,14 +52,14 @@ export default async function SearchPage({ searchParams }: Props) {
 
       {q ? (
         <div className="mt-10">
-          <p className="mb-8 text-sm text-smoke">
+          <p className="mb-8 text-sm text-muted-foreground">
             {products.length} result{products.length !== 1 ? "s" : ""} for{" "}
-            <span className="text-ivory">&quot;{q}&quot;</span>
+            <span className="text-foreground">&quot;{q}&quot;</span>
           </p>
           {products.length === 0 ? (
             <div className="py-16 text-center">
-              <p className="font-display text-3xl italic text-smoke">No results found.</p>
-              <p className="mt-2 text-sm text-smoke">Try a different search term or browse the shop.</p>
+              <p className="font-display text-3xl italic text-muted-foreground">No results found.</p>
+              <p className="mt-2 text-sm text-muted-foreground">Try a different search term or browse the shop.</p>
               <Link
                 href="/shop"
                 className="mt-6 inline-block rounded-full border border-gold px-6 py-2.5 text-sm text-gold transition-colors hover:bg-gold/10"
@@ -87,13 +87,13 @@ export default async function SearchPage({ searchParams }: Props) {
                         className="absolute inset-0"
                       />
                     </div>
-                    <h3 className="mt-3 font-body text-sm text-ivory group-hover:text-gold transition-colors">
+                    <h3 className="mt-3 font-body text-sm text-foreground group-hover:text-gold transition-colors">
                       {p.name}
                     </h3>
                     <div className="mt-1 flex items-center gap-2">
                       <span className="text-gold text-sm">{formatPKR(p.price_pkr)}</span>
                       {p.compare_at_price && p.compare_at_price > p.price_pkr && (
-                        <span className="text-xs text-smoke line-through">
+                        <span className="text-xs text-muted-foreground line-through">
                           {formatPKR(p.compare_at_price)}
                         </span>
                       )}
@@ -106,7 +106,7 @@ export default async function SearchPage({ searchParams }: Props) {
         </div>
       ) : (
         <div className="mt-16 py-16 text-center">
-          <p className="font-display text-3xl italic text-smoke">What are you looking for?</p>
+          <p className="font-display text-3xl italic text-muted-foreground">What are you looking for?</p>
         </div>
       )}
     </div>

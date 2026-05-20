@@ -161,9 +161,9 @@ export default async function PolicyPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-24">
-      <p className="text-xs uppercase tracking-widest text-luxe-gold">Razzaq Luxe</p>
-      <h1 className="mt-3 font-display text-5xl text-ivory">{policy.title}</h1>
-      <p className="mt-3 text-sm text-ash">Last updated: May 2026</p>
+      <p className="text-xs uppercase tracking-widest text-gold">Razzaq Luxe</p>
+      <h1 className="mt-3 font-display text-5xl text-foreground">{policy.title}</h1>
+      <p className="mt-3 text-sm text-muted-foreground">Last updated: May 2026</p>
 
       <nav className="my-10 space-y-1 border-l-2 border-gold/40 pl-4">
         {sections.map(
@@ -172,7 +172,7 @@ export default async function PolicyPage({ params }: Props) {
               <a
                 key={i}
                 href={`#sec-${i}`}
-                className="block text-sm text-smoke transition-colors hover:text-gold"
+                className="block text-sm text-muted-foreground transition-colors hover:text-gold"
               >
                 {s.heading}
               </a>
@@ -180,16 +180,16 @@ export default async function PolicyPage({ params }: Props) {
         )}
       </nav>
 
-      <div className="space-y-10 text-sm leading-relaxed text-smoke">
+      <div className="space-y-10 text-sm leading-relaxed text-muted-foreground">
         {sections.map((s, i) => (
           <section key={i} id={`sec-${i}`} className="scroll-mt-24">
             {s.heading && (
-              <h2 className="mb-3 font-display text-2xl text-ivory">
+              <h2 className="mb-3 font-display text-2xl text-foreground">
                 {s.heading}
               </h2>
             )}
             <div
-              className="prose prose-sm prose-invert max-w-none prose-headings:font-display prose-a:text-gold prose-strong:text-ivory"
+              className="prose prose-sm prose-invert max-w-none prose-headings:font-display prose-a:text-gold prose-strong:text-foreground"
               dangerouslySetInnerHTML={{
                 __html: policyBodyHtml(s.body),
               }}
