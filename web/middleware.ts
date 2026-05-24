@@ -160,5 +160,7 @@ export const config = {
     "/studio",
     "/admin/:path*",
     "/admin",
+    /** Refresh Supabase session cookies before admin API route handlers read auth. */
+    "/api/admin/:path*",
   ],
 };

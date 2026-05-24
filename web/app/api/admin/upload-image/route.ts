@@ -4,6 +4,7 @@ import { v2 as cloudinary } from "cloudinary";
 import {
   cloudinaryErrorDiag,
   cloudinaryErrorMessage,
+  configureCloudinaryAdmin,
   getCloudinaryAdminCredentials,
 } from "@/lib/cloudinary-admin-config";
 import { ADMIN_PRODUCT_IMAGE_MAX_BYTES } from "@/lib/admin/product-image-upload";
@@ -32,14 +33,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { data: profile } = await supabase
+    const { data: profile, error: profileErr } = await supabase
       .from("profiles")
       .select("role")
       .eq("id", user.id)
       .single();
 
+    if (profileErr) {
+      console.error("[upload-image] profiles:", profileErr.message);
+      return NextResponse.json(
+        { error: "Could not verify admin role. Sign in again at /admin/login." },
+        { status: 403 },
+      );
+    }
     if (profile?.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json(
+        { error: "Admin privileges required to upload images." },
+        { status: 403 },
+      );
     }
 
     const cfg = getCloudinaryAdminCredentials();
@@ -48,16 +59,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { cloudName } = cfg.credentials;
-
-    // Credentials MUST come only from env (never inlined). Mirrors Cloudinary's expected keys.
-    cloudinary.config({
-      cloud_name:
-        process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME?.trim() ||
-        process.env.CLOUDINARY_CLOUD_NAME?.trim(),
-      api_key: process.env.CLOUDINARY_API_KEY?.trim(),
-      api_secret: process.env.CLOUDINARY_API_SECRET?.trim(),
-      secure: true,
-    });
+    configureCloudinaryAdmin(cfg.credentials);
 
     const formData = await request.formData();
     const file = formData.get("file") as File | null;

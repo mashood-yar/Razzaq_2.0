@@ -91,7 +91,7 @@ export default function AddProductPage() {
         try {
           const res = await fetch("/api/admin/upload-image", {
             method: "POST",
-            credentials: "same-origin",
+            credentials: "include",
             body: formData,
             signal: AbortSignal.timeout(120_000),
           });

@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { useDropzone } from "react-dropzone";
-import { X, Upload, ArrowLeft } from "lucide-react";
+import { X, Upload, ArrowLeft, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import type { Product, ProductImage, Category } from "@/lib/types";
@@ -38,6 +38,7 @@ export default function EditProductPage() {
   const supabase = useMemo(() => tryCreateBrowserClient(), []);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [pendingImageUploads, setPendingImageUploads] = useState(0);
   const [product, setProduct] = useState<Product | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [formData, setFormData] = useState<ProductFormData>({
@@ -121,6 +122,7 @@ export default function EditProductPage() {
         is_primary: false,
       }));
       setImages((prev) => [...prev, ...newImages]);
+      setPendingImageUploads((n) => n + newImages.length);
 
       for (const img of newImages) {
         const formData = new FormData();
@@ -128,7 +130,7 @@ export default function EditProductPage() {
         try {
           const res = await fetch("/api/admin/upload-image", {
             method: "POST",
-            credentials: "same-origin",
+            credentials: "include",
             body: formData,
             signal: AbortSignal.timeout(120_000),
           });
@@ -150,6 +152,8 @@ export default function EditProductPage() {
           );
         } catch (e) {
           toast.error(`${img.file!.name}: ${formatImageUploadFetchError(e, img.file!.name)}`);
+        } finally {
+          setPendingImageUploads((n) => Math.max(0, n - 1));
         }
       }
     },
@@ -167,6 +171,16 @@ export default function EditProductPage() {
     }
 
     try {
+      if (pendingImageUploads > 0) {
+        toast.error("Wait for all image uploads to finish before saving.");
+        return;
+      }
+      const stuckLocal = images.some((img) => img.file && !img.url?.trim());
+      if (stuckLocal) {
+        toast.error("Some images failed to upload or are still pending. Remove them or re-add files.");
+        return;
+      }
+
       const validated = productSchema.parse(formData);
       const categoryId = validated.category_id;
 
@@ -202,6 +216,7 @@ export default function EditProductPage() {
         await supabase.from("product_images").delete().eq("id", imageId);
         await fetch("/api/admin/delete-image", {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ imageId }),
         });
@@ -252,6 +267,7 @@ export default function EditProductPage() {
       // Delete from Cloudinary
       await fetch("/api/admin/delete-image", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ imageId: img.id }),
       });
@@ -402,6 +418,12 @@ export default function EditProductPage() {
                 {isDragActive ? "Drop images here" : "Drag & drop images, or click to select"}
               </p>
               <p className="text-xs text-muted-foreground mt-1">PNG, JPG, JPEG, WebP</p>
+              {pendingImageUploads > 0 && (
+                <p className="text-xs text-muted-foreground mt-2 flex items-center justify-center gap-2">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+                  Uploading {pendingImageUploads} image{pendingImageUploads === 1 ? "" : "s"} to Cloudinary…
+                </p>
+              )}
             </div>
 
             {images.length > 0 && (
@@ -418,6 +440,12 @@ export default function EditProductPage() {
                     {img.is_primary && (
                       <span className="absolute top-1 left-1 bg-gold text-obsidian text-xs px-2 py-1 rounded">
                         Primary
+                      </span>
+                    )}
+                    {!img.url && img.file && (
+                      <span className="absolute bottom-1 left-1 right-1 flex items-center justify-center gap-1 bg-background/90 text-xs py-1 rounded">
+                        <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
+                        Uploading…
                       </span>
                     )}
                     <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -445,7 +473,7 @@ export default function EditProductPage() {
           </div>
 
           <div className="flex gap-4">
-            <Button type="submit" disabled={saving}>
+            <Button type="submit" disabled={saving || pendingImageUploads > 0}>
               {saving ? "Saving..." : "Save Changes"}
             </Button>
             <Button

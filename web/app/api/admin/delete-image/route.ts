@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { v2 as cloudinary } from "cloudinary";
-import { cloudinaryErrorDiag, cloudinaryErrorMessage, getCloudinaryAdminCredentials } from "@/lib/cloudinary-admin-config";
+import {
+  cloudinaryErrorDiag,
+  cloudinaryErrorMessage,
+  configureCloudinaryAdmin,
+  getCloudinaryAdminCredentials,
+} from "@/lib/cloudinary-admin-config";
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
@@ -27,14 +32,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: cfg.error }, { status: 503 });
   }
 
-  cloudinary.config({
-    cloud_name:
-      process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME?.trim() ||
-      process.env.CLOUDINARY_CLOUD_NAME?.trim(),
-    api_key: process.env.CLOUDINARY_API_KEY?.trim(),
-    api_secret: process.env.CLOUDINARY_API_SECRET?.trim(),
-    secure: true,
-  });
+  configureCloudinaryAdmin(cfg.credentials);
 
   try {
     const body = await request.json();

@@ -10,6 +10,8 @@ export const RESEND_ORDER_EMAIL_KIND = {
   DELIVERED_NOTICE: "order_delivered",
   PAYMENT_VERIFIED: "payment_verified",
   CANCELLED: "order_cancelled",
+  /** Internal merchant alert when a customer places an order */
+  MERCHANT_NEW_ORDER: "merchant_new_order",
 } as const;
 
 export type ResendOrderEmailKind =

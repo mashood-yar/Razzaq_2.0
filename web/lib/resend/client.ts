@@ -15,6 +15,10 @@ export type SendOrderConfirmationCodeEmailResult =
   | { sent: true }
   | { sent: false; reason: "missing_api_key" | "resend_rejected" };
 
+export type SendMerchantNewOrderAlertEmailResult =
+  | { sent: true }
+  | { sent: false; reason: "missing_api_key" | "resend_rejected" };
+
 /** Non-PII summary for server logs when Resend rejects a send. */
 function logResendSendRejected(
   context: string,
@@ -153,6 +157,25 @@ function baseHtml(content: string): string {
 </html>`;
 }
 
+function formatPaymentMethodLabel(method: Order["payment_method"]): string {
+  switch (method) {
+    case "cod":
+      return "Cash on Delivery (COD)";
+    case "bank_transfer":
+      return "Bank / Upaisa transfer";
+    case "safepay":
+      return "Safepay (card / wallet)";
+    case "jazzcash":
+      return "JazzCash";
+    case "payfast":
+      return "PayFast";
+    case "card":
+      return "Card (Stripe)";
+    default:
+      return method;
+  }
+}
+
 function orderItemsTable(order: Order): string {
   const rows = (order.order_items ?? [])
     .map(
@@ -224,6 +247,61 @@ export async function sendOrderConfirmationCodeEmail(
 
   if (error) {
     logResendSendRejected("order confirmation code email", error);
+    return { sent: false, reason: "resend_rejected" };
+  }
+
+  return { sent: true };
+}
+
+/** Merchant alert — new order placed (does not replace customer confirmation emails). */
+export async function sendMerchantNewOrderAlertEmail(
+  order: Order,
+  merchantEmail: string,
+): Promise<SendMerchantNewOrderAlertEmailResult> {
+  const origin = siteOrigin();
+  const adminUrl = `${origin}/admin/orders/${order.id}`;
+  const isBank = order.payment_method === "bank_transfer";
+  const paymentLabel = formatPaymentMethodLabel(order.payment_method);
+
+  const resend = getResend();
+  if (!resend) {
+    return { sent: false, reason: "missing_api_key" };
+  }
+
+  const { error } = await resend.emails.send({
+    from: getResendFrom(),
+    to: merchantEmail,
+    tags: orderEmailTags(order.id, RESEND_ORDER_EMAIL_KIND.MERCHANT_NEW_ORDER),
+    subject: `New order #${order.order_number} — ${BRAND}`,
+    html: baseHtml(`
+      <div class="badge">New order</div>
+      <h1>Order #${order.order_number}</h1>
+      <p>A customer just placed an order on ${BRAND}. Review details below and fulfil from the admin panel.</p>
+      <hr class="div">
+      <p><strong>Customer</strong><br>
+        ${order.customer_name ?? "—"}<br>
+        <a href="mailto:${order.customer_email}" style="color:#D4AF37">${order.customer_email}</a><br>
+        ${order.customer_phone ?? order.ship_phone ?? "—"}
+      </p>
+      ${orderItemsTable(order)}
+      <hr class="div">
+      <p><strong>Payment:</strong> ${paymentLabel}
+        ${isBank && order.transaction_id ? `<br><span class="muted">Txn reference: ${order.transaction_id}</span>` : ""}
+      </p>
+      <p><strong>Shipping to:</strong><br>
+        ${order.ship_first_name} ${order.ship_last_name}<br>
+        ${order.ship_address1}${order.ship_address2 ? ", " + order.ship_address2 : ""}<br>
+        ${order.ship_city}, ${order.ship_province}${order.ship_postal_code ? " " + order.ship_postal_code : ""}<br>
+        ${order.ship_country}<br>
+        ${order.ship_phone}
+      </p>
+      <p class="muted">Status: ${order.status.replace(/_/g, " ")}</p>
+      <p style="text-align:center"><a href="${adminUrl}" class="btn">Open in admin</a></p>
+    `),
+  });
+
+  if (error) {
+    logResendSendRejected("merchant new order alert", error);
     return { sent: false, reason: "resend_rejected" };
   }
 
