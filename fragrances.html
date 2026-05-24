@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Shop all Razzaq Luxe fragrances — oud, oriental, floral and fresh. Premium Pakistani perfumes crafted in Quetta. Free shipping above PKR 5,000.">
+  <title>All Fragrances — Razzaq Luxe | Premium Pakistani Perfumes</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="fragrances.css">
+  <link rel="stylesheet" href="footer-global.css">
+</head>
+<body>
+
+  <div class="announcement-bar" id="announcement-bar">
+    Free shipping on orders above PKR 5,000 &nbsp;·&nbsp; Use code <strong>LUXE10</strong> for 10% off
+  </div>
+
+  <header class="site-nav has-announcement" id="site-nav" role="banner">
+    <a href="index.html" class="nav-logo" aria-label="Razzaq Luxe Home">Razzaq Luxe</a>
+    <nav aria-label="Main Navigation">
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="fragrances.html" aria-current="page">Fragrances</a></li>
+        <li><a href="about.html">Our Story</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="nav-actions">
+      <button class="nav-icon-btn" id="search-btn" aria-label="Search fragrances">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+      <button class="nav-icon-btn" id="cart-btn" aria-label="Open cart">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+      </button>
+      <button class="hamburger" id="hamburger-btn" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Navigation Menu">
+    <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Close menu">✕</button>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="fragrances.html">Fragrances</a>
+      <a href="about.html">Our Story</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="mobile-menu-footer">Quetta, Pakistan · Since 2020</div>
+  </div>
+
+  <main>
+
+    <!-- FRAGRANCES HERO -->
+    <section class="frag-hero" id="frag-hero" aria-label="Fragrances Collection">
+      <div class="frag-hero-bg"></div>
+      <div class="frag-hero-content">
+        <span class="frag-hero-eyebrow">The Collection</span>
+        <h1 class="frag-hero-headline">
+          All <em>Fragrances</em>
+        </h1>
+        <p class="frag-hero-sub">
+          Seven signatures. Each one a world.
+          Discover the scent that speaks for you.
+        </p>
+      </div>
+    </section>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar" id="filter-bar" role="navigation" aria-label="Filter fragrances">
+      <div class="filter-bar-inner">
+        <span class="filter-label">Filter:</span>
+        <button class="filter-btn active" id="filter-all" data-filter="all" aria-pressed="true">All</button>
+        <button class="filter-btn" id="filter-oud" data-filter="oud" aria-pressed="false">Oud</button>
+        <button class="filter-btn" id="filter-oriental" data-filter="oriental" aria-pressed="false">Oriental</button>
+        <button class="filter-btn" id="filter-floral" data-filter="floral" aria-pressed="false">Floral</button>
+        <button class="filter-btn" id="filter-fresh" data-filter="fresh" aria-pressed="false">Fresh</button>
+        <span class="filter-count" id="filter-count" aria-live="polite">7 Fragrances</span>
+      </div>
+    </div>
+
+    <!-- CATALOG — fragrances.js renders into #product-grid-container -->
+    <section class="frag-catalog" id="frag-catalog" aria-labelledby="catalog-heading">
+      <div class="container">
+        <h2 class="sr-only" id="catalog-heading">Fragrance Catalog</h2>
+
+        <!--
+          IMPORTANT: fragrances.js renders product cards into this container.
+          DO NOT add hardcoded cards here — they would conflict with JS rendering.
+          The CSS in fragrances.css provides the visual styles for JS-injected cards.
+        -->
+        <div class="product-grid" id="product-grid-container" role="list" aria-label="Fragrance products">
+          <!-- JS renders here -->
+          <div class="product-grid-empty" id="frag-loading" aria-live="polite">
+            Loading fragrances...
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer pb-safe" id="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <a href="index.html" class="footer-logo">Razzaq Luxe</a>
+      <p class="footer-origin">Quetta, Pakistan</p>
+      <div class="footer-grid">
+        <div>
+          <p class="footer-desc">A luxury fragrance house rooted in the scent traditions of Balochistan.</p>
+          <div class="footer-socials">
+            <a href="#" class="footer-social-link" id="frag-footer-ig">Instagram</a>
+            <a href="#" class="footer-social-link" id="frag-footer-tt">TikTok</a>
+          </div>
+        </div>
+        <div>
+          <p class="footer-col-title">Shop</p>
+          <ul class="footer-links">
+            <li><a href="fragrances.html">All Fragrances</a></li>
+            <li><a href="fragrances.html">Best Sellers</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Company</p>
+          <ul class="footer-links">
+            <li><a href="about.html">Our Story</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="returns.html">Returns</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-col-title">Legal</p>
+          <ul class="footer-links">
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copyright">© 2025 Razzaq Luxe. All rights reserved.</p>
+        <div class="footer-payments">
+          <span class="footer-payment-badge">JazzCash</span>
+          <span class="footer-payment-badge">EasyPaisa</span>
+          <span class="footer-payment-badge">Bank Transfer</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      var nav = document.querySelector('.site-nav');
+      if (!nav) return;
+      window.addEventListener('scroll', function() { nav.classList.toggle('scrolled', window.scrollY > 80); }, { passive: true });
+    })();
+  </script>
+  <script>
+    (function() {
+      var hamburger = document.getElementById('hamburger-btn');
+      var menu = document.getElementById('mobile-menu');
+      var closeBtn = document.getElementById('mobile-menu-close');
+      if (!hamburger || !menu) return;
+      function openMenu() { menu.classList.add('open'); hamburger.classList.add('open'); hamburger.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
+      function closeMenu() { menu.classList.remove('open'); hamburger.classList.remove('open'); hamburger.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
+      hamburger.addEventListener('click', function() { if (menu.classList.contains('open')) { closeMenu(); } else { openMenu(); } });
+      if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+      menu.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', closeMenu); });
+    })();
+  </script>
+  <!-- Filter button active state toggle (visual only — fragrances.js handles actual filtering) -->
+  <script>
+    (function() {
+      var filterBtns = document.querySelectorAll('.filter-btn');
+      filterBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          filterBtns.forEach(function(b) { b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
+          this.classList.add('active');
+          this.setAttribute('aria-pressed','true');
+        });
+      });
+    })();
+  </script>
+  <script>
+    (function() {
+      var els = document.querySelectorAll('.reveal');
+      if (!els.length) return;
+      var io = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+      }, { threshold: 0.1, rootMargin: '-60px' });
+      els.forEach(function(el) { io.observe(el); });
+    })();
+  </script>
+  <!-- fragrances.js handles product loading, filtering, cart — DO NOT MODIFY -->
+  <script src="fragrances.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
