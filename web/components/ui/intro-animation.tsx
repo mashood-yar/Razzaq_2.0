@@ -48,18 +48,14 @@ export function IntroAnimation() {
             transition={{ duration: 1.8, ease: "easeOut", delay: 0.2 }}
             className="flex flex-col items-center text-center"
           >
-            <h1 className="font-display font-light text-[2.5rem] md:text-[4rem] text-[var(--gold-warm)] tracking-[0.2em] uppercase leading-none mb-4">
-              Razzaq
+            <h1 className="font-display font-medium text-[2rem] md:text-[3.5rem] text-[var(--cream-bone)] tracking-[0.25em] uppercase leading-none">
+              RAZZAQ LUXE
             </h1>
-            <div className="h-[1px] w-[120px] bg-gradient-to-r from-transparent via-[var(--gold-warm)] to-transparent my-2" />
-            <h2 className="font-display italic font-light text-[1.5rem] md:text-[2.5rem] text-[var(--cream-bone)] tracking-[0.3em] uppercase">
-              Luxe
-            </h2>
             <motion.p 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 1.5 }}
-              className="font-body text-[10px] tracking-[0.4em] text-[var(--cream-muted)] mt-8 uppercase"
+              transition={{ duration: 1, delay: 1.2 }}
+              className="font-body text-[11px] tracking-[0.4em] text-[var(--gold-warm)] mt-6 uppercase"
             >
               Extrait de Parfum
             </motion.p>
