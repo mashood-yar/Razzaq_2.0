@@ -114,11 +114,16 @@ const config: Config = {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "marquee-right": {
+          "0%": { transform: "translateX(-50%)" },
+          "100%": { transform: "translateX(0%)" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards",
         "slide-right": "slide-right 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards",
         shimmer: "shimmer 2s ease-in-out infinite",
+        "marquee-right": "marquee-right 25s linear infinite",
       },
     },
   },

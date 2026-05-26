@@ -84,9 +84,9 @@ export function AtelierHomeClient({ bestSellers }: { bestSellers: Product[] }) {
 
       {/* 2. SIGNATURE SCENTS MARQUEE */}
       <section className="w-full h-[52px] lg:h-[60px] bg-[var(--bg-obsidian)] border-y border-[var(--border-fine)] overflow-hidden flex items-center">
-        <div className="flex animate-shimmer whitespace-nowrap gap-4 px-4 w-[200%]">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="flex items-center gap-4 text-[14px] font-display text-[var(--cream-warm)] tracking-[0.1em]">
+        <div className="flex animate-marquee-right whitespace-nowrap w-max">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => (
+            <div key={i} className="flex items-center gap-4 text-[14px] font-display text-[var(--cream-warm)] tracking-[0.1em] px-2">
               <span>SPORTY · <i className="text-[var(--cream-muted)]">fresh, athletic, bold</i></span>
               <span className="text-[var(--gold-warm)]/50">✦</span>
               <span>HABIBI · <i className="text-[var(--cream-muted)]">warm, oriental, enveloping</i></span>
