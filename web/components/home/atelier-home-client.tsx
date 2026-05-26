@@ -182,25 +182,12 @@ export function AtelierHomeClient({ bestSellers }: { bestSellers: Product[] }) {
             <p className="font-body font-light text-[15px] text-[var(--cream-muted)]">Our palette — premium materials orchestrated like art.</p>
           </div>
           
-          <div className="flex flex-col lg:hidden">
-            <div className="flex gap-6 border-b border-[var(--border-mid)] pb-2 mb-6 overflow-x-auto">
-              {['TOP NOTES', 'HEART NOTES', 'BASE NOTES'].map((tab, i) => (
-                <button key={tab} className={`font-body font-semibold text-[11px] tracking-[0.25em] whitespace-nowrap ${i === 0 ? 'text-[var(--gold-warm)] border-b-2 border-[var(--gold-warm)] pb-2' : 'text-[var(--cream-ghost)] pb-2'}`}>
-                  {tab}
-                </button>
-              ))}
-            </div>
-            <div className="flex gap-3 overflow-x-auto pb-4 hide-scrollbar">
-              {['Bergamot', 'Citrus', 'Pink Pepper', 'Saffron'].map(note => (
-                <div key={note} className="w-[100px] h-[68px] shrink-0 bg-[var(--bg-dusk)] border border-[var(--border-fine)] rounded-[4px] flex items-center justify-center">
-                  <span className="font-body font-medium text-[12px] text-[var(--cream-warm)]">{note}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div className="hidden lg:flex justify-center items-center h-[500px] opacity-20 border border-[var(--gold-warm)] rounded-full w-[500px] mx-auto">
-            <span className="font-display text-4xl text-[var(--gold-warm)]">RL Wheel</span>
+          <div className="flex justify-center items-center h-[320px] lg:h-[500px] opacity-40 lg:opacity-20 mx-auto mt-8 lg:mt-0">
+            <img 
+              src="/rl-wheel.png" 
+              alt="Razzaq Luxe Scent Wheel" 
+              className="w-[300px] h-[300px] lg:w-[500px] lg:h-[500px] object-contain animate-[spin_60s_linear_infinite]" 
+            />
           </div>
         </motion.div>
       </section>
