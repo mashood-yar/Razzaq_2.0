@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, ChevronDown, Check } from "lucide-react";
 import type { LegacyProduct as Product } from "@/lib/products";
-import { CinematicProductGrid } from "@/components/cinematic/cinematic-product-grid";
+import { ProductCard } from "@/components/product/product-card";
 import { motion, AnimatePresence } from "framer-motion";
 
 const PAGE_SIZE = 12;
@@ -165,7 +165,11 @@ export function ShopContent({ initialProducts }: { initialProducts: Product[] })
           Showing {filtered.length} fragrance{filtered.length !== 1 ? "s" : ""}
         </p>
 
-        <CinematicProductGrid products={slice} />
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[12px] lg:gap-6">
+          {slice.map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
 
         {filtered.length === 0 && (
           <div className="w-full py-32 flex flex-col items-center justify-center text-center px-4 border border-[var(--border-fine)] border-dashed rounded-[4px] mt-12">
