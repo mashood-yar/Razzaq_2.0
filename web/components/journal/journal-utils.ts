@@ -4,7 +4,7 @@ const TORN_CLIP =
   "polygon(0 0, 100% 0, 100% 92%, 97% 95%, 94% 91%, 91% 96%, 88% 92%, 85% 97%, 82% 93%, 79% 97%, 76% 92%, 73% 96%, 70% 91%, 67% 95%, 64% 91%, 61% 96%, 58% 92%, 55% 96%, 52% 91%, 49% 95%, 46% 92%, 43% 96%, 40% 91%, 37% 95%, 34% 92%, 31% 96%, 28% 91%, 25% 95%, 22% 92%, 19% 96%, 16% 91%, 13% 95%, 10% 92%, 7% 96%, 4% 91%, 0 95%)";
 
 const CARD_ROTATIONS = [-1.5, 0.8, -0.5, 1.2] as const;
-const CARD_BACKGROUNDS = ["#1B262C", "#16213E", "#1B3A4B"] as const;
+const CARD_BACKGROUNDS = ["#1c1c1c", "#1a1a1a", "#222222"] as const;
 
 export function getTornClipPath(): string {
   return TORN_CLIP;

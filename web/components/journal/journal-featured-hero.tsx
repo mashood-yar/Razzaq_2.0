@@ -39,23 +39,23 @@ export function JournalFeaturedHero({ article }: JournalFeaturedHeroProps) {
         </div>
 
         <div className="flex flex-col justify-center lg:col-span-2">
-          <span className="inline-block w-fit -rotate-1 rounded-full bg-[#0F4C75] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+          <span className="inline-block w-fit rounded-[2px] bg-[var(--gold-warm)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--bg-void)]">
             Featured · {article.category}
           </span>
-          <h2 className="mt-4 font-display text-3xl font-bold leading-tight text-foreground transition-colors group-hover:text-[#0F4C75] sm:text-4xl">
+          <h2 className="mt-4 font-display italic text-[2.5rem] leading-tight text-[var(--cream-bone)] transition-colors group-hover:text-[var(--gold-warm)] sm:text-[3rem]">
             {article.title}
           </h2>
-          <p className="mt-4 line-clamp-3 font-body text-base leading-relaxed text-muted-foreground sm:text-lg">
+          <p className="mt-4 line-clamp-3 font-body font-light text-[15px] leading-[1.8] text-[var(--cream-muted)]">
             {article.excerpt}
           </p>
-          <div className="mt-6 flex items-center gap-3 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">{article.author}</span>
+          <div className="mt-6 flex items-center gap-3 font-body text-[13px] font-normal text-[var(--cream-ghost)]">
+            <span className="text-[var(--cream-bone)]">{article.author}</span>
             <span aria-hidden="true">·</span>
             <time dateTime={article.date}>{formatArticleDate(article.date)}</time>
             <span aria-hidden="true">·</span>
             <span>{article.readTime}</span>
           </div>
-          <span className="mt-6 inline-flex items-center gap-2 font-semibold text-[#0F4C75] transition-transform group-hover:translate-x-1">
+          <span className="mt-8 font-body font-semibold text-[11px] tracking-[0.2em] uppercase flex items-center gap-2 text-[var(--gold-warm)] transition-transform group-hover:translate-x-1">
             Read story
             <span aria-hidden="true">→</span>
           </span>

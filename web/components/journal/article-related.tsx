@@ -10,7 +10,7 @@ export function ArticleRelated({ articles }: ArticleRelatedProps) {
   if (articles.length === 0) return null;
 
   return (
-    <section className="mt-20 border-t border-[#1B3A4B]/60 pt-16">
+    <section className="mt-20 border-t border-graphite pt-16">
       <h2 className="text-center font-display text-2xl font-bold text-foreground sm:text-3xl">
         More from the Journal
       </h2>

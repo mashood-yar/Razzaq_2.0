@@ -6,14 +6,14 @@ export function JournalEmptyState() {
         aria-hidden="true"
       >
         <div
-          className="mx-auto h-48 w-48 rounded-[40%_60%_55%_45%/50%_40%_60%_50%] bg-[#1B3A4B]"
+          className="mx-auto h-48 w-48 rounded-[40%_60%_55%_45%/50%_40%_60%_50%] bg-gold/10"
           style={{ animation: "organic-float 10s ease-in-out infinite" }}
         />
       </div>
-      <h2 className="font-display text-2xl font-semibold text-foreground sm:text-3xl">
+      <h2 className="font-display text-2xl font-semibold text-ivory sm:text-3xl">
         No stories yet — check back soon
       </h2>
-      <p className="mt-3 text-sm text-muted-foreground">
+      <p className="mt-3 text-sm text-smoke">
         Try a different search or category filter.
       </p>
     </div>

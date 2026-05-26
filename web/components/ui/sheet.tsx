@@ -37,8 +37,7 @@ const sheetVariants = cva(
           "inset-x-0 bottom-0 border-t rounded-none rounded-t-xl sm:rounded-t-xl",
         left:
           "inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm rounded-none rounded-r-xl sm:rounded-r-xl",
-        right:
-          "inset-y-0 right-0 h-full w-full border-l sm:max-w-md rounded-none rounded-l-xl sm:rounded-l-xl",
+        right: "inset-y-0 right-0 h-full w-full border-l sm:max-w-md rounded-none rounded-l-[2px] sm:rounded-l-[2px]",
       },
     },
     defaultVariants: {

@@ -65,14 +65,14 @@ export function JournalScroll({ articles, featuredSlug }: JournalScrollProps) {
     !search.trim();
 
   return (
-    <div className="relative min-h-screen bg-[#1B262C]">
-      {/* Stronger grain overlay — page-specific */}
+    <div className="relative min-h-screen bg-[var(--bg-obsidian)]">
+      {/* Subtle overlay */}
       <div
-        className="pointer-events-none absolute inset-0 z-0 bg-grain opacity-[0.06] mix-blend-multiply"
+        className="pointer-events-none absolute inset-0 z-0 bg-[url('/arabesque.svg')] bg-repeat opacity-[0.02]"
         aria-hidden="true"
       />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 pb-12 pt-36 sm:px-6 sm:pb-16 sm:pt-40 lg:px-8 lg:pb-20 lg:pt-48">
         <JournalHeader />
 
         <JournalSearchBar value={search} onChange={setSearch} />

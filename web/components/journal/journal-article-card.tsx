@@ -37,11 +37,11 @@ export function JournalArticleCard({
         backgroundColor: background,
         rotate: `${rotation}deg`,
       }}
-      className="group relative flex flex-col shadow-[4px_8px_24px_rgba(44,44,36,0.15)] transition-all duration-300 hover:-translate-y-2 hover:rotate-0 hover:shadow-[6px_14px_32px_rgba(44,44,36,0.22)]"
+      className="group relative flex flex-col transition-all duration-300 hover:-translate-y-2 border border-[var(--border-fine)]"
     >
       {/* Pushpin */}
       <span
-        className="absolute left-1/2 top-0 z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#3282B8] shadow-[0_2px_4px_rgba(44,44,36,0.25)] ring-2 ring-[#3282B8]/30"
+        className="absolute left-1/2 top-0 z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--gold-warm)] shadow-sm"
         aria-hidden="true"
       />
 
@@ -58,32 +58,32 @@ export function JournalArticleCard({
         />
       </Link>
 
-      <div className={`flex flex-1 flex-col ${compact ? "p-4" : "p-6 sm:p-7"}`}>
-        <div className="flex items-center justify-between gap-2">
+      <div className={`flex flex-1 flex-col ${compact ? "p-4" : "p-6 sm:p-7"} bg-[var(--bg-dusk)]`}>
+        <div className="flex items-center justify-between gap-2 mb-3">
           <span
-            className="inline-block -rotate-1 rounded-full bg-[#0F4C75] px-3 py-0.5 text-xs font-semibold text-white"
+            className="inline-block rounded-[2px] bg-[var(--gold-warm)] px-2 py-1 text-[9px] font-semibold tracking-[0.2em] uppercase text-[var(--bg-void)]"
           >
             {article.category}
           </span>
-          <span className="text-xs text-muted-foreground">{article.readTime}</span>
+          <span className="text-[12px] font-body text-[var(--cream-ghost)]">{article.readTime}</span>
         </div>
 
         <h2
-          className={`mt-3 font-display font-bold leading-snug text-foreground ${compact ? "text-lg" : "text-xl sm:text-2xl"}`}
+          className={`font-display italic font-light leading-snug text-[var(--cream-bone)] ${compact ? "text-xl" : "text-[1.75rem]"}`}
         >
-          <Link href={`/journal/${article.slug}`} className="hover:text-[#0F4C75]">
+          <Link href={`/journal/${article.slug}`} className="hover:text-[var(--gold-warm)] transition-colors">
             {article.title}
           </Link>
         </h2>
 
         <p
-          className={`mt-2 flex-1 text-muted-foreground ${compact ? "line-clamp-2 text-sm" : "line-clamp-2 text-sm sm:text-base"}`}
+          className={`mt-3 flex-1 font-body font-light text-[var(--cream-muted)] leading-[1.6] ${compact ? "line-clamp-2 text-[13px]" : "line-clamp-3 text-[14px]"}`}
         >
           {article.excerpt}
         </p>
 
-        <div className="mt-4 flex items-center gap-3 border-t border-[#1B3A4B]/60 pt-4">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0F4C75]/15 font-display text-xs font-bold text-[#0F4C75]">
+        <div className="mt-5 flex items-center gap-3 border-t border-[var(--border-fine)] pt-4">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--gold-warm)]/10 font-body text-[10px] tracking-wider font-bold text-[var(--gold-warm)]">
             {article.author
               .split(" ")
               .map((w) => w[0])
@@ -92,12 +92,12 @@ export function JournalArticleCard({
               .toUpperCase()}
           </span>
           <div className="min-w-0">
-            <p className="truncate text-sm font-medium text-foreground">
+            <p className="truncate text-[13px] font-body text-[var(--cream-bone)]">
               {article.author}
             </p>
             <time
               dateTime={article.date}
-              className="text-xs text-muted-foreground"
+              className="text-[11px] font-body text-[var(--cream-ghost)]"
             >
               {formatArticleDate(article.date)}
             </time>

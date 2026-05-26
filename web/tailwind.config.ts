@@ -11,152 +11,114 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        "ocean-deep": "#1B262C",
-        "ocean-surface": "#16213E",
-        "ocean-primary": "#0F4C75",
-        "ocean-mid": "#3282B8",
-        "ocean-light": "#BBE1FA",
-        gold: {
-          DEFAULT: "#B8961E",
-          light: "#D4A832",
-          subtle: "#F5EDD6",
-        },
-        "gold-light": "#D4A832",
-        "gold-subtle": "#F5EDD6",
-        "text-primary": "#F3F4F1",
-        "text-secondary": "#BBE1FA",
-        "text-muted": "#8BA3B5",
-        success: "#4CAF82",
-        error: "#E05A5A",
-        border: {
-          DEFAULT: "#0F4C75",
-          subtle: "#1B3A4B",
-        },
-        "border-subtle": "#1B3A4B",
+        /* Primary Backgrounds */
+        void: "var(--bg-void)",
+        obsidian: "var(--bg-obsidian)",
+        dusk: "var(--bg-dusk)",
+        stone: "var(--bg-stone)",
+        ash: "var(--bg-ash)",
 
-        /* Semantic — wired to CSS variables */
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        /* Gold System */
+        gold: {
+          deep: "var(--gold-deep)",
+          earth: "var(--gold-earth)",
+          warm: "var(--gold-warm)",
+          bright: "var(--gold-bright)",
+          pale: "var(--gold-pale)",
+          DEFAULT: "var(--gold-warm)", // backward compat
+          light: "var(--gold-bright)",
+          muted: "var(--gold-earth)",
+        },
+
+        /* Cream System */
+        cream: {
+          bone: "var(--cream-bone)",
+          warm: "var(--cream-warm)",
+          muted: "var(--cream-muted)",
+          ghost: "var(--cream-ghost)",
+        },
+
+        /* Semantic */
+        ember: "var(--ember)",
+        sage: "var(--sage)",
+        "rose-dust": "var(--rose-dust)",
+        success: "var(--sage)",
+        error: "var(--ember)",
+        warning: "var(--gold-earth)",
+        info: "var(--gold-deep)",
+
+        /* Legacy Fallbacks mapping to new variables */
+        charcoal: "var(--bg-dusk)",
+        graphite: "var(--bg-ash)",
+        smoke: "var(--cream-muted)",
+        ivory: "var(--cream-bone)",
+        
+        /* Base mapped variables */
+        background: "var(--bg-obsidian)",
+        foreground: "var(--cream-bone)",
+        muted: {
+          DEFAULT: "var(--bg-ash)",
+          foreground: "var(--cream-muted)",
+        },
+        card: {
+          DEFAULT: "var(--bg-dusk)",
+          foreground: "var(--cream-bone)",
+        },
+        border: "var(--bg-ash)",
         primary: {
-          DEFAULT: "var(--primary)",
-          foreground: "var(--primary-foreground)",
+          DEFAULT: "var(--gold-warm)",
+          foreground: "var(--bg-void)",
         },
         secondary: {
-          DEFAULT: "var(--secondary)",
-          foreground: "var(--secondary-foreground)",
+          DEFAULT: "transparent",
+          foreground: "var(--cream-bone)",
         },
-        accent: {
-          DEFAULT: "var(--accent)",
-          foreground: "var(--accent-foreground)",
-        },
-        muted: {
-          DEFAULT: "var(--muted)",
-          foreground: "var(--muted-foreground)",
-        },
-        destructive: {
-          DEFAULT: "var(--destructive)",
-          foreground: "var(--destructive-foreground)",
-        },
-        ring: "var(--primary)",
-        card: {
-          DEFAULT: "var(--card)",
-          foreground: "var(--card-foreground)",
-        },
-        contrast: {
-          "on-light": "var(--text-on-light)",
-          "muted-on-light": "var(--text-muted-on-light)",
-          "caption-on-light": "var(--text-caption-on-light)",
-          "on-dark": "var(--text-on-dark)",
-          "muted-on-dark": "var(--text-muted-on-dark)",
-          "on-primary": "var(--text-on-primary)",
-          "on-terracotta": "var(--text-on-ocean-mid)",
-        },
-        warning: "#3282B8",
-
-        /* Legacy warm palette → ocean */
-        "rice-paper": "#1B262C",
-        "mughal-moss": "#0F4C75",
-        terracotta: "#3282B8",
-        sand: "#16213E",
-        parchment: "#16213E",
-        "warm-cream": "#1B262C",
-        "warm-sand": "#16213E",
-        "warm-accent": "#BBE1FA",
-        "luxe-gold": "#B8961E",
-        "luxe-gold-bright": "#D4A832",
-        obsidian: "#1B262C",
-        charcoal: "#16213E",
-        graphite: "#1B3A4B",
-        ash: "#8BA3B5",
-        smoke: "#8BA3B5",
-        ivory: "#F3F4F1",
-        cream: "#F3F4F1",
-        brand: {
-          slate: "#0F4C75",
-          mist: "#3282B8",
-          sky: "#BBE1FA",
-          frost: "#F3F4F1",
-        },
-        "navy-deep": "#1B262C",
-        "navy-brand": "#0F4C75",
-        "emerald-deep": "#0F4C75",
-        "emerald-brand": "#3282B8",
       },
       fontFamily: {
-        display: ["var(--font-fraunces)", "Georgia", "serif"],
-        body: ["var(--font-nunito)", "system-ui", "sans-serif"],
-        serif: ["var(--font-fraunces)", "Georgia", "serif"],
-        sans: ["var(--font-nunito)", "system-ui", "sans-serif"],
+        display: ["var(--font-cormorant)", "Georgia", "serif"],
+        body: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
+        serif: ["var(--font-cormorant)", "Georgia", "serif"],
+        sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
         mono: ["Courier Prime", "Courier New", "monospace"],
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-        pill: "9999px",
-        luxe: "2rem",
+        none: '0px',
+        sm: '2px',
+        md: '4px',
+        lg: '8px',
+        xl: '12px',
+        pill: '9999px',
+        DEFAULT: '4px',
+        full: "9999px",
+        luxe: "4px", /* Re-map old luxe class */
       },
       boxShadow: {
-        navy: "0 12px 40px -12px rgba(15, 76, 117, 0.35)",
-        moss: "0 12px 40px -12px rgba(15, 76, 117, 0.35)",
-        ocean: "0 12px 40px -12px rgba(15, 76, 117, 0.35)",
-        card: "0 8px 32px -8px rgba(0, 0, 0, 0.35)",
+        modal: "0 32px 80px rgba(0, 0, 0, 0.6)",
+        card: "0 8px 32px -8px rgba(0, 0, 0, 0.35)", /* subtle base shadow */
+      },
+      transitionTimingFunction: {
+        "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "in-out": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "luxury": "cubic-bezier(0.25, 0.1, 0.0, 1.0)",
       },
       keyframes: {
-        "marquee-seamless": {
-          "0%": { transform: "translateX(0)" },
-          "100%": { transform: "translateX(-50%)" },
-        },
         "fade-up": {
-          "0%": { opacity: "0", transform: "translateY(16px)" },
+          "0%": { opacity: "0", transform: "translateY(24px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "slide-right": {
+          "0%": { transform: "translateX(100%)" },
+          "100%": { transform: "translateX(0)" },
         },
         shimmer: {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
-        "drawer-in": {
-          "0%": { transform: "translateX(100%)" },
-          "100%": { transform: "translateX(0)" },
-        },
-        "organic-float": {
-          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
-          "50%": { transform: "translate(8px, -12px) scale(1.03)" },
-        },
       },
       animation: {
-        "marquee-row": "marquee-seamless 52s linear infinite",
-        "marquee-row-reverse": "marquee-seamless 62s linear infinite reverse",
-        "fade-up": "fade-up 0.7s ease-out forwards",
+        "fade-up": "fade-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards",
+        "slide-right": "slide-right 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards",
         shimmer: "shimmer 2s ease-in-out infinite",
-        "drawer-in": "drawer-in 0.5s cubic-bezier(0.16,1,0.3,1) forwards",
-        "organic-float": "organic-float 12s ease-in-out infinite",
-      },
-      backgroundImage: {
-        grain:
-          "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E\")",
-        "organic-shimmer":
-          "linear-gradient(90deg, var(--muted) 0%, #3282B8 50%, var(--muted) 100%)",
       },
     },
   },

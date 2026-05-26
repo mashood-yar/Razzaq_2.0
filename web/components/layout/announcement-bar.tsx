@@ -8,9 +8,9 @@ import { X } from "lucide-react";
 import { ANNOUNCEMENT_DISMISS_KEY } from "@/lib/banner-constants";
 
 const MESSAGES = [
-  "Free delivery on orders above PKR 5,000",
-  "New arrivals — explore the collection",
-  "Use code RAZZAQ10 for 10% off your first order",
+  "FREE SHIPPING ON ORDERS OVER PKR 5,000",
+  "NEW ARRIVALS — EXPLORE THE COLLECTION",
+  "USE CODE RAZZAQ10 FOR 10% OFF YOUR FIRST ORDER",
 ];
 
 const ROTATE_MS = 4000;
@@ -56,13 +56,13 @@ export function AnnouncementBar({ dismissed, onDismiss }: AnnouncementBarProps) 
     <motion.div
       initial={{ height: 0, opacity: 0 }}
       animate={{ height: "auto", opacity: 1 }}
-      className="fixed inset-x-0 top-0 z-[60] bg-[#0F4C75] text-[#BBE1FA]"
+      className="fixed inset-x-0 top-0 z-[60] bg-[var(--bg-obsidian)] text-[var(--cream-muted)] border-b border-[var(--border-fine)]"
       role="region"
       aria-label="Store announcements"
     >
       <Link
         href="/shop"
-        className="group flex min-h-9 items-center justify-center gap-2 px-10 py-2 text-center text-sm font-medium transition-opacity hover:opacity-90"
+        className="group flex min-h-9 items-center justify-center gap-2 px-10 py-2.5 text-center transition-colors hover:bg-[var(--bg-dusk)]"
       >
         <AnimatePresence mode="wait">
           <motion.span
@@ -71,12 +71,11 @@ export function AnnouncementBar({ dismissed, onDismiss }: AnnouncementBarProps) 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.35 }}
-            className="font-body [&_strong]:text-gold-light"
+            className="font-body font-semibold text-[10px] tracking-[0.2em] uppercase"
           >
             {MESSAGES[index].includes("RAZZAQ10") ? (
               <>
-                Use code <span className="font-semibold text-gold-light">RAZZAQ10</span> for 10%
-                off your first order
+                USE CODE <span className="text-[var(--gold-warm)]">RAZZAQ10</span> FOR 10% OFF YOUR FIRST ORDER
               </>
             ) : (
               MESSAGES[index]
@@ -87,7 +86,7 @@ export function AnnouncementBar({ dismissed, onDismiss }: AnnouncementBarProps) 
       <button
         type="button"
         onClick={dismiss}
-        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-[#F3F4F1]/80 transition-colors hover:bg-white/10 hover:text-[#F3F4F1]"
+        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-[2px] p-1.5 text-[var(--cream-ghost)] transition-colors hover:text-[var(--gold-warm)]"
         aria-label="Dismiss announcements"
       >
         <X className="h-4 w-4" />

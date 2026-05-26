@@ -27,10 +27,10 @@ export function JournalCategoryFilter({
               role="tab"
               aria-selected={isActive}
               onClick={() => onChange(cat)}
-              className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 focus-ocean ${
+              className={`shrink-0 rounded-[2px] px-4 py-2 font-body font-semibold text-[11px] tracking-[0.2em] uppercase transition-all duration-300 ${
                 isActive
-                  ? "bg-[#0F4C75] text-white shadow-sm"
-                  : "border-2 border-[#3282B8] bg-transparent text-[#3282B8] hover:bg-[#3282B8]/10"
+                  ? "bg-[var(--gold-warm)] text-[var(--bg-void)] shadow-sm"
+                  : "border border-[var(--border-mid)] bg-transparent text-[var(--cream-ghost)] hover:border-[var(--gold-warm)]/40 hover:text-[var(--cream-bone)]"
               }`}
             >
               {cat}

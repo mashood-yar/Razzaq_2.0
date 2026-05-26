@@ -11,10 +11,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
 const schema = z.object({
-  name:    z.string().min(2, "Name required"),
-  email:   z.string().email("Valid email required"),
+  name:    z.string().trim().min(2, "Name required"),
+  email:   z.string().trim().toLowerCase().email("Valid email required"),
   subject: z.string().min(2, "Subject required"),
-  message: z.string().min(10, "Please write at least 10 characters"),
+  message: z.string().trim().min(10, "Please write at least 10 characters"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -57,23 +57,23 @@ export function ContactForm() {
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl border border-border bg-charcoal/60 p-8 backdrop-blur-md"
+      className="rounded-[2px] border border-graphite bg-charcoal p-8 backdrop-blur-md"
     >
       {!sent ? (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <h2 className="font-display text-2xl text-foreground">Send a Message</h2>
+          <h2 className="font-display text-2xl text-ivory italic mb-4">Direct Enquiry</h2>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <Label>Name</Label>
-              <Input className="mt-1.5" {...register("name")} />
+              <Label className="text-smoke">Name</Label>
+              <Input className="input mt-1.5" {...register("name")} />
               {errors.name && (
                 <p className="mt-1 text-xs text-error">{errors.name.message}</p>
               )}
             </div>
             <div>
-              <Label>Email</Label>
-              <Input type="email" className="mt-1.5" {...register("email")} />
+              <Label className="text-smoke">Email</Label>
+              <Input type="email" className="input mt-1.5" {...register("email")} />
               {errors.email && (
                 <p className="mt-1 text-xs text-error">{errors.email.message}</p>
               )}
@@ -81,10 +81,10 @@ export function ContactForm() {
           </div>
 
           <div>
-            <Label>Subject</Label>
+            <Label className="text-smoke">Subject</Label>
             <select
               {...register("subject")}
-              className="mt-1.5 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-gold/60 focus:outline-none"
+              className="mt-1.5 w-full rounded-[2px] border border-graphite bg-obsidian px-3 py-2 text-sm text-ivory focus:border-gold/60 focus:outline-none focus:ring-1 focus:ring-gold/60 transition-colors"
             >
               <option value="">Select a topic</option>
               {SUBJECTS.map((s) => (
@@ -97,9 +97,9 @@ export function ContactForm() {
           </div>
 
           <div>
-            <Label>Message</Label>
+            <Label className="text-smoke">Message</Label>
             <Textarea
-              className="mt-1.5 min-h-[140px]"
+              className="input mt-1.5 min-h-[140px]"
               {...register("message")}
               placeholder="How can we help you?"
             />
@@ -114,14 +114,14 @@ export function ContactForm() {
             </p>
           )}
 
-          <Button type="submit" size="lg" disabled={isSubmitting}>
+          <button type="submit" className="btn-primary w-full mt-4" disabled={isSubmitting}>
             {isSubmitting ? "Sending…" : "Send Message"}
-          </Button>
+          </button>
         </form>
       ) : (
         <div className="py-8 text-center">
           <p className="font-display text-3xl italic text-gold">Thank you.</p>
-          <p className="mt-3 text-sm text-muted-foreground">
+          <p className="mt-3 text-sm text-smoke font-light tracking-wide">
             We received your message and will get back to you within 24 hours.
           </p>
         </div>

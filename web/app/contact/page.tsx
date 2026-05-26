@@ -2,49 +2,63 @@ import type { Metadata } from "next";
 import { ContactForm } from "@/components/contact/contact-form";
 
 export const metadata: Metadata = {
-  title: "Contact",
+  title: "Client Care | Razzaq Luxe",
   description:
-    "Reach Razzaq Luxe — customer support, order queries, and business enquiries.",
+    "Reach Razzaq Luxe — bespoke client care, order enquiries, and flagship boutique appointments.",
 };
 
 export default function ContactPage() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-      <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
-        <div>
-          <h1 className="font-display text-5xl text-foreground">Contact</h1>
-          <p className="mt-6 leading-relaxed text-muted-foreground">
-            Our customer support team is available Saturday–Thursday, 10 AM – 8 PM PKT. We typically respond within a few hours.
+    <div className="bg-obsidian min-h-screen text-ivory">
+      {/* Editorial Header */}
+      <section className="pt-32 pb-24 px-6 sm:px-12 lg:px-24">
+        <div className="mx-auto max-w-[1200px] border-b border-graphite pb-16">
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-gold mb-6">
+            Client Care
           </p>
+          <h1 className="font-display text-[clamp(3rem,6vw,6rem)] leading-none italic font-light">
+            At Your Service
+          </h1>
+        </div>
+      </section>
 
-          <div className="mt-12 space-y-8 text-sm">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
-                Customer Support
-              </p>
-              <p className="mt-2 text-muted-foreground">sultanbarak77@gmail.com</p>
-              <p className="text-muted-foreground">Sat–Thu, 10 AM – 8 PM PKT</p>
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
-                Flagship boutique
-              </p>
-              <p className="mt-2 text-muted-foreground">
-                Quetta, Balochistan
-                <br />
-                Pakistan
-              </p>
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
-                Business enquiries
-              </p>
-              <p className="mt-2 text-muted-foreground">sultanbarak77@gmail.com</p>
+      {/* Main Content */}
+      <div className="mx-auto max-w-[1200px] px-6 pb-32 sm:px-12 lg:px-0">
+        <div className="grid gap-24 lg:grid-cols-5">
+          {/* Contact Details (2 cols) */}
+          <div className="lg:col-span-2">
+            <p className="leading-loose text-smoke text-lg font-light mb-16 max-w-md">
+              Whether you are enquiring about a bespoke order or require assistance with your current selection, our Client Care team is dedicated to providing an impeccable experience.
+            </p>
+
+            <div className="space-y-12">
+              <div>
+                <h3 className="font-display text-2xl italic text-gold mb-4">
+                  Boutique Concierge
+                </h3>
+                <div className="space-y-2 text-smoke font-light tracking-wide">
+                  <p>sultanbarak77@gmail.com</p>
+                  <p>Sat–Thu, 10:00 – 20:00 PKT</p>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-display text-2xl italic text-gold mb-4">
+                  The Flagship
+                </h3>
+                <div className="space-y-2 text-smoke font-light tracking-wide">
+                  <p>Quetta, Balochistan</p>
+                  <p>Pakistan</p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <ContactForm />
+          {/* Form (3 cols) */}
+          <div className="lg:col-span-3">
+            <ContactForm />
+          </div>
+        </div>
       </div>
     </div>
   );

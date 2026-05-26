@@ -42,7 +42,7 @@ export async function generateMetadata({
 
 function PullQuote({ text }: { text: string }) {
   return (
-    <blockquote className="my-8 border-l-4 border-[#0F4C75] py-2 pl-6 font-display text-xl italic leading-snug text-[#3282B8] sm:text-2xl">
+    <blockquote className="my-10 border-l-[2px] border-[var(--gold-warm)] py-2 pl-6 font-display text-[1.5rem] italic leading-snug text-[var(--gold-warm)] sm:text-[2rem]">
       &ldquo;{text}&rdquo;
     </blockquote>
   );
@@ -66,33 +66,33 @@ export default async function ArticlePage({
     <>
       <ArticleReadingProgress />
 
-      <article className="relative min-h-screen bg-[#1B262C]">
+      <article className="relative min-h-screen bg-[var(--bg-obsidian)]">
         <div
-          className="pointer-events-none absolute inset-0 bg-grain opacity-[0.06] mix-blend-multiply"
+          className="pointer-events-none absolute inset-0 bg-[url('/arabesque.svg')] bg-repeat opacity-[0.02]"
           aria-hidden="true"
         />
 
         <div className="relative mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
           <Link
             href="/journal"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-[#0F4C75] transition-colors hover:text-[#0a3d5c]"
+            className="inline-flex items-center gap-1 font-body text-[11px] font-semibold tracking-[0.2em] uppercase text-[var(--gold-warm)] transition-colors hover:text-[var(--gold-warm)]/80"
           >
             ← Back to Journal
           </Link>
 
-          <header className="mx-auto mt-10 max-w-2xl text-center">
-            <span className="inline-block -rotate-1 rounded-full bg-[#0F4C75] px-3 py-1 text-xs font-semibold text-white">
+          <header className="mx-auto mt-16 max-w-2xl text-center">
+            <span className="inline-block rounded-[2px] bg-[var(--gold-warm)] px-3 py-1 font-body text-[10px] font-semibold tracking-[0.2em] uppercase text-[var(--bg-void)]">
               {article.category}
             </span>
-            <h1 className="mt-5 font-display text-3xl font-bold leading-tight text-[#F3F4F1] sm:text-4xl lg:text-5xl">
+            <h1 className="mt-6 font-display italic font-light text-[2.5rem] leading-tight text-[var(--cream-bone)] sm:text-[3.5rem] lg:text-[4.5rem]">
               {article.title}
             </h1>
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-[#8BA3B5]">
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-body text-[13px] text-[var(--cream-ghost)]">
               <span className="inline-flex items-center gap-2">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0F4C75]/15 font-display text-xs font-bold text-[#0F4C75]">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--gold-warm)]/15 font-body text-[10px] tracking-wider font-bold text-[var(--gold-warm)]">
                   {authorInitials(article.author)}
                 </span>
-                <span className="font-medium text-[#F3F4F1]">
+                <span className="font-medium text-[var(--cream-bone)]">
                   {article.author}
                 </span>
               </span>
@@ -105,10 +105,9 @@ export default async function ArticlePage({
             </div>
           </header>
 
-          <div className="relative mx-auto mt-12 max-w-3xl">
+          <div className="relative mx-auto mt-16 max-w-3xl">
             <div
-              className="relative aspect-[16/9] overflow-hidden border-4 border-white shadow-[4px_12px_32px_rgba(44,44,36,0.15)]"
-              style={{ transform: "rotate(-2deg)" }}
+              className="relative aspect-[16/9] overflow-hidden border border-[var(--border-fine)] shadow-2xl rounded-[2px]"
             >
               <Image
                 src={article.image}
@@ -121,7 +120,7 @@ export default async function ArticlePage({
             </div>
           </div>
 
-          <div className="mx-auto mt-12 max-w-2xl space-y-6 font-body text-lg leading-relaxed text-[#BBE1FA]">
+          <div className="mx-auto mt-16 max-w-2xl space-y-8 font-body font-light text-[16px] leading-[1.8] text-[var(--cream-bone)]">
             {article.body.map((paragraph, i) => (
               <div key={i}>
                 <p>{paragraph}</p>
@@ -132,11 +131,11 @@ export default async function ArticlePage({
             ))}
           </div>
 
-          <div className="mx-auto mt-12 max-w-2xl">
+          <div className="mx-auto mt-16 max-w-2xl">
             <ArticleShareButtons title={article.title} slug={article.slug} />
           </div>
 
-          <div className="mx-auto max-w-5xl">
+          <div className="mx-auto mt-16 max-w-5xl">
             <ArticleRelated articles={related} />
           </div>
         </div>

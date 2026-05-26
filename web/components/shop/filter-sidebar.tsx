@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import type { MainNoteCategory, Gender } from "@/lib/types";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -122,67 +124,88 @@ export function FilterSidebar({
 
       <Separator />
 
-      <div>
-        <Label className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
-          Longevity (min)
-        </Label>
-        <Slider
-          className="mt-4"
-          min={1}
-          max={5}
-          step={1}
-          value={[value.longevityMin]}
-          onValueChange={(v) =>
-            onChange({ ...value, longevityMin: v[0] })
-          }
-        />
-        <p className="mt-2 text-xs text-muted-foreground">
-          {value.longevityMin}+ / 5
-        </p>
-      </div>
+      <AdvancedFilters>
+        <div>
+          <Label className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+            Longevity (min)
+          </Label>
+          <Slider
+            className="mt-4"
+            min={1}
+            max={5}
+            step={1}
+            value={[value.longevityMin]}
+            onValueChange={(v) =>
+              onChange({ ...value, longevityMin: v[0] })
+            }
+          />
+          <p className="mt-2 text-xs text-muted-foreground">
+            {value.longevityMin}+ / 5
+          </p>
+        </div>
 
-      <div>
-        <Label className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
-          Sillage (min)
-        </Label>
-        <Slider
-          className="mt-4"
-          min={1}
-          max={5}
-          step={1}
-          value={[value.sillageMin]}
-          onValueChange={(v) =>
-            onChange({ ...value, sillageMin: v[0] })
-          }
-        />
-        <p className="mt-2 text-xs text-muted-foreground">
-          {value.sillageMin}+ / 5
-        </p>
-      </div>
+        <div className="mt-8">
+          <Label className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+            Sillage (min)
+          </Label>
+          <Slider
+            className="mt-4"
+            min={1}
+            max={5}
+            step={1}
+            value={[value.sillageMin]}
+            onValueChange={(v) =>
+              onChange({ ...value, sillageMin: v[0] })
+            }
+          />
+          <p className="mt-2 text-xs text-muted-foreground">
+            {value.sillageMin}+ / 5
+          </p>
+        </div>
 
-      <Separator />
-
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
-          Bottle size (ml)
-        </h3>
-        <Slider
-          className="mt-4"
-          min={30}
-          max={100}
-          step={10}
-          value={value.sizeMlRange}
-          onValueChange={(v) =>
-            onChange({
-              ...value,
-              sizeMlRange: [v[0], v[1]] as [number, number],
-            })
-          }
-        />
-        <p className="mt-2 text-xs text-muted-foreground">
-          {value.sizeMlRange[0]} ml — {value.sizeMlRange[1]} ml available
-        </p>
-      </div>
+        <div className="mt-8">
+          <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+            Bottle size (ml)
+          </h3>
+          <Slider
+            className="mt-4"
+            min={30}
+            max={100}
+            step={10}
+            value={value.sizeMlRange}
+            onValueChange={(v) =>
+              onChange({
+                ...value,
+                sizeMlRange: [v[0], v[1]] as [number, number],
+              })
+            }
+          />
+          <p className="mt-2 text-xs text-muted-foreground">
+            {value.sizeMlRange[0]} ml — {value.sizeMlRange[1]} ml available
+          </p>
+        </div>
+      </AdvancedFilters>
     </aside>
+  );
+}
+
+function AdvancedFilters({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center justify-between py-2 text-left"
+      >
+        <span className="text-xs font-semibold uppercase tracking-[0.2em] text-smoke hover:text-ivory transition-colors">
+          Advanced Filters
+        </span>
+        <ChevronDown
+          className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open && <div className="mt-6 animate-in fade-in slide-in-from-top-2">{children}</div>}
+    </div>
   );
 }

@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { MessageCircle, Package, ShoppingBag } from "lucide-react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { MessageCircle } from "lucide-react";
 
 type OrderSuccessBannerProps = {
   orderId?: string;
@@ -11,8 +10,8 @@ type OrderSuccessBannerProps = {
 
 function buildWhatsAppShareUrl(orderId?: string) {
   const text = orderId
-    ? `I just placed an order with Razzaq Luxe! Order #${orderId.slice(0, 8).toUpperCase()}`
-    : "I just shopped at Razzaq Luxe — luxury fragrances from Pakistan.";
+    ? `Hi Razzaq Luxe, I have a question about my order #${orderId.slice(0, 8).toUpperCase()}`
+    : "Hi Razzaq Luxe, I have a question about my order.";
   const encoded = encodeURIComponent(text);
   const phone =
     process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_PHONE?.replace(/\D/g, "") ?? "";
@@ -23,79 +22,117 @@ function buildWhatsAppShareUrl(orderId?: string) {
 export function OrderSuccessBanner({ orderId }: OrderSuccessBannerProps) {
   const displayId = orderId
     ? orderId.slice(0, 8).toUpperCase()
-    : null;
+    : "PENDING";
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="order-success-confetti relative overflow-hidden rounded-[2rem] border border-border bg-[#1B262C] px-6 py-12 text-center sm:px-10"
-    >
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-        {Array.from({ length: 12 }).map((_, i) => (
-          <span
-            key={i}
-            className="confetti-piece"
-            style={{
-              left: `${8 + (i * 7) % 85}%`,
-              animationDelay: `${i * 0.12}s`,
-              backgroundColor: i % 3 === 0 ? "#0F4C75" : i % 3 === 1 ? "#3282B8" : "#B8961E",
-            }}
-          />
-        ))}
-      </div>
-
-      <div className="relative z-10">
-        <motion.p
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="text-xs font-semibold uppercase tracking-[0.35em] text-[#0F4C75]"
+    <div className="flex flex-col items-center text-center">
+      {/* Animated Checkmark */}
+      <div className="relative w-[120px] h-[120px] mb-12 flex items-center justify-center">
+        <motion.svg
+          width="120"
+          height="120"
+          viewBox="0 0 120 120"
+          className="absolute inset-0"
         >
-          Order confirmed
-        </motion.p>
-        <h1 className="mt-4 font-display text-3xl text-foreground sm:text-4xl">
-          Thank you for choosing Razzaq Luxe
-        </h1>
-        {displayId && (
-          <p className="mt-4 text-sm text-muted-foreground">
-            Order number{" "}
-            <span className="font-display text-lg font-semibold text-gold">#{displayId}</span>
-          </p>
-        )}
-        <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
-          We&apos;re preparing your parcel with care. Estimated delivery via{" "}
-          <span className="font-medium text-foreground">TCS</span> in 3–5 business days across
-          Pakistan.
-        </p>
-
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
-          {orderId && (
-            <Button asChild size="lg" className="gap-2">
-              <Link href={`/order/${orderId}`}>
-                <Package className="h-4 w-4" aria-hidden />
-                Track order
-              </Link>
-            </Button>
-          )}
-          <Button asChild variant="secondary" size="lg" className="gap-2">
-            <Link href="/shop">
-              <ShoppingBag className="h-4 w-4" aria-hidden />
-              Continue shopping
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="lg" className="gap-2">
-            <a
-              href={buildWhatsAppShareUrl(orderId)}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <MessageCircle className="h-4 w-4" aria-hidden />
-              Share on WhatsApp
-            </a>
-          </Button>
-        </div>
+          <motion.circle
+            cx="60"
+            cy="60"
+            r="58"
+            fill="transparent"
+            stroke="var(--gold-warm)"
+            strokeWidth="1.5"
+            initial={{ pathLength: 0, opacity: 0, scale: 0.5 }}
+            animate={{ pathLength: 1, opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.6, ease: "easeOut" }}
+          />
+          <motion.path
+            d="M38 60 L54 76 L82 44"
+            fill="transparent"
+            stroke="var(--gold-warm)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.6, ease: "easeInOut" }}
+          />
+        </motion.svg>
       </div>
-    </motion.div>
+
+      <motion.h1 
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8 }}
+        className="font-display italic font-light text-[var(--type-display)] text-[var(--cream-bone)] mb-4"
+      >
+        Your order is on its way.
+      </motion.h1>
+
+      <motion.p 
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.9 }}
+        className="font-body font-light text-[15px] text-[var(--cream-muted)] mb-10"
+      >
+        Order #{displayId} <span className="opacity-40 mx-2">·</span> Confirmation sent to your email.
+      </motion.p>
+
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+        className="w-full h-[1px] bg-[var(--border-fine)] mb-10" 
+      />
+
+      {/* Next Steps */}
+      <motion.div 
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.1 }}
+        className="flex flex-col gap-6 text-left w-full mb-12"
+      >
+        <div className="flex items-start gap-4">
+          <div className="w-1.5 h-1.5 rounded-full bg-[var(--gold-warm)] mt-2 shrink-0" />
+          <p className="font-body font-light text-[14px] text-[var(--cream-warm)]">
+            You'll receive a WhatsApp notification when your order ships.
+          </p>
+        </div>
+        <div className="flex items-start gap-4">
+          <div className="w-1.5 h-1.5 rounded-full bg-[var(--gold-warm)] mt-2 shrink-0" />
+          <p className="font-body font-light text-[14px] text-[var(--cream-warm)]">
+            Track your order anytime from My Account.
+          </p>
+        </div>
+        <div className="flex items-start gap-4">
+          <div className="w-1.5 h-1.5 rounded-full bg-[var(--gold-warm)] mt-2 shrink-0" />
+          <a href={buildWhatsAppShareUrl(orderId)} target="_blank" rel="noreferrer" className="font-body font-light text-[14px] text-[var(--cream-warm)] flex items-center gap-2 hover:text-[var(--gold-warm)] transition-colors">
+            Questions? Chat with us on WhatsApp <MessageCircle className="w-3.5 h-3.5" />
+          </a>
+        </div>
+      </motion.div>
+
+      {/* CTAs */}
+      <motion.div 
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.2 }}
+        className="flex flex-col gap-5 w-full items-center"
+      >
+        <Link 
+          href="/shop" 
+          className="flex items-center justify-center w-full h-[52px] border border-[var(--cream-bone)] text-[var(--cream-bone)] font-body font-semibold text-[11px] tracking-[0.2em] rounded-[2px] transition-colors hover:bg-[var(--cream-bone)] hover:text-[var(--bg-void)]"
+        >
+          CONTINUE SHOPPING
+        </Link>
+        {orderId && (
+          <Link 
+            href={`/order/${orderId}`}
+            className="font-body font-light text-[13px] text-[var(--cream-muted)] hover:text-[var(--gold-warm)] transition-colors mt-2"
+          >
+            VIEW MY ORDER
+          </Link>
+        )}
+      </motion.div>
+    </div>
   );
 }

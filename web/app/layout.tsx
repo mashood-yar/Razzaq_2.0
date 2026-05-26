@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Nunito } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import "react-loading-skeleton/dist/skeleton.css";
 import { siteConfig } from "@/lib/site";
@@ -14,17 +14,17 @@ import { AppToaster } from "@/components/providers/app-toaster";
 import { IntroAnimation } from "@/components/ui/intro-animation";
 import { CustomCursorProvider } from "@/components/ui/custom-cursor-provider";
 
-const fraunces = Fraunces({
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  variable: "--font-fraunces",
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-cormorant",
   display: "swap",
 });
 
-const nunito = Nunito({
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-nunito",
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-dm-sans",
   display: "swap",
 });
 
@@ -76,7 +76,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${fraunces.variable} ${nunito.variable} min-h-screen bg-background font-body antialiased`}
+        className={`${cormorant.variable} ${dmSans.variable} min-h-screen bg-background font-body antialiased`}
       >
         <AuthProvider>
           <AppToaster />
@@ -87,7 +87,7 @@ export default function RootLayout({
           <FlyToCartProvider>
             <div className="relative z-10">
               <SiteHeader />
-              <main className="min-h-screen pt-28 sm:pt-32">{children}</main>
+              <main className="min-h-screen flex flex-col">{children}</main>
               <SiteFooter />
               <DeferredChrome />
             </div>
