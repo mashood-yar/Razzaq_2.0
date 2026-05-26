@@ -15,7 +15,7 @@ export default function AboutPage() {
       {/* Hero Section */}
       <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
         <Image
-          src="https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=2000&q=80"
+          src="/about-hero.png"
           alt="Razzaq Luxe Heritage"
           fill
           className="object-cover opacity-40 grayscale"
