@@ -101,10 +101,10 @@ export function AtelierHomeClient({ bestSellers }: { bestSellers: Product[] }) {
       {/* 3. SCENT QUIZ TEASER */}
       <section className="py-24 px-5 max-w-[1440px] mx-auto w-full border-t border-[var(--border-fine)]">
         <motion.div {...revealProps} className="w-full flex flex-col items-center text-center relative">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 flex justify-center -mt-8 opacity-50" aria-hidden="true">
-            <div className="w10 h10 rounded-full border border-[var(--gold-warm)]/40 absolute" />
-            <div className="w10 h10 rounded-full border border-[var(--gold-warm)]/30 absolute ml-4" />
-            <div className="w10 h10 rounded-full border border-[var(--gold-warm)]/20 absolute ml-8" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 flex items-center justify-center -mt-24 opacity-30 pointer-events-none" aria-hidden="true">
+            <div className="w-[300px] h-[300px] rounded-full border border-[var(--gold-warm)] absolute" />
+            <div className="w-[450px] h-[450px] rounded-full border border-[var(--gold-warm)]/50 absolute" />
+            <div className="w-[600px] h-[600px] rounded-full border border-[var(--gold-warm)]/20 absolute" />
           </div>
           <p className="font-body font-semibold text-[10px] tracking-[0.4em] text-[var(--gold-warm)] uppercase mb-4 z-10">THE RITUAL</p>
           <h2 className="font-display italic font-light text-[2.25rem] text-[var(--cream-bone)] mb-4 z-10">Find Your Signature</h2>
@@ -137,14 +137,14 @@ export function AtelierHomeClient({ bestSellers }: { bestSellers: Product[] }) {
       <section className="py-24 px-0 max-w-[1440px] mx-auto w-full lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 px-5 lg:px-0">
           {[
-            { label: "FOR HIM", title: "The Gentleman", img: "/collection-1.jpg" },
-            { label: "FOR HER", title: "The Feminine", img: "/collection-2.jpg" },
-            { label: "UNISEX", title: "The Shared", img: "/collection-3.jpg" },
-            { label: "LIMITED", title: "The Rare", img: "/collection-4.jpg" },
+            { label: "FOR HIM", title: "The Gentleman", img: "/collection-1.png" },
+            { label: "FOR HER", title: "The Feminine", img: "/collection-2.png" },
+            { label: "UNISEX", title: "The Shared", img: "/collection-3.png" },
+            { label: "LIMITED", title: "The Rare", img: "/collection-4.png" },
           ].map((col, i) => (
-            <motion.div key={i} {...revealProps} transition={{ delay: i * 0.1, duration: 0.6 }} className="relative w-full aspect-[16/10] lg:aspect-[3/4] bg-[var(--bg-obsidian)] overflow-hidden group cursor-pointer lg:rounded-[4px]">
-              <div className="absolute inset-0 bg-[var(--bg-void)]">
-                {/* Fallback box if no image */}
+            <motion.div key={i} {...revealProps} transition={{ delay: i * 0.1, duration: 0.6 }} className="relative w-full aspect-[16/10] lg:aspect-[3/4] bg-[var(--bg-void)] overflow-hidden group cursor-pointer lg:rounded-[4px]">
+              <div className="absolute inset-0">
+                <Image src={col.img} alt={col.title} fill className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out-expo" sizes="(max-width: 1024px) 100vw, 25vw" />
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-[rgba(8,7,5,0.82)] to-transparent via-transparent" />
               <div className="absolute bottom-0 left-0 p-6 flex flex-col">
@@ -199,8 +199,8 @@ export function AtelierHomeClient({ bestSellers }: { bestSellers: Product[] }) {
             </div>
           </div>
           
-          <div className="hidden lg:flex justify-center items-center h-[500px] opacity-20 border border-[var(--gold-warm)] rounded-full w-[500px] mx-auto">
-            <span className="font-display text-4xl text-[var(--gold-warm)]">RL Wheel</span>
+          <div className="hidden lg:flex justify-center items-center h-[500px] w-[500px] mx-auto relative rounded-full overflow-hidden border border-[var(--border-mid)] shadow-[0_0_60px_rgba(212,175,55,0.05)]">
+            <Image src="/rl-wheel.png" alt="Razzaq Luxe Scent Wheel" fill className="object-cover opacity-90 mix-blend-screen" sizes="500px" />
           </div>
         </motion.div>
       </section>
@@ -238,15 +238,16 @@ export function AtelierHomeClient({ bestSellers }: { bestSellers: Product[] }) {
           {[1, 2, 3, 4].map((i) => (
             <div 
               key={i} 
-              className={`relative bg-[var(--bg-ash)] overflow-hidden group cursor-pointer ${
-                i === 0 ? 'aspect-square' : 
-                i === 1 ? 'aspect-[1/1.35]' : 
-                i === 2 ? 'aspect-[1/1.35]' : 
-                'aspect-square'
+              className={`relative bg-[var(--bg-void)] overflow-hidden group cursor-pointer ${
+                i === 1 || i === 2 ? 'aspect-[1/1.35]' : 'aspect-square'
               }`}
             >
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-[rgba(8,7,5,0.5)] transition-colors duration-300 z-10 flex items-center justify-center">
-                <span className="font-body font-semibold text-[13px] text-[var(--cream-bone)] opacity-0 group-hover:opacity-100 transition-opacity">#RazzaqLuxe</span>
+              <Image src={`/ugc-${i}.png`} alt={`Community photo ${i}`} fill className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out-expo" sizes="(max-width: 1024px) 50vw, 25vw" />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-[rgba(8,7,5,0.6)] transition-colors duration-300 z-10 flex items-center justify-center">
+                <span className="font-body font-semibold text-[13px] tracking-widest text-[var(--cream-bone)] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
+                  <Heart className="w-4 h-4 text-[var(--gold-warm)]" />
+                  #RazzaqLuxe
+                </span>
               </div>
             </div>
           ))}
