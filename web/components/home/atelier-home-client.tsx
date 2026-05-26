@@ -31,7 +31,7 @@ export function AtelierHomeClient({ bestSellers }: { bestSellers: Product[] }) {
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="/hero-bg.mp4" type="video/mp4" />
+          <source src="/hero-final-bg.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-t from-[rgba(8,7,5,0.88)] via-[rgba(8,7,5,0.2)] to-transparent pointer-events-none" />
         
