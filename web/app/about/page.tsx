@@ -38,7 +38,7 @@ export default function AboutPage() {
         <ParallaxSection>
           <div className="mx-auto max-w-4xl text-center">
             <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl leading-snug font-light text-ivory italic">
-              "We don't just blend fragrances. We orchestrate emotions, bottling the essence of quiet confidence."
+              &quot;We don&apos;t just blend fragrances. We orchestrate emotions, bottling the essence of quiet confidence.&quot;
             </h2>
             <div className="mt-12 h-[1px] w-16 bg-gold mx-auto" />
             <p className="mt-8 text-sm uppercase tracking-widest text-smoke font-medium">
@@ -71,7 +71,7 @@ export default function AboutPage() {
                 Razzaq Luxe was born in Quetta from a singular obsession: to redefine luxury perfumery for the modern connoisseur. What started as a boutique vision has grown into a house known for its impeccable standards.
               </p>
               <p>
-                Each composition—whether the vibrant energy of Sporty or the profound depth of Khan's Aura—is meticulously balanced. We source the finest raw materials, ensuring that every note unfolds with perfect clarity and lasts throughout the day.
+                Each composition—whether the vibrant energy of Sporty or the profound depth of Khan&apos;s Aura—is meticulously balanced. We source the finest raw materials, ensuring that every note unfolds with perfect clarity and lasts throughout the day.
               </p>
               <p>
                 Our philosophy is simple: True luxury never shouts. It is felt in the weight of the bottle, the mist of the atomizer, and the indelible trail left behind.

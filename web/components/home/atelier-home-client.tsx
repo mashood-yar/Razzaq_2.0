@@ -3,14 +3,13 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, Star, ArrowRight, Heart } from "lucide-react";
-import type { Product } from "@/lib/types";
+import { ChevronDown, Star, ArrowRight } from "lucide-react";
+import type { LegacyProduct as Product } from "@/lib/products";
 import { ProductCard } from "@/components/product/product-card";
 
 export function AtelierHomeClient({ bestSellers }: { bestSellers: Product[] }) {
   // Motion defaults
   const easeDrama = [0.87, 0, 0.13, 1];
-  const easeReveal = [0.25, 0.46, 0.45, 0.94];
 
   const revealProps = {
     initial: { opacity: 0, y: 36 },
@@ -183,9 +182,11 @@ export function AtelierHomeClient({ bestSellers }: { bestSellers: Product[] }) {
           </div>
           
           <div className="flex justify-center items-center h-[320px] lg:h-[500px] opacity-40 lg:opacity-20 mx-auto mt-8 lg:mt-0">
-            <img 
+            <Image 
               src="/rl-wheel.png" 
               alt="Razzaq Luxe Scent Wheel" 
+              width={500}
+              height={500}
               className="w-[300px] h-[300px] lg:w-[500px] lg:h-[500px] object-contain animate-[spin_60s_linear_infinite]" 
             />
           </div>
@@ -199,9 +200,9 @@ export function AtelierHomeClient({ bestSellers }: { bestSellers: Product[] }) {
           <h2 className="font-display italic font-light text-[var(--type-display)] text-[var(--cream-bone)] text-center mb-16">Voices of Razzaq Luxe</h2>
           
           <div className="relative w-full max-w-[640px] px-4">
-            <span className="absolute -top-12 -left-4 font-display text-[5rem] text-[var(--gold-deep)]/50 leading-none">"</span>
+            <span className="absolute -top-12 -left-4 font-display text-[5rem] text-[var(--gold-deep)]/50 leading-none">&quot;</span>
             <p className="font-display italic font-normal text-[1.5rem] lg:text-[1.875rem] text-[var(--cream-bone)] text-center leading-[1.65] mb-8">
-              Every spray feels like a ceremony. The depth of the oud is unmatched by anything else I've worn this year.
+              Every spray feels like a ceremony. The depth of the oud is unmatched by anything else I&apos;ve worn this year.
             </p>
             <div className="flex flex-col items-center gap-3">
               <span className="font-body font-semibold text-[10px] tracking-[0.3em] text-[var(--gold-warm)]">— AISHA K., LAHORE</span>

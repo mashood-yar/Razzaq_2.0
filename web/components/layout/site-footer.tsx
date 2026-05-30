@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { TrustBadges } from "@/components/layout/trust-badges";
-import { siteConfig } from "@/lib/site";
 import { MessageCircle } from "lucide-react";
 
 const footerNav = {
@@ -53,7 +52,7 @@ export function SiteFooter() {
               Razzaq Luxe
             </p>
             <p className="font-body text-[13px] font-light text-[var(--cream-muted)] max-w-[220px] leading-[1.7] mb-8">
-              Boutique luxury fragrances — Sporty, Habibi, Flourine, Khan's Aura. Rooted in
+              Boutique luxury fragrances — Sporty, Habibi, Flourine, Khan&apos;s Aura. Rooted in
               Quetta, shipped nationwide.
             </p>
             

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 function getStatusColor(status: OrderStatus) {
   switch (status) {
-    case "pending":
+    case "pending_confirmation":
       return "bg-[#B8860B] text-[var(--cream-bone)] border-[#B8860B]"; // gold-deep
     case "confirmed":
       return "bg-[#FFD700] text-[var(--bg-void)] border-[#FFD700]"; // gold-bright
@@ -63,7 +63,7 @@ export default async function AccountOrdersPage() {
           <li className="rounded-[4px] border border-[var(--border-fine)] bg-[var(--bg-dusk)] p-12 text-center flex flex-col items-center">
             <Package className="w-8 h-8 text-[var(--border-mid)] mb-4" />
             <p className="font-body font-light text-[14px] text-[var(--cream-muted)] mb-6">
-              You haven't placed any orders yet.
+              You haven&apos;t placed any orders yet.
             </p>
             <Link 
               href="/shop" 

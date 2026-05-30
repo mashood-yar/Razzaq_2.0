@@ -12,10 +12,10 @@ import {
   Home,
   Store,
   User,
-  MapPin,
   Clock,
   Mail,
 } from "lucide-react";
+import type React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useUiStore } from "@/stores/ui-store";
@@ -35,7 +35,7 @@ const nav = [
 ];
 
 export function SiteHeader() {
-  const { status, user } = useSession();
+  const { user } = useSession();
   const pathname = usePathname();
   const { dismissed: announcementDismissed, setDismissed: dismissAnnouncement } =
     useAnnouncementDismissed();
@@ -173,7 +173,7 @@ export function SiteHeader() {
 
         {/* Center: Logo (taps to open full menu per spec) */}
         <button 
-          className="font-display text-[17px] font-medium tracking-[0.18em] text-[var(--cream-bone)] uppercase"
+          className="font-display text-[17px] font-medium tracking-[0.18em] text-[var(--cream-bone)] uppercase absolute left-1/2 -translate-x-1/2"
           onClick={() => setMobileMenuOpen(true)}
         >
           RAZZAQ LUXE
@@ -203,8 +203,8 @@ export function SiteHeader() {
         {[
           { href: "/", label: "Home", icon: Home },
           { href: "/shop", label: "Shop", icon: Store },
-          { href: "/search", label: "Search", icon: Search, onClick: (e: any) => { e.preventDefault(); setSearchOpen(true); } },
-          { href: "/cart", label: "Cart", icon: ShoppingCart, count: itemCount, onClick: (e: any) => { e.preventDefault(); setCartOpen(true); } },
+          { href: "/search", label: "Search", icon: Search, onClick: (e: React.MouseEvent) => { e.preventDefault(); setSearchOpen(true); } },
+          { href: "/cart", label: "Cart", icon: ShoppingCart, count: itemCount, onClick: (e: React.MouseEvent) => { e.preventDefault(); setCartOpen(true); } },
           { href: user ? "/account" : "/login", label: "Account", icon: User },
         ].map((item) => {
           const active = isActive(item.href) && !item.onClick;

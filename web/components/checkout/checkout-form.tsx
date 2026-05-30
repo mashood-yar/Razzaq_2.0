@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -16,10 +15,11 @@ import {
 } from "@/stores/cart-store";
 import { PK_CITIES_BY_PROVINCE, PK_PROVINCES } from "@/lib/utils";
 import { publicBankTransferDisplay } from "@/lib/checkout/bank-transfer-public";
-import { TrustBadges } from "@/components/layout/trust-badges";
 import { SafeProductImage } from "@/components/product/safe-product-image";
-import { Check } from "lucide-react";
+import { Check, Loader2, ChevronRight, Tag } from "lucide-react";
+import { cn } from "@/lib/utils";
 
+// ─── All schemas and types preserved exactly ─────────────────────────────────
 const detailsSchema = z.object({
   fullName:     z.string().min(2, "Full name required"),
   email:        z.string().email("Valid email required"),
@@ -38,6 +38,134 @@ type DetailsData  = z.output<typeof detailsSchema>;
 type ShippingMethod = "standard" | "express";
 type PaymentChoice = "cod" | "bank_transfer";
 
+// ─── UX Law: Doherty — sub-400ms transition ──────────────────────────────────
+const stepVariants = {
+  initial: { opacity: 0, x: 28 },
+  animate: { opacity: 1, x: 0 },
+  exit:    { opacity: 0, x: -28 },
+};
+const stepTransition = { duration: 0.28, ease: [0.4, 0, 0.2, 1] };
+
+// ─── Premium field component — Aesthetic-Usability Effect ────────────────────
+function Field({
+  label,
+  error,
+  children,
+  className,
+}: {
+  label: string;
+  error?: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("flex flex-col gap-2", className)}>
+      <label className="font-body font-semibold text-[10px] tracking-[0.28em] text-[var(--cream-ghost)] uppercase">
+        {label}
+      </label>
+      {children}
+      <AnimatePresence>
+        {error && (
+          <motion.p
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="font-body font-light text-[12px] text-[var(--ember)] flex items-center gap-1.5"
+          >
+            <span className="w-1 h-1 rounded-full bg-[var(--ember)] shrink-0" />
+            {error}
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─── Shared input class — consistent design language ─────────────────────────
+const inputCls = (hasError?: boolean) =>
+  cn(
+    "w-full h-[52px] bg-[var(--bg-dusk)] border text-[var(--cream-bone)] font-body font-light text-[15px] px-4 rounded-[4px]",
+    "placeholder:text-[var(--cream-ghost)] focus:outline-none transition-all duration-200",
+    "focus:border-[var(--border-glow)] focus:ring-2 focus:ring-[var(--gold-warm)]/10",
+    hasError
+      ? "border-[var(--ember)] bg-[var(--ember)]/5"
+      : "border-[var(--border-fine)] hover:border-[var(--border-mid)]"
+  );
+
+const selectCls = (hasError?: boolean) =>
+  cn(inputCls(hasError), "cursor-pointer appearance-none bg-[var(--bg-dusk)]");
+
+// ─── Step Indicator ───────────────────────────────────────────────────────────
+function StepIndicator({ current }: { current: 1 | 2 | 3 }) {
+  const steps = [
+    { num: 1, label: "Contact" },
+    { num: 2, label: "Shipping" },
+    { num: 3, label: "Payment" },
+  ];
+  return (
+    <div className="w-full max-w-[480px] mx-auto mb-12 px-2">
+      <div className="flex items-center justify-between relative">
+        {/* Background track */}
+        <div className="absolute top-[14px] left-0 right-0 h-px bg-[var(--border-fine)] -z-10" />
+        {/* Animated gold fill — Doherty: real-time progress feedback */}
+        <motion.div
+          className="absolute top-[14px] left-0 h-px bg-[var(--gold-warm)] -z-10"
+          animate={{ width: current === 1 ? "0%" : current === 2 ? "50%" : "100%" }}
+          transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+        />
+
+        {steps.map(({ num, label }) => {
+          const done = current > num;
+          const active = current === num;
+          return (
+            <div key={num} className="flex flex-col items-center gap-2 bg-[var(--bg-obsidian)] px-2">
+              <motion.div
+                animate={{
+                  backgroundColor: done || active ? "var(--gold-warm)" : "var(--bg-dusk)",
+                  borderColor: done || active ? "var(--gold-warm)" : "var(--border-mid)",
+                  scale: active ? 1.1 : 1,
+                }}
+                transition={{ duration: 0.25 }}
+                className="w-[28px] h-[28px] rounded-full border-2 flex items-center justify-center"
+              >
+                <AnimatePresence mode="wait">
+                  {done ? (
+                    <motion.div key="check" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
+                      <Check className="w-3.5 h-3.5 text-[var(--bg-void)]" strokeWidth={3} />
+                    </motion.div>
+                  ) : (
+                    <motion.span
+                      key="num"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      className={cn(
+                        "font-body font-bold text-[11px]",
+                        active ? "text-[var(--bg-void)]" : "text-[var(--cream-ghost)]"
+                      )}
+                    >
+                      {num}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+              <span
+                className={cn(
+                  "font-body font-medium text-[10px] tracking-[0.18em] uppercase",
+                  active ? "text-[var(--gold-warm)]" : done ? "text-[var(--cream-muted)]" : "text-[var(--cream-ghost)]"
+                )}
+              >
+                {label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Component ──────────────────────────────────────────────────────────
 export function CheckoutForm({
   saved,
 }: {
@@ -51,6 +179,7 @@ export function CheckoutForm({
   } | null;
 }) {
   const router = useRouter();
+  // ── All original store subscriptions preserved ──
   const items = useCartStore((s) => s.items);
   const promoCode = useCartStore((s) => s.promoCode);
   const promoDiscount = useCartStore((s) => s.promoDiscount);
@@ -70,8 +199,7 @@ export function CheckoutForm({
   const [submitError, setSubmitError] = useState("");
 
   const sub = cartSubtotal(items);
-  const shipCost =
-    shippingMethod === "express" ? 500 : cartShipping(sub, promoCode);
+  const shipCost = shippingMethod === "express" ? 500 : cartShipping(sub, promoCode);
   const total = cartTotal(sub, promoDiscount, shipCost);
   const bankDisplay = publicBankTransferDisplay();
 
@@ -92,17 +220,24 @@ export function CheckoutForm({
     },
   });
 
+  // ── Empty cart state ────────────────────────────────────────────────────────
   if (items.length === 0) {
     return (
-      <div className="mx-auto max-w-xl px-4 py-24 text-center">
-        <p className="font-display text-[2rem] italic text-[var(--cream-bone)]">Your bag is empty.</p>
-        <button onClick={() => router.push('/shop')} className="mt-8 btn-primary">
-          CONTINUE SHOPPING
+      <div className="mx-auto max-w-xl px-4 py-32 text-center flex flex-col items-center gap-6">
+        <p className="font-display text-[2.5rem] italic text-[var(--cream-bone)]">
+          Your bag is empty.
+        </p>
+        <p className="font-body font-light text-[15px] text-[var(--cream-muted)]">
+          Explore our collection and find your signature scent.
+        </p>
+        <button onClick={() => router.push("/shop")} className="btn-primary h-[52px] px-10">
+          BROWSE COLLECTION
         </button>
       </div>
     );
   }
 
+  // ── API handlers — preserved exactly ────────────────────────────────────────
   const applyPromoCode = async () => {
     setPromoError("");
     setPromoLoading(true);
@@ -138,15 +273,12 @@ export function CheckoutForm({
         body: JSON.stringify({
           cartItems: items,
           shippingAddress: shippingDetails,
-          shippingMethod:
-            shippingMethod === "express" ? "express_pk" : "standard_pk",
+          shippingMethod: shippingMethod === "express" ? "express_pk" : "standard_pk",
           paymentMethod,
           promoCode: promoCode ?? undefined,
           discountAmount: promoDiscount,
           transactionId:
-            paymentMethod === "bank_transfer"
-              ? bankTxnReference.trim()
-              : undefined,
+            paymentMethod === "bank_transfer" ? bankTxnReference.trim() : undefined,
         }),
       });
 
@@ -165,7 +297,7 @@ export function CheckoutForm({
           try {
             sessionStorage.setItem(
               `razzaq:confirm-email-missed:${data.order.id}`,
-              "1",
+              "1"
             );
           } catch {
             /* private mode / quota */
@@ -176,106 +308,116 @@ export function CheckoutForm({
         throw new Error("Order created without id");
       }
     } catch (e: unknown) {
-      setSubmitError(e instanceof Error ? e.message : "Something went wrong. Please try again.");
+      setSubmitError(
+        e instanceof Error ? e.message : "Something went wrong. Please try again."
+      );
       setIsSubmitting(false);
     }
   };
 
-  const stepVariants = {
-    initial: { opacity: 0, x: 20 },
-    animate: { opacity: 1, x: 0 },
-    exit:    { opacity: 0, x: -20 },
-  };
-
-  // Atelier specific input classes
-  const inputBase = "w-full h-[52px] bg-[var(--bg-dusk)] border border-[var(--border-fine)] text-[var(--cream-bone)] font-body font-light text-[15px] px-4 rounded-[2px] placeholder:text-[var(--cream-ghost)] focus:border-[var(--border-glow)] focus:outline-none focus:ring-[2px] focus:ring-[var(--gold-warm)]/12 transition-all duration-200";
-  const inputError = "!border-[var(--ember)]";
-  const labelBase = "block font-body font-semibold text-[10px] tracking-[0.25em] text-[var(--cream-muted)] uppercase mb-2";
-  const errorText = "mt-2 font-body font-light text-[12px] text-[var(--ember)]/90";
-  const sectionHeader = "font-body font-semibold text-[10px] tracking-[0.42em] text-[var(--cream-ghost)] uppercase border-b border-[var(--border-fine)] pb-3 mb-6";
+  const sectionHeader = "font-body font-semibold text-[10px] tracking-[0.42em] text-[var(--cream-ghost)] uppercase mb-6 flex items-center gap-3";
 
   return (
     <div className="mx-auto max-w-[1440px] px-4 lg:px-24 py-12 lg:py-24 text-[var(--cream-bone)]">
-      
-      {/* Step Indicator (Endowed Progress) */}
-      <div className="w-full max-w-[480px] mx-auto mb-16 px-4">
-        <div className="flex items-center justify-between relative">
-          <div className="absolute top-[8px] left-0 right-0 h-[1px] bg-[var(--border-fine)] -z-10" />
-          <div className="absolute top-[8px] left-0 h-[1px] bg-[var(--gold-warm)] -z-10 transition-all duration-500" style={{ width: step === 1 ? '0%' : step === 2 ? '50%' : '100%' }} />
-          
-          {(["Contact", "Shipping", "Payment"] as const).map((label, idx) => {
-            const isCompletedOrActive = step >= idx + 1;
-            return (
-              <div key={label} className="flex flex-col items-center gap-3 bg-[var(--bg-obsidian)] px-2">
-                <div className={`w-[16px] h-[16px] rounded-full border-2 flex items-center justify-center transition-colors ${
-                  isCompletedOrActive ? "border-[var(--gold-warm)] bg-[var(--gold-warm)]" : "border-[var(--border-mid)] bg-[var(--bg-dusk)]"
-                }`}>
-                  {isCompletedOrActive && <Check className="w-2.5 h-2.5 text-[var(--bg-void)]" />}
-                </div>
-                <span className={`font-body font-medium text-[11px] tracking-[0.15em] uppercase ${
-                  isCompletedOrActive ? "text-[var(--gold-warm)]" : "text-[var(--cream-ghost)]"
-                }`}>
-                  {label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
 
-      <div className="grid gap-12 lg:gap-24 lg:grid-cols-[1fr_420px]">
-        {/* Left Side: Forms */}
+      {/* ── Step Indicator ──────────────────────────────────────────────────── */}
+      <StepIndicator current={step} />
+
+      <div className="grid gap-12 lg:gap-20 lg:grid-cols-[1fr_400px]">
+
+        {/* ── Left: Form Steps ─────────────────────────────────────────────── */}
         <div className="min-w-0">
           <AnimatePresence mode="wait">
-            
-            {/* STEP 1: CONTACT & DELIVERY */}
+
+            {/* STEP 1 — CONTACT & DELIVERY */}
             {step === 1 && (
               <motion.form
                 key="step1"
-                {...stepVariants}
-                transition={{ duration: 0.25 }}
+                variants={stepVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={stepTransition}
                 onSubmit={handleSubmit((data: DetailsData) => {
                   setShippingDetails(data);
                   setStep(2);
                 })}
                 className="space-y-10"
               >
+                {/* Contact section */}
                 <div>
-                  <h2 className={sectionHeader}>CONTACT INFORMATION</h2>
+                  <h2 className={sectionHeader}>
+                    <span className="w-5 h-5 rounded-full bg-[var(--gold-warm)] text-[var(--bg-void)] text-[10px] font-bold flex items-center justify-center shrink-0">1</span>
+                    Contact Information
+                  </h2>
                   <div className="grid gap-5 sm:grid-cols-2">
-                    <div className="sm:col-span-2">
-                      <label htmlFor="fullName" className={labelBase}>Full name</label>
-                      <input id="fullName" autoComplete="name" className={`${inputBase} ${errors.fullName ? inputError : ''}`} {...register("fullName")} />
-                      {errors.fullName && <p className={errorText}>{errors.fullName.message}</p>}
-                    </div>
-                    <div>
-                      <label htmlFor="email" className={labelBase}>Email</label>
-                      <input id="email" type="email" className={`${inputBase} ${errors.email ? inputError : ''}`} {...register("email")} />
-                      {errors.email && <p className={errorText}>{errors.email.message}</p>}
-                    </div>
-                    <div>
-                      <label htmlFor="phone" className={labelBase}>Phone</label>
-                      <input id="phone" type="tel" placeholder="+92 300 0000000" className={`${inputBase} ${errors.phone ? inputError : ''}`} {...register("phone")} />
-                      {errors.phone && <p className={errorText}>{errors.phone.message}</p>}
-                    </div>
+                    <Field label="Full name" error={errors.fullName?.message} className="sm:col-span-2">
+                      <input
+                        id="fullName"
+                        autoComplete="name"
+                        className={inputCls(!!errors.fullName)}
+                        placeholder="Muhammad Ali"
+                        {...register("fullName")}
+                      />
+                    </Field>
+                    <Field label="Email" error={errors.email?.message}>
+                      <input
+                        id="email"
+                        type="email"
+                        autoComplete="email"
+                        placeholder="you@example.com"
+                        className={inputCls(!!errors.email)}
+                        {...register("email")}
+                      />
+                    </Field>
+                    <Field label="Phone" error={errors.phone?.message}>
+                      <input
+                        id="phone"
+                        type="tel"
+                        autoComplete="tel"
+                        placeholder="+92 300 0000000"
+                        className={inputCls(!!errors.phone)}
+                        {...register("phone")}
+                      />
+                    </Field>
                   </div>
                 </div>
 
+                {/* Delivery section */}
                 <div>
-                  <h2 className={sectionHeader}>DELIVERY ADDRESS</h2>
+                  <h2 className={sectionHeader}>
+                    <span className="w-5 h-5 rounded-full bg-[var(--gold-warm)] text-[var(--bg-void)] text-[10px] font-bold flex items-center justify-center shrink-0">2</span>
+                    Delivery Address
+                  </h2>
                   <div className="grid gap-5 sm:grid-cols-2">
-                    <div className="sm:col-span-2">
-                      <label htmlFor="addressLine1" className={labelBase}>Full address</label>
-                      <input id="addressLine1" className={`${inputBase} ${errors.addressLine1 ? inputError : ''}`} {...register("addressLine1")} />
-                      {errors.addressLine1 && <p className={errorText}>{errors.addressLine1.message}</p>}
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label htmlFor="addressLine2" className={labelBase}>Apartment / landmark (optional)</label>
-                      <input id="addressLine2" className={inputBase} {...register("addressLine2")} />
-                    </div>
-                    <div>
-                      <label htmlFor="city" className={labelBase}>City</label>
-                      <select id="city" {...register("city")} className={`${inputBase} ${errors.city ? inputError : ''}`}>
+                    <Field label="Full address" error={errors.addressLine1?.message} className="sm:col-span-2">
+                      <input
+                        id="addressLine1"
+                        autoComplete="address-line1"
+                        placeholder="Street, House number"
+                        className={inputCls(!!errors.addressLine1)}
+                        {...register("addressLine1")}
+                      />
+                    </Field>
+                    <Field label="Apartment / landmark (optional)" className="sm:col-span-2">
+                      <input
+                        id="addressLine2"
+                        autoComplete="address-line2"
+                        placeholder="Floor, landmark, etc."
+                        className={inputCls()}
+                        {...register("addressLine2")}
+                      />
+                    </Field>
+                    <Field label="Province" error={errors.province?.message}>
+                      <select id="province" {...register("province")} className={selectCls(!!errors.province)}>
+                        <option value="">Select province</option>
+                        {PK_PROVINCES.map((p) => (
+                          <option key={p} value={p} className="bg-[var(--bg-obsidian)]">{p}</option>
+                        ))}
+                      </select>
+                    </Field>
+                    <Field label="City" error={errors.city?.message}>
+                      <select id="city" {...register("city")} className={selectCls(!!errors.city)}>
                         <option value="">Select city</option>
                         {Object.entries(PK_CITIES_BY_PROVINCE).map(([province, cities]) => (
                           <optgroup key={province} label={province} className="bg-[var(--bg-obsidian)]">
@@ -285,199 +427,277 @@ export function CheckoutForm({
                           </optgroup>
                         ))}
                       </select>
-                      {errors.city && <p className={errorText}>{errors.city.message}</p>}
-                    </div>
-                    <div>
-                      <label htmlFor="province" className={labelBase}>Province</label>
-                      <select id="province" {...register("province")} className={`${inputBase} ${errors.province ? inputError : ''}`}>
-                        <option value="">Select province</option>
-                        {PK_PROVINCES.map((p) => (
-                          <option key={p} value={p} className="bg-[var(--bg-obsidian)]">{p}</option>
-                        ))}
-                      </select>
-                      {errors.province && <p className={errorText}>{errors.province.message}</p>}
-                    </div>
+                    </Field>
                   </div>
                 </div>
 
-                <button type="submit" className="w-full h-[56px] bg-[var(--gold-warm)] text-[var(--bg-void)] font-body font-bold text-[11px] tracking-[0.25em] rounded-[2px] transition-colors hover:bg-[var(--gold-bright)] mt-4">
-                  CONTINUE TO SHIPPING →
+                {/* CTA — Fitts's Law: full-width, 56px, rounded */}
+                <button
+                  type="submit"
+                  className="w-full h-[56px] bg-[var(--gold-warm)] text-[var(--bg-void)] font-body font-bold text-[11px] tracking-[0.28em] rounded-full transition-all hover:bg-[var(--gold-bright)] active:scale-[0.98] shadow-[0_0_30px_rgba(201,160,80,0.2)] flex items-center justify-center gap-2"
+                >
+                  CONTINUE TO SHIPPING <ChevronRight className="w-4 h-4" />
                 </button>
               </motion.form>
             )}
 
-            {/* STEP 2: SHIPPING METHOD */}
+            {/* STEP 2 — SHIPPING METHOD */}
             {step === 2 && (
               <motion.div
                 key="step2"
-                {...stepVariants}
-                transition={{ duration: 0.25 }}
-                className="space-y-10"
+                variants={stepVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={stepTransition}
+                className="space-y-8"
               >
-                <div>
-                  <h2 className={sectionHeader}>SHIPPING METHOD</h2>
-                  <div className="space-y-4">
-                    {[
-                      {
-                        value: "standard" as const,
-                        label: "Standard delivery",
-                        sub: "3–5 business days · TCS / Leopards",
-                        price: sub >= 5000 ? "Free" : formatPKR(250),
-                      },
-                      {
-                        value: "express" as const,
-                        label: "Express delivery",
-                        sub: "1–2 business days · TCS",
-                        price: formatPKR(500),
-                      },
-                    ].map((opt) => (
+                <h2 className={sectionHeader}>
+                  <span className="w-5 h-5 rounded-full bg-[var(--gold-warm)] text-[var(--bg-void)] text-[10px] font-bold flex items-center justify-center shrink-0">2</span>
+                  Shipping Method
+                </h2>
+
+                {/* ── Method cards — Law of Similarity: same card shape, gold selection state */}
+                <div className="space-y-3">
+                  {[
+                    {
+                      value: "standard" as const,
+                      label: "Standard Delivery",
+                      sub: "3–5 business days · TCS / Leopards",
+                      price: sub >= 5000 ? "FREE" : formatPKR(250),
+                      badge: sub >= 5000 ? "Complimentary" : null,
+                    },
+                    {
+                      value: "express" as const,
+                      label: "Express Delivery",
+                      sub: "1–2 business days · TCS",
+                      price: formatPKR(500),
+                      badge: "Fastest",
+                    },
+                  ].map((opt) => {
+                    const active = shippingMethod === opt.value;
+                    return (
                       <button
                         key={opt.value}
                         type="button"
                         onClick={() => setShippingMethod(opt.value)}
-                        className={`w-full flex items-center justify-between p-5 rounded-[4px] border transition-all duration-300 ${
-                          shippingMethod === opt.value
-                            ? "bg-[rgba(201,160,80,0.06)] border-[var(--border-glow)]"
-                            : "bg-[var(--bg-dusk)] border-[var(--border-fine)]"
-                        }`}
+                        className={cn(
+                          "w-full flex items-center justify-between p-5 rounded-[8px] border transition-all duration-250 text-left",
+                          active
+                            ? "bg-[rgba(201,160,80,0.07)] border-[var(--border-glow)] shadow-[0_0_20px_rgba(201,160,80,0.08)]"
+                            : "bg-[var(--bg-dusk)] border-[var(--border-fine)] hover:border-[var(--border-mid)]"
+                        )}
                       >
-                        <div className="text-left flex gap-4 items-center">
-                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${shippingMethod === opt.value ? 'border-[var(--gold-warm)]' : 'border-[var(--border-mid)]'}`}>
-                            {shippingMethod === opt.value && <div className="w-2 h-2 rounded-full bg-[var(--gold-warm)]" />}
+                        <div className="flex gap-4 items-center">
+                          {/* Radio indicator — animated */}
+                          <div className={cn(
+                            "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors",
+                            active ? "border-[var(--gold-warm)]" : "border-[var(--border-mid)]"
+                          )}>
+                            <AnimatePresence>
+                              {active && (
+                                <motion.div
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  exit={{ scale: 0 }}
+                                  className="w-2.5 h-2.5 rounded-full bg-[var(--gold-warm)]"
+                                />
+                              )}
+                            </AnimatePresence>
                           </div>
                           <div>
-                            <p className="font-body font-medium text-[15px] text-[var(--cream-bone)]">{opt.label}</p>
-                            <p className="font-body font-light text-[13px] text-[var(--cream-muted)] mt-1">{opt.sub}</p>
+                            <p className="font-body font-semibold text-[14px] text-[var(--cream-bone)] flex items-center gap-2">
+                              {opt.label}
+                              {opt.badge && (
+                                <span className="text-[9px] font-body font-bold tracking-[0.15em] bg-[var(--gold-warm)]/15 text-[var(--gold-warm)] border border-[var(--gold-warm)]/30 px-2 py-0.5 rounded-full">
+                                  {opt.badge}
+                                </span>
+                              )}
+                            </p>
+                            <p className="font-body font-light text-[13px] text-[var(--cream-muted)] mt-0.5">
+                              {opt.sub}
+                            </p>
                           </div>
                         </div>
-                        <span className="font-body font-semibold text-[14px] text-[var(--gold-warm)]">{opt.price}</span>
+                        <span className={cn(
+                          "font-body font-bold text-[14px] shrink-0 ml-4",
+                          active ? "text-[var(--gold-warm)]" : "text-[var(--cream-muted)]"
+                        )}>
+                          {opt.price}
+                        </span>
                       </button>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
 
-                <div className="flex gap-4">
-                  <button onClick={() => setStep(1)} className="h-[56px] px-8 bg-transparent border border-[var(--border-mid)] text-[var(--cream-bone)] font-body font-semibold text-[11px] tracking-[0.25em] rounded-[2px]">
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setStep(1)}
+                    className="h-[52px] px-6 bg-transparent border border-[var(--border-mid)] text-[var(--cream-bone)] font-body font-semibold text-[11px] tracking-[0.2em] rounded-full hover:border-[var(--border-glow)] transition-colors"
+                  >
                     BACK
                   </button>
-                  <button onClick={() => setStep(3)} className="flex-1 h-[56px] bg-[var(--gold-warm)] text-[var(--bg-void)] font-body font-bold text-[11px] tracking-[0.25em] rounded-[2px] transition-colors hover:bg-[var(--gold-bright)]">
-                    CONTINUE TO PAYMENT →
+                  <button
+                    onClick={() => setStep(3)}
+                    className="flex-1 h-[52px] bg-[var(--gold-warm)] text-[var(--bg-void)] font-body font-bold text-[11px] tracking-[0.28em] rounded-full transition-all hover:bg-[var(--gold-bright)] active:scale-[0.98] flex items-center justify-center gap-2"
+                  >
+                    CONTINUE TO PAYMENT <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
               </motion.div>
             )}
 
-            {/* STEP 3: PAYMENT */}
+            {/* STEP 3 — PAYMENT */}
             {step === 3 && (
               <motion.div
                 key="step3"
-                {...stepVariants}
-                transition={{ duration: 0.25 }}
-                className="space-y-10"
+                variants={stepVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={stepTransition}
+                className="space-y-8"
               >
-                <div>
-                  <h2 className={sectionHeader}>PAYMENT METHOD</h2>
-                  <div className="space-y-4">
-                    {([
-                      {
-                        value: "cod" as const,
-                        label: "Cash on delivery",
-                        sub: "Pay in cash when your parcel arrives — available nationwide.",
-                      },
-                      {
-                        value: "bank_transfer" as const,
-                        label: "Bank / Upaisa transfer",
-                        sub: "Transfer the exact total, then enter your receipt reference below.",
-                      },
-                    ]).map((opt) => (
+                <h2 className={sectionHeader}>
+                  <span className="w-5 h-5 rounded-full bg-[var(--gold-warm)] text-[var(--bg-void)] text-[10px] font-bold flex items-center justify-center shrink-0">3</span>
+                  Payment Method
+                </h2>
+
+                <div className="space-y-3">
+                  {([
+                    {
+                      value: "cod" as const,
+                      label: "Cash on Delivery",
+                      sub: "Pay in cash when your parcel arrives — available nationwide.",
+                    },
+                    {
+                      value: "bank_transfer" as const,
+                      label: "Bank / Upaisa Transfer",
+                      sub: "Transfer the exact total, then enter your receipt reference below.",
+                    },
+                  ]).map((opt) => {
+                    const active = paymentMethod === opt.value;
+                    return (
                       <button
                         key={opt.value}
                         type="button"
                         onClick={() => setPaymentMethod(opt.value)}
-                        className={`w-full flex items-center justify-between p-5 rounded-[4px] border transition-all duration-300 ${
-                          paymentMethod === opt.value
-                            ? "bg-[rgba(201,160,80,0.06)] border-[var(--border-glow)]"
-                            : "bg-[var(--bg-dusk)] border-[var(--border-fine)]"
-                        }`}
+                        className={cn(
+                          "w-full flex items-center gap-4 p-5 rounded-[8px] border transition-all duration-250 text-left",
+                          active
+                            ? "bg-[rgba(201,160,80,0.07)] border-[var(--border-glow)] shadow-[0_0_20px_rgba(201,160,80,0.08)]"
+                            : "bg-[var(--bg-dusk)] border-[var(--border-fine)] hover:border-[var(--border-mid)]"
+                        )}
                       >
-                        <div className="text-left flex gap-4 items-center">
-                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentMethod === opt.value ? 'border-[var(--gold-warm)]' : 'border-[var(--border-mid)]'}`}>
-                            {paymentMethod === opt.value && <div className="w-2 h-2 rounded-full bg-[var(--gold-warm)]" />}
-                          </div>
-                          <div>
-                            <p className="font-body font-medium text-[15px] text-[var(--cream-bone)] flex items-center gap-2">
-                              {opt.label}
-                              {opt.value === "cod" && <span className="text-[9px] bg-[var(--bg-obsidian)] border border-[var(--border-mid)] px-2 py-0.5 rounded-[2px]">COD</span>}
-                            </p>
-                            <p className="font-body font-light text-[13px] text-[var(--cream-muted)] mt-1 pr-4">{opt.sub}</p>
-                          </div>
+                        <div className={cn(
+                          "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors",
+                          active ? "border-[var(--gold-warm)]" : "border-[var(--border-mid)]"
+                        )}>
+                          <AnimatePresence>
+                            {active && (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                exit={{ scale: 0 }}
+                                className="w-2.5 h-2.5 rounded-full bg-[var(--gold-warm)]"
+                              />
+                            )}
+                          </AnimatePresence>
+                        </div>
+                        <div>
+                          <p className="font-body font-semibold text-[14px] text-[var(--cream-bone)]">
+                            {opt.label}
+                          </p>
+                          <p className="font-body font-light text-[13px] text-[var(--cream-muted)] mt-0.5">
+                            {opt.sub}
+                          </p>
                         </div>
                       </button>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
 
-                {submitError && (
-                  <p className="rounded-[4px] border border-[var(--ember)]/30 bg-[var(--ember)]/10 px-4 py-3 font-body text-[13px] text-[var(--ember)]">
-                    {submitError}
-                  </p>
-                )}
-
+                {/* Bank transfer details — AnimatePresence for smooth reveal */}
                 <AnimatePresence>
                   {paymentMethod === "bank_transfer" && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
                       className="overflow-hidden"
                     >
-                      <div className="space-y-4 rounded-[4px] border border-[var(--border-mid)] bg-[var(--bg-dusk)] p-5">
-                        <p className="font-body font-semibold text-[10px] tracking-[0.2em] text-[var(--gold-warm)] uppercase">
+                      <div className="space-y-5 rounded-[8px] border border-[var(--border-mid)] bg-[var(--bg-dusk)] p-5">
+                        <p className="font-body font-semibold text-[10px] tracking-[0.25em] text-[var(--gold-warm)] uppercase">
                           Transfer exactly {formatPKR(total)}
                         </p>
-                        <div className="grid gap-3 font-body font-light text-[13px]">
-                          <div className="grid grid-cols-[120px_1fr]">
-                            <span className="text-[var(--cream-ghost)]">Bank</span>
-                            <span className="text-[var(--cream-bone)] font-medium">{bankDisplay.bankName}</span>
-                          </div>
-                          <div className="grid grid-cols-[120px_1fr]">
-                            <span className="text-[var(--cream-ghost)]">Account title</span>
-                            <span className="text-[var(--cream-bone)] font-medium">{bankDisplay.accountTitle}</span>
-                          </div>
-                          <div className="grid grid-cols-[120px_1fr]">
-                            <span className="text-[var(--cream-ghost)]">Account number</span>
-                            <span className="text-[var(--cream-bone)] font-mono">{bankDisplay.accountNumber}</span>
-                          </div>
-                          <div className="grid grid-cols-[120px_1fr]">
-                            <span className="text-[var(--cream-ghost)]">Upaisa number</span>
-                            <span className="text-[var(--cream-bone)] font-mono">{bankDisplay.upaisaNumber}</span>
-                          </div>
+                        <div className="grid gap-3 text-[13px]">
+                          {[
+                            { label: "Bank", value: bankDisplay.bankName },
+                            { label: "Account title", value: bankDisplay.accountTitle },
+                            { label: "Account #", value: bankDisplay.accountNumber, mono: true },
+                            { label: "Upaisa", value: bankDisplay.upaisaNumber, mono: true },
+                          ].map(({ label, value, mono }) => (
+                            <div key={label} className="grid grid-cols-[110px_1fr] items-center">
+                              <span className="font-body font-light text-[var(--cream-ghost)]">{label}</span>
+                              <span className={cn("text-[var(--cream-bone)]", mono && "font-mono")}>{value}</span>
+                            </div>
+                          ))}
                         </div>
-                        <p className="font-body font-light text-[12px] text-[var(--cream-muted)] leading-relaxed mt-2">
+                        <p className="font-body font-light text-[12px] text-[var(--cream-muted)] leading-relaxed border-t border-[var(--border-fine)] pt-4">
                           Use your checkout email ({shippingDetails?.email}) in the transfer narration. After payment, enter your transaction ID below.
                         </p>
-                        <div className="mt-4">
-                          <label htmlFor="bank-txn-reference" className={labelBase}>Transaction ID</label>
+                        <Field label="Transaction ID">
                           <input
                             id="bank-txn-reference"
-                            className={inputBase}
+                            className={inputCls()}
                             placeholder="From your SMS or banking receipt"
                             value={bankTxnReference}
                             onChange={(e) => setBankTxnReference(e.target.value)}
                             autoComplete="off"
                           />
-                        </div>
+                        </Field>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
-                <div className="flex gap-4">
-                  <button onClick={() => setStep(2)} className="h-[56px] px-8 bg-transparent border border-[var(--border-mid)] text-[var(--cream-bone)] font-body font-semibold text-[11px] tracking-[0.25em] rounded-[2px]">
+                {/* Submit error */}
+                <AnimatePresence>
+                  {submitError && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="rounded-[8px] border border-[var(--ember)]/30 bg-[var(--ember)]/8 px-5 py-4 font-body text-[13px] text-[var(--ember)] flex items-start gap-2"
+                    >
+                      <span className="w-4 h-4 rounded-full border border-[var(--ember)] flex items-center justify-center shrink-0 mt-0.5 text-[10px] font-bold">!</span>
+                      {submitError}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setStep(2)}
+                    className="h-[52px] px-6 bg-transparent border border-[var(--border-mid)] text-[var(--cream-bone)] font-body font-semibold text-[11px] tracking-[0.2em] rounded-full hover:border-[var(--border-glow)] transition-colors"
+                  >
                     BACK
                   </button>
-                  <button onClick={placeOrder} disabled={isSubmitting} className="flex-1 h-[56px] bg-[var(--gold-warm)] text-[var(--bg-void)] font-body font-bold text-[11px] tracking-[0.25em] rounded-[2px] transition-colors hover:bg-[var(--gold-bright)] disabled:opacity-50">
-                    {isSubmitting ? "PROCESSING…" : "PLACE ORDER →"}
+                  {/* CTA — Doherty: animated loading state, never just freezes */}
+                  <button
+                    onClick={placeOrder}
+                    disabled={isSubmitting}
+                    className="flex-1 h-[52px] bg-[var(--gold-warm)] text-[var(--bg-void)] font-body font-bold text-[11px] tracking-[0.28em] rounded-full transition-all hover:bg-[var(--gold-bright)] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(201,160,80,0.2)]"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        PROCESSING…
+                      </>
+                    ) : (
+                      <>PLACE ORDER →</>
+                    )}
                   </button>
                 </div>
               </motion.div>
@@ -485,42 +705,60 @@ export function CheckoutForm({
           </AnimatePresence>
         </div>
 
-        {/* Right Side: Order Summary */}
-        <aside className="w-full relative lg:sticky lg:top-[120px] h-fit">
-          <div className="bg-[var(--bg-dusk)] border border-[var(--border-mid)] rounded-[4px] p-6">
-            <h2 className="font-body font-semibold text-[10px] tracking-[0.35em] text-[var(--cream-ghost)] uppercase mb-6 border-b border-[var(--border-fine)] pb-4">
-              ORDER SUMMARY
-            </h2>
-            
-            <ul className="space-y-4 mb-6">
+        {/* ── Right: Order Summary ─────────────────────────────────────────── */}
+        {/* UX Law: Law of Proximity — all order details in a single grouped card */}
+        <aside className="w-full relative lg:sticky lg:top-[100px] h-fit">
+          <div className="rounded-[8px] border border-[var(--border-mid)] bg-[var(--bg-dusk)] overflow-hidden">
+            <div className="p-5 border-b border-[var(--border-fine)]">
+              <h2 className="font-body font-semibold text-[10px] tracking-[0.38em] text-[var(--cream-ghost)] uppercase">
+                Order Summary
+              </h2>
+            </div>
+
+            <ul className="divide-y divide-[var(--border-fine)]">
               {items.map((i) => (
-                <li key={i.id} className="flex gap-4 items-center">
-                  <div className="relative w-[48px] h-[64px] rounded-[2px] bg-[var(--bg-obsidian)] border border-[var(--border-fine)] overflow-hidden shrink-0">
-                     <SafeProductImage src={i.imageUrl} alt={i.name} fill sizes="48px" className="object-cover" />
+                <li key={i.id} className="flex gap-3 p-4 items-center">
+                  <div className="relative w-[44px] h-[60px] rounded-[4px] bg-[var(--bg-obsidian)] border border-[var(--border-fine)] overflow-hidden shrink-0">
+                    <SafeProductImage src={i.imageUrl} alt={i.name} fill sizes="44px" className="object-cover" />
+                    {/* Quantity badge overlay */}
+                    <div className="absolute -top-1.5 -right-1.5 w-[18px] h-[18px] rounded-full bg-[var(--gold-warm)] text-[var(--bg-void)] font-body font-bold text-[9px] flex items-center justify-center">
+                      {i.quantity}
+                    </div>
                   </div>
-                  <div className="flex flex-col flex-1 min-w-0">
-                    <span className="font-display font-medium text-[15px] text-[var(--cream-bone)] truncate">{i.name}</span>
-                    <span className="font-body font-light text-[12px] text-[var(--cream-ghost)] truncate">{i.variantLabel} x {i.quantity}</span>
+                  <div className="flex-1 min-w-0">
+                    <span className="font-display font-medium text-[14px] text-[var(--cream-bone)] block truncate">{i.name}</span>
+                    {i.variantLabel && <span className="font-body font-light text-[11px] text-[var(--cream-ghost)]">{i.variantLabel}</span>}
                   </div>
-                  <span className="font-body font-semibold text-[14px] text-[var(--gold-warm)] shrink-0">
+                  <span className="font-body font-semibold text-[13px] text-[var(--gold-warm)] shrink-0">
                     {formatPKR(i.price * i.quantity)}
                   </span>
                 </li>
               ))}
             </ul>
 
-            <div className="mb-6 pt-6 border-t border-[var(--border-fine)]">
-              <label className={labelBase}>Promo code</label>
+            {/* Promo code section */}
+            <div className="p-5 border-t border-[var(--border-fine)]">
+              <label className="font-body font-semibold text-[10px] tracking-[0.25em] text-[var(--cream-ghost)] uppercase flex items-center gap-2 mb-3">
+                <Tag className="w-3.5 h-3.5 text-[var(--gold-warm)]" />
+                Promo Code
+              </label>
               <div className="flex gap-2">
                 <input
                   value={promoInput}
                   onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
-                  placeholder="Enter code"
-                  className={`${inputBase} flex-1`}
+                  placeholder="ENTER CODE"
+                  className={cn(
+                    inputCls(),
+                    "flex-1 font-body font-semibold text-[12px] tracking-[0.18em] placeholder:font-light placeholder:tracking-normal placeholder:text-[13px]"
+                  )}
                   disabled={!!promoCode}
                 />
                 {promoCode ? (
-                  <button type="button" onClick={removePromo} className="h-[52px] px-6 bg-[var(--bg-obsidian)] border border-[var(--border-mid)] font-body font-semibold text-[10px] tracking-[0.2em] text-[var(--cream-muted)] rounded-[2px]">
+                  <button
+                    type="button"
+                    onClick={removePromo}
+                    className="h-[52px] px-4 bg-[var(--bg-obsidian)] border border-[var(--border-mid)] font-body font-semibold text-[10px] tracking-[0.2em] text-[var(--cream-muted)] rounded-[4px] hover:text-[var(--ember)] transition-colors shrink-0"
+                  >
                     REMOVE
                   </button>
                 ) : (
@@ -528,48 +766,83 @@ export function CheckoutForm({
                     type="button"
                     onClick={applyPromoCode}
                     disabled={!promoInput || promoLoading}
-                    className="h-[52px] px-6 bg-[var(--bg-obsidian)] border border-[var(--border-mid)] font-body font-semibold text-[10px] tracking-[0.2em] text-[var(--cream-muted)] rounded-[2px] hover:text-[var(--gold-warm)] disabled:opacity-50"
+                    className="h-[52px] px-4 bg-[var(--bg-obsidian)] border border-[var(--border-mid)] font-body font-semibold text-[10px] tracking-[0.2em] text-[var(--cream-muted)] rounded-[4px] hover:text-[var(--gold-warm)] disabled:opacity-40 transition-colors shrink-0 flex items-center gap-1.5"
                   >
-                    {promoLoading ? "…" : "APPLY"}
+                    {promoLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : "APPLY"}
                   </button>
                 )}
               </div>
-              {promoCode && (
-                <p className="mt-2 font-body font-light text-[12px] text-emerald-400/90">
-                  Code "{promoCode}" applied
-                </p>
-              )}
-              {promoError && (
-                <p className="mt-2 font-body font-light text-[12px] text-[var(--ember)]/90">
-                  {promoError}
-                </p>
-              )}
+              <AnimatePresence>
+                {promoCode && (
+                  <motion.p
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-2 font-body font-light text-[12px] text-[var(--sage)] flex items-center gap-1.5"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    Code &quot;{promoCode}&quot; applied
+                  </motion.p>
+                )}
+                {promoError && (
+                  <motion.p
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-2 font-body font-light text-[12px] text-[var(--ember)]"
+                  >
+                    {promoError}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
 
-            <div className="space-y-3 font-body font-light text-[14px] text-[var(--cream-warm)] pt-6 border-t border-[var(--border-fine)]">
-              <div className="flex justify-between">
+            {/* Price breakdown */}
+            <div className="p-5 pt-0 space-y-2 text-[13px]">
+              <div className="flex justify-between text-[var(--cream-muted)]">
                 <span>Subtotal</span>
-                <span>{formatPKR(sub)}</span>
+                <span className="text-[var(--cream-bone)]">{formatPKR(sub)}</span>
               </div>
               {promoDiscount > 0 && (
                 <div className="flex justify-between">
-                  <span className="text-[var(--cream-ghost)]">Discount</span>
-                  <span className="text-emerald-400/90">− {formatPKR(promoDiscount)}</span>
+                  <span className="text-[var(--cream-muted)]">Discount</span>
+                  <span className="text-[var(--sage)]">− {formatPKR(promoDiscount)}</span>
                 </div>
               )}
-              <div className="flex justify-between">
+              <div className="flex justify-between text-[var(--cream-muted)]">
                 <span>Shipping</span>
-                <span>{shipCost === 0 ? "Free" : formatPKR(shipCost)}</span>
+                <span className="text-[var(--cream-bone)]">
+                  {shipCost === 0 ? <span className="text-[var(--sage)]">Free</span> : formatPKR(shipCost)}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between pt-4 mt-4 border-t border-[var(--border-fine)]">
+                <span className="font-body font-semibold text-[14px] text-[var(--cream-bone)]">Total</span>
+                <motion.span
+                  key={total}
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="font-display font-bold text-[1.625rem] text-[var(--cream-bone)]"
+                >
+                  {formatPKR(total)}
+                </motion.span>
               </div>
             </div>
+          </div>
 
-            <div className="flex items-end justify-between pt-6 mt-6 border-t border-[var(--border-fine)]">
-              <span className="font-body font-medium text-[15px] text-[var(--cream-bone)]">Total</span>
-              <span className="font-display font-semibold text-[1.5rem] text-[var(--cream-bone)]">{formatPKR(total)}</span>
-            </div>
+          {/* Trust badges below summary — Law of Proximity */}
+          <div className="mt-4 flex items-center justify-center gap-5 text-[11px] text-[var(--cream-ghost)] font-body">
+            <span className="flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5 text-[var(--gold-warm)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+              Secure checkout
+            </span>
+            <span className="w-px h-3 bg-[var(--border-fine)]" />
+            <span className="flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5 text-[var(--gold-warm)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+              100% authentic
+            </span>
           </div>
         </aside>
-
       </div>
     </div>
   );

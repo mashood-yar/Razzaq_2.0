@@ -94,7 +94,7 @@ export function OrderSuccessBanner({ orderId }: OrderSuccessBannerProps) {
         <div className="flex items-start gap-4">
           <div className="w-1.5 h-1.5 rounded-full bg-[var(--gold-warm)] mt-2 shrink-0" />
           <p className="font-body font-light text-[14px] text-[var(--cream-warm)]">
-            You'll receive a WhatsApp notification when your order ships.
+            You&apos;ll receive a WhatsApp notification when your order ships.
           </p>
         </div>
         <div className="flex items-start gap-4">

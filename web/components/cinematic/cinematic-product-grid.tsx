@@ -5,7 +5,7 @@ import Link from "next/link";
 import { formatPKR } from "@/lib/utils";
 import { Heart, Star } from "lucide-react";
 import Image from "next/image";
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function CinematicProductGrid({ products }: { products: any[] }) {
   const container = {
     hidden: { opacity: 0 },
@@ -28,7 +28,7 @@ export function CinematicProductGrid({ products }: { products: any[] }) {
       viewport={{ once: true, margin: "-50px" }}
       className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[12px] lg:gap-6"
     >
-      {products.map((p, i) => {
+      {products.map((p) => {
         return (
           <motion.div key={p.id} variants={item} className="flex flex-col group cursor-pointer">
             <Link href={`/products/${p.slug}`} className="block relative aspect-[2/3] w-full bg-[var(--bg-dusk)] rounded-[2px] overflow-hidden mb-3">

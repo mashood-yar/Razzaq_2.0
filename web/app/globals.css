@@ -184,4 +184,41 @@
     background-size: 200% 100%;
     animation: shimmer 1.8s ease-in-out infinite;
   }
+
+  /* Marquee utility — used in homepage scent strip */
+  .animate-marquee-right {
+    animation: marquee-right 32s linear infinite;
+  }
+
+  /* Focus ring — keyboard accessibility (Aesthetic-Usability Effect) */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold-warm)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-obsidian)];
+  }
+
+  /* Gold glow card hover — used on product cards */
+  .hover-gold-glow {
+    @apply transition-all duration-300 hover:shadow-[0_0_32px_rgba(201,160,80,0.15)] hover:border-[var(--border-mid)];
+  }
 }
+
+/* ─── Keyframes ─────────────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes marquee-right {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes gold-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 160, 80, 0); }
+  50%       { box-shadow: 0 0 0 8px rgba(201, 160, 80, 0.08); }
+}
+

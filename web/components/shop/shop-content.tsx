@@ -2,7 +2,8 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check } from "lucide-react";
+import Image from "next/image";
 import type { LegacyProduct as Product } from "@/lib/products";
 import { ProductCard } from "@/components/product/product-card";
 import { motion, AnimatePresence } from "framer-motion";
@@ -40,7 +41,7 @@ function sortProducts(products: Product[], sort: SortKey): Product[] {
 
 export function ShopContent({ initialProducts }: { initialProducts: Product[] }) {
   const searchParams = useSearchParams();
-  const [query, setQuery] = useState("");
+  const [query] = useState("");
   const [sort, setSort] = useState<SortKey>("featured");
   const [activeFilter, setActiveFilter] = useState("all");
   const [visible, setVisible] = useState(PAGE_SIZE);
@@ -84,7 +85,7 @@ export function ShopContent({ initialProducts }: { initialProducts: Product[] })
       {/* 1. Collection Banner Hero */}
       <div className="relative w-full aspect-[16/9] lg:aspect-[21/9] bg-[var(--bg-void)] overflow-hidden">
         <div className="absolute inset-0 opacity-40">
-          <img src="/shop-hero.png" alt="Collection" className="w-full h-full object-cover grayscale" />
+          <Image src="/shop-hero.png" alt="Collection" fill className="object-cover grayscale" priority sizes="100vw" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-obsidian)] to-transparent via-transparent" />
         <div className="absolute bottom-0 left-0 w-full p-8 flex flex-col items-center justify-end h-full">
