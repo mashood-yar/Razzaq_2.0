@@ -22,7 +22,7 @@ export function EditorialSection() {
             <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[2px]">
               <motion.img
                 whileHover={{ scale: 1.04 }}
-                transition={{ duration: 0.8, ease: [0.25, 0.1, 0, 1] }}
+                transition={{ duration: 0.8, ease: [0.25, 0.1, 0, 1] as [number, number, number, number] }}
                 src="/images/flourine.png"
                 alt="Editorial brand image"
                 className="h-full w-full object-cover grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-700"

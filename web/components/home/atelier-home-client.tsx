@@ -9,13 +9,13 @@ import { ProductCard } from "@/components/product/product-card";
 
 export function AtelierHomeClient({ bestSellers }: { bestSellers: Product[] }) {
   // Motion defaults
-  const easeDrama = [0.87, 0, 0.13, 1];
+  const easeDrama = [0.87, 0, 0.13, 1] as [number, number, number, number];
 
   const revealProps = {
     initial: { opacity: 0, y: 36 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true, margin: '-80px', amount: 0.12 },
-    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] }
+    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }
   };
 
   return (

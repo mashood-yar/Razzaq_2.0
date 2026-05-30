@@ -20,7 +20,7 @@ import { EmptyCartCta } from "@/components/cart/empty-cart-cta";
 import { ShippingProgress } from "@/components/cart/shipping-progress";
 
 // ─── Spring for snappy item removal/addition animations ──────────────────────
-const itemSpring = { type: "spring", stiffness: 400, damping: 35 };
+const itemSpring = { type: "spring", stiffness: 400, damping: 35 } as const;
 
 export function CartDrawer() {
   const open = useUiStore((s) => s.cartOpen);

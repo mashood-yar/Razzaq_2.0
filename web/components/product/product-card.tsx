@@ -69,7 +69,7 @@ export function ProductCard({
       initial={{ opacity: 0, y: 36 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
     >
       {/* Image container — Law of Proximity: image + actions grouped */}
       <div className="relative aspect-[2/3] w-full bg-[var(--bg-dusk)] rounded-[4px] overflow-hidden mb-3 border border-[var(--border-fine)] group-hover:border-[var(--border-mid)] transition-all duration-300 group-hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)]">

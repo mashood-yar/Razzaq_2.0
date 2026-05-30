@@ -39,7 +39,7 @@ export function IntroAnimation() {
         <motion.div
           key="intro"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 1.2, ease: [0.25, 0.1, 0.25, 1] } }}
+          exit={{ opacity: 0, transition: { duration: 1.2, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] } }}
           className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[var(--bg-void)] pointer-events-none"
         >
           <motion.div

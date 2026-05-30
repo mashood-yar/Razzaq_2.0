@@ -44,7 +44,10 @@ const stepVariants = {
   animate: { opacity: 1, x: 0 },
   exit:    { opacity: 0, x: -28 },
 };
-const stepTransition = { duration: 0.28, ease: [0.4, 0, 0.2, 1] };
+const stepTransition = {
+  duration: 0.28,
+  ease: [0.4, 0, 0.2, 1] as [number, number, number, number] as [number, number, number, number],
+};
 
 // ─── Premium field component — Aesthetic-Usability Effect ────────────────────
 function Field({
@@ -111,7 +114,7 @@ function StepIndicator({ current }: { current: 1 | 2 | 3 }) {
         <motion.div
           className="absolute top-[14px] left-0 h-px bg-[var(--gold-warm)] -z-10"
           animate={{ width: current === 1 ? "0%" : current === 2 ? "50%" : "100%" }}
-          transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+          transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] as [number, number, number, number] as [number, number, number, number] }}
         />
 
         {steps.map(({ num, label }) => {
@@ -624,7 +627,7 @@ export function CheckoutForm({
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] as [number, number, number, number] as [number, number, number, number] }}
                       className="overflow-hidden"
                     >
                       <div className="space-y-5 rounded-[8px] border border-[var(--border-mid)] bg-[var(--bg-dusk)] p-5">

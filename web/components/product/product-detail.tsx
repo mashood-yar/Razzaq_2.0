@@ -54,8 +54,8 @@ export interface DbProduct {
 }
 
 // ─── UX Law: Doherty Threshold — sub-400ms feedback for every action ─────────
-const springTransition = { type: "spring", stiffness: 380, damping: 30 };
-const revealTransition = { duration: 0.45, ease: [0.16, 1, 0.3, 1] };
+const springTransition = { type: "spring", stiffness: 380, damping: 30 } as const;
+const revealTransition = { duration: 0.45, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] as [number, number, number, number] };
 
 export function ProductDetail({ product }: { product: DbProduct }) {
   const addItem = useCartStore((s) => s.addItem);
@@ -405,7 +405,7 @@ export function ProductDetail({ product }: { product: DbProduct }) {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                  transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] as [number, number, number, number] as [number, number, number, number] }}
                   className="overflow-hidden"
                 >
                   {/* ── Visual pyramid — Law of Similarity: dot color codes layers */}

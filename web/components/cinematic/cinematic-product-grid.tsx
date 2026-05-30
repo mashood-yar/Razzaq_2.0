@@ -17,7 +17,7 @@ export function CinematicProductGrid({ products }: { products: any[] }) {
 
   const item = {
     hidden: { opacity: 0, y: 36 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } },
+    show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] as [number, number, number, number] } },
   };
 
   return (
@@ -36,7 +36,7 @@ export function CinematicProductGrid({ products }: { products: any[] }) {
                 src={p.images?.[0]?.url || p.product_images?.[0]?.url || "/placeholder.jpg"}
                 alt={p.name}
                 fill
-                className="object-cover transition-all duration-[380ms] saturate-[0.88] group-hover:saturate-100 group-hover:scale-[1.03]"
+                className="object-cover transition-all duration-500 saturate-[0.88] group-hover:saturate-100 group-hover:scale-[1.03]"
                 sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
               />
               <button className="absolute top-2 right-2 w-[36px] h-[36px] bg-[var(--bg-obsidian)]/70 flex items-center justify-center rounded-[2px] z-10" onClick={(e) => { e.preventDefault(); }}>
