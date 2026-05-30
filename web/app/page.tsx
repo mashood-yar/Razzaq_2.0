@@ -175,13 +175,13 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <div className="section-ocean-surface border-t border-border px-4 py-16 sm:px-6 lg:px-8">
+      <div className="section-alt border-t border-border px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <QuizTeaser />
         </div>
       </div>
 
-      <div className="section-ocean-primary border-t border-border px-4 py-24 sm:px-6 lg:px-8">
+      <div className="section-sand border-t border-border px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-24 lg:space-y-32">
 
         {/* Best sellers */}
