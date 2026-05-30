@@ -135,6 +135,14 @@ create table if not exists public.products (
   updated_at       timestamptz not null default now()
 );
 
+alter table public.products add column if not exists is_trending boolean not null default false;
+alter table public.products add column if not exists is_premium boolean not null default false;
+alter table public.products add column if not exists on_sale boolean not null default false;
+alter table public.products add column if not exists sale_price numeric(10,2);
+alter table public.products add column if not exists discount_percent integer;
+alter table public.products add column if not exists sale_start_at timestamptz;
+alter table public.products add column if not exists sale_end_at timestamptz;
+
 create index if not exists products_search_idx on public.products using gin(search_vector);
 create index if not exists products_category_idx on public.products(category_id);
 create index if not exists products_status_idx on public.products(status);

@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card } from "@/components/ui/card";
 import { useDropzone } from "react-dropzone";
 import { X, Upload, ArrowLeft, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -18,6 +17,20 @@ import {
   ADMIN_PRODUCT_IMAGE_MAX_BYTES,
   formatImageUploadFetchError,
 } from "@/lib/admin/product-image-upload";
+import {
+  ProductHighlightsFields,
+  defaultHighlightFormState,
+  highlightPayloadFromForm,
+  highlightStateFromProduct,
+  type ProductHighlightFormState,
+} from "@/components/admin/product-highlights-fields";
+import {
+  AdminPageHeader,
+  AdminCard,
+  AdminFormSection,
+  AdminImageDropzone,
+  AdminLoading,
+} from "@/components/admin/admin-ui";
 
 
 const productSchema = z.object({
@@ -52,6 +65,7 @@ export default function EditProductPage() {
   });
   const [images, setImages] = useState<{ id?: string; file?: File; preview: string; url: string; is_primary: boolean }[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [highlights, setHighlights] = useState<ProductHighlightFormState>(defaultHighlightFormState);
 
   useEffect(() => {
     const loadData = async () => {
@@ -81,6 +95,7 @@ export default function EditProductPage() {
           category_id: p.category_id || "",
           status: st,
         });
+        setHighlights(highlightStateFromProduct(p));
         setImages(
           productRes.data.product_images?.map((img: ProductImage) => ({
             id: img.id,
@@ -201,6 +216,7 @@ export default function EditProductPage() {
           stock_quantity: parseInt(validated.stock_quantity, 10),
           category_id: categoryId,
           status: validated.status,
+          ...highlightPayloadFromForm(highlights),
         })
         .eq("id", params.id);
 
@@ -280,31 +296,39 @@ export default function EditProductPage() {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
+    return <AdminLoading label="Loading product…" />;
   }
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => router.back()}>
+    <div className="mx-auto max-w-4xl space-y-6">
+      <div className="flex items-start gap-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full shrink-0 hover:bg-ocean-primary/15"
+          onClick={() => router.back()}
+        >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div>
-          <h1 className="text-3xl font-display font-bold">Edit Product</h1>
-          <p className="text-muted-foreground">Update product information</p>
-        </div>
+        <AdminPageHeader
+          title="Edit Product"
+          subtitle={product?.name ?? "Update product information"}
+          breadcrumb="Catalog"
+        />
       </div>
 
-      <Card className="p-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <AdminCard padding="lg">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <AdminFormSection title="Basic information">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="name">Product Name *</Label>
+              <Label htmlFor="name" className="font-body">Product Name *</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 disabled={saving}
+                className="admin-input rounded-full"
               />
               {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
             </div>
@@ -403,56 +427,60 @@ export default function EditProductPage() {
             </Select>
             {errors.status && <p className="text-sm text-destructive">{errors.status}</p>}
           </div>
+          </AdminFormSection>
 
-          <div className="space-y-2">
-            <Label>Product Images</Label>
-            <div
-              {...getRootProps()}
-              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-                isDragActive ? "border-gold bg-gold/5" : "border-border hover:border-gold/50"
-              }`}
+          <ProductHighlightsFields
+            value={highlights}
+            onChange={setHighlights}
+            disabled={saving}
+          />
+
+          <AdminFormSection title="Product images">
+            <AdminImageDropzone
+              isDragActive={isDragActive}
+              rootProps={getRootProps()}
             >
               <input {...getInputProps()} />
-              <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-2" />
-              <p className="text-sm text-muted-foreground">
+              <Upload className="mx-auto mb-2 h-12 w-12 text-ocean-light" />
+              <p className="font-body text-sm text-muted-foreground">
                 {isDragActive ? "Drop images here" : "Drag & drop images, or click to select"}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">PNG, JPG, JPEG, WebP</p>
+              <p className="mt-1 font-body text-xs text-muted-foreground">PNG, JPG, JPEG, WebP</p>
               {pendingImageUploads > 0 && (
-                <p className="text-xs text-muted-foreground mt-2 flex items-center justify-center gap-2">
+                <p className="mt-2 flex items-center justify-center gap-2 font-body text-xs text-muted-foreground">
                   <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
-                  Uploading {pendingImageUploads} image{pendingImageUploads === 1 ? "" : "s"} to Cloudinary…
+                  Uploading {pendingImageUploads} image{pendingImageUploads === 1 ? "" : "s"}…
                 </p>
               )}
-            </div>
+            </AdminImageDropzone>
 
             {images.length > 0 && (
-              <div className="grid grid-cols-4 gap-4 mt-4">
+              <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
                 {images.map((img, idx) => (
-                  <div key={img.preview} className="relative group">
+                  <div key={img.preview} className="group relative">
                     {/* eslint-disable-next-line @next/next/no-img-element -- blob: object URL preview */}
                     <img
                       src={img.preview}
                       alt={`Preview ${idx + 1}`}
-                      className="w-full h-32 object-cover rounded cursor-pointer"
+                      className="h-32 w-full cursor-pointer rounded-xl border border-border-subtle/60 object-cover"
                       onClick={() => setPrimaryImage(idx)}
                     />
                     {img.is_primary && (
-                      <span className="absolute top-1 left-1 bg-gold text-obsidian text-xs px-2 py-1 rounded">
+                      <span className="absolute left-2 top-2 rounded-full bg-gold-light px-2 py-0.5 font-body text-[10px] font-bold text-ocean-deep">
                         Primary
                       </span>
                     )}
                     {!img.url && img.file && (
-                      <span className="absolute bottom-1 left-1 right-1 flex items-center justify-center gap-1 bg-background/90 text-xs py-1 rounded">
+                      <span className="absolute bottom-2 left-2 right-2 flex items-center justify-center gap-1 rounded-lg bg-ocean-deep/90 py-1 font-body text-xs">
                         <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
                         Uploading…
                       </span>
                     )}
-                    <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                       <button
                         type="button"
                         onClick={() => setPrimaryImage(idx)}
-                        className="bg-gold text-obsidian p-1 rounded"
+                        className="rounded-full bg-gold-light p-1 text-ocean-deep"
                         title="Set as primary"
                       >
                         ★
@@ -460,7 +488,7 @@ export default function EditProductPage() {
                       <button
                         type="button"
                         onClick={() => removeImage(idx)}
-                        className="bg-destructive text-white p-1 rounded"
+                        className="rounded-full bg-destructive p-1 text-white"
                         title="Remove"
                       >
                         <X className="h-4 w-4" />
@@ -470,23 +498,18 @@ export default function EditProductPage() {
                 ))}
               </div>
             )}
-          </div>
+          </AdminFormSection>
 
-          <div className="flex gap-4">
-            <Button type="submit" disabled={saving || pendingImageUploads > 0}>
-              {saving ? "Saving..." : "Save Changes"}
+          <div className="flex gap-3 pt-2">
+            <Button type="submit" className="admin-btn-primary" disabled={saving || pendingImageUploads > 0}>
+              {saving ? "Saving…" : "Save Changes"}
             </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.back()}
-              disabled={saving}
-            >
+            <Button type="button" variant="outline" className="admin-btn-outline" onClick={() => router.back()} disabled={saving}>
               Cancel
             </Button>
           </div>
         </form>
-      </Card>
+      </AdminCard>
     </div>
   );
 }

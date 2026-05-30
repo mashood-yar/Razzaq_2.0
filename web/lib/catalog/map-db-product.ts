@@ -1,6 +1,10 @@
 import type { MainNoteCategory, Product as DbProduct, ProductImage } from "@/lib/types";
 import type { LegacyProduct } from "@/lib/products";
 import {
+  computeSalePricePkr,
+  isSaleWindowActive,
+} from "@/lib/product-highlights";
+import {
   PRODUCT_PLACEHOLDER_SRC,
   getProductImageUrl,
 } from "@/lib/product-image";
@@ -40,18 +44,30 @@ function parseMlFromLabel(label: string | null | undefined, fallback: number): n
   return m ? parseInt(m[1], 10) : fallback;
 }
 
+function effectiveListPrice(row: DbProduct): number {
+  const saleActive = isSaleWindowActive(row);
+  const salePrice = saleActive ? computeSalePricePkr(row) : null;
+  return salePrice ?? row.price_pkr;
+}
+
 function buildSizes(row: DbProduct): LegacyProduct["sizes"] {
   const variants = row.product_variants ?? [];
   const fb = typeof row.liter_ml === "number" && row.liter_ml > 0 ? row.liter_ml : 50;
+  const basePrice = effectiveListPrice(row);
+  const saleActive = isSaleWindowActive(row);
 
   if (variants.length === 0) {
-    return [{ label: "Standard", ml: fb, price: row.price_pkr }];
+    return [{ label: "Standard", ml: fb, price: basePrice }];
   }
 
   return variants.map((v) => {
     const label = v.size?.trim() || "Standard";
     const ml = parseMlFromLabel(v.size, fb);
-    const price = v.price_override ?? row.price_pkr;
+    const variantBase = v.price_override ?? row.price_pkr;
+    let price = v.price_override ?? basePrice;
+    if (saleActive && v.price_override != null && row.price_pkr > 0) {
+      price = Math.round((variantBase / row.price_pkr) * basePrice);
+    }
     return { label, ml, price };
   });
 }
@@ -99,6 +115,13 @@ function taglineFrom(row: DbProduct): string {
 export function mapDbProductToLegacy(row: DbProduct): LegacyProduct {
   const images = sortedImageUrls(row.product_images);
   const tags = row.tags ?? [];
+  const saleActive = isSaleWindowActive(row);
+  const salePrice = saleActive ? computeSalePricePkr(row) : null;
+  const listPrice = salePrice ?? row.price_pkr;
+  const compareAt =
+    saleActive && salePrice != null
+      ? row.compare_at_price ?? row.price_pkr
+      : row.compare_at_price ?? undefined;
 
   return {
     id: row.id,
@@ -106,8 +129,15 @@ export function mapDbProductToLegacy(row: DbProduct): LegacyProduct {
     created_at: row.created_at,
     name: row.name,
     tagline: taglineFrom(row),
-    price: row.price_pkr,
-    compareAtPrice: row.compare_at_price ?? undefined,
+    price: listPrice,
+    compareAtPrice: compareAt,
+    isTrending: row.is_trending ?? false,
+    isPremium: row.is_premium ?? false,
+    onSale: row.on_sale ?? false,
+    salePrice: row.sale_price ?? null,
+    discountPercent: row.discount_percent ?? null,
+    saleStartAt: row.sale_start_at ?? null,
+    saleEndAt: row.sale_end_at ?? null,
     rating: 0,
     reviewCount: 0,
     gender: inferGender(tags),
@@ -139,9 +169,16 @@ export function mapPartialDbProductToLegacy(
     | "compare_at_price"
     | "description"
     | "seo_desc"
-    | "tags"
-    | "liter_ml"
-    | "product_images"
+        | "tags"
+        | "liter_ml"
+        | "is_trending"
+        | "is_premium"
+        | "on_sale"
+        | "sale_price"
+        | "discount_percent"
+        | "sale_start_at"
+        | "sale_end_at"
+        | "product_images"
     | "product_variants"
   >,
 ): LegacyProduct {

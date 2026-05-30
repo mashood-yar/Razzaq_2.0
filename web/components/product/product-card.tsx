@@ -12,6 +12,15 @@ import { StarRating } from "@/components/product/star-rating";
 import { useCartStore } from "@/stores/cart-store";
 import { QuickViewModal } from "@/components/product/quick-view-modal";
 import { useFlyToCart } from "@/components/motion/fly-to-cart";
+import {
+  type HighlightLabel,
+  highlightLabelClasses,
+  highlightLabelText,
+  isLegacyProductOnSale,
+  resolveHighlightLabel,
+} from "@/lib/product-highlights";
+
+export type { HighlightLabel };
 
 const imageVariants = {
   rest: {},
@@ -38,10 +47,12 @@ export function ProductCard({
   product,
   className,
   radiusClass = "rounded-[2rem]",
+  highlightLabel,
 }: {
   product: Product;
   className?: string;
   radiusClass?: string;
+  highlightLabel?: HighlightLabel;
 }) {
   const addItem = useCartStore((s) => s.addItem);
   const fly = useFlyToCart();
@@ -50,6 +61,13 @@ export function ProductCard({
   const [quickOpen, setQuickOpen] = useState(false);
   const [canHover, setCanHover] = useState(false);
   const defaultSize = product.sizes[1] ?? product.sizes[0];
+  const resolvedHighlight = highlightLabel ?? resolveHighlightLabel(product);
+  const onSale = isLegacyProductOnSale(product);
+  const displayPrice = defaultSize?.price ?? product.price;
+  const comparePrice =
+    onSale && product.compareAtPrice && product.compareAtPrice > displayPrice
+      ? product.compareAtPrice
+      : undefined;
 
   useEffect(() => {
     const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
@@ -71,7 +89,7 @@ export function ProductCard({
       productId: product.id,
       name: product.name,
       imageUrl: product.images[0],
-      price: defaultSize.price,
+      price: displayPrice,
       quantity: 1,
       variantLabel: defaultSize.label,
     });
@@ -80,10 +98,10 @@ export function ProductCard({
   const card = (
     <motion.article
       className={cn("group relative flex flex-col", className)}
-      initial={{ opacity: 0, y: 18 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-48px", amount: 0.12 }}
-      transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: reduceMotion ? 0 : 0.4, ease: [0.22, 1, 0.36, 1] }}
       whileHover={reduceMotion ? undefined : { y: -8 }}
     >
       <motion.div
@@ -108,6 +126,16 @@ export function ProductCard({
           <Badge className="absolute left-3 top-3 z-10" variant="default">
             {badgeLabel(product.badge)}
           </Badge>
+        )}
+        {resolvedHighlight && (
+          <span
+            className={cn(
+              "absolute right-3 top-3 z-10 rounded-full px-2.5 py-0.5 text-xs font-semibold",
+              highlightLabelClasses(resolvedHighlight),
+            )}
+          >
+            {highlightLabelText(resolvedHighlight)}
+          </span>
         )}
         <motion.div
           variants={overlayVariants}
@@ -151,11 +179,13 @@ export function ProductCard({
           <StarRating rating={product.rating} />
           <span className="text-xs text-muted-foreground">({product.reviewCount})</span>
         </div>
-        <p className="mt-3 price-gold">
-          {formatPKR(defaultSize?.price ?? product.price)}
-          {product.compareAtPrice && (
+        <p className={cn("mt-3", onSale ? "price-gold" : "text-foreground")}>
+          <span className={onSale ? "font-semibold text-gold" : undefined}>
+            {formatPKR(displayPrice)}
+          </span>
+          {comparePrice && (
             <span className="ml-2 font-body text-sm font-normal text-muted-foreground line-through">
-              {formatPKR(product.compareAtPrice)}
+              {formatPKR(comparePrice)}
             </span>
           )}
         </p>

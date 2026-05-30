@@ -118,7 +118,13 @@ export async function notifyMerchantNewOrder(order: Order): Promise<void> {
       merchantWhatsApp,
       buildWhatsAppBody(order),
     );
-    if (!result.sent) {
+    if (result.sent) {
+      console.info("[Merchant notify] WhatsApp sent:", {
+        to: merchantWhatsApp,
+        orderId: order.id,
+        orderNumber: order.order_number,
+      });
+    } else {
       console.warn("[Merchant notify] WhatsApp not sent:", {
         reason: result.reason,
         to: merchantWhatsApp,

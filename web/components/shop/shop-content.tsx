@@ -26,6 +26,7 @@ import {
   type ShopFiltersState,
 } from "@/components/shop/filter-sidebar";
 import { CategoryBanner } from "@/components/banners/category-banner";
+import { isLegacyProductOnSale } from "@/lib/product-highlights";
 
 const PAGE_SIZE = 8;
 
@@ -41,7 +42,7 @@ function applyFilters(
   const term = q.trim().toLowerCase();
   return products.filter((p) => {
     if (categorySlug && p.categorySlug !== categorySlug) return false;
-    if (saleOnly && !(p.compareAtPrice && p.compareAtPrice > p.price)) return false;
+    if (saleOnly && !isLegacyProductOnSale(p)) return false;
     if (term) {
       const hit =
         p.name.toLowerCase().includes(term) ||

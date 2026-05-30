@@ -3,15 +3,26 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ProductDetail } from "@/components/product/product-detail";
 import { isSupabaseConfigured } from "@/utils/supabase/public-env";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
 export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ slug: string }> };
 
+function pickPrimaryImage(
+  images?: { url: string; is_primary?: boolean | null }[] | null,
+): string | undefined {
+  if (!images?.length) return undefined;
+  return images.find((img) => img.is_primary)?.url ?? images[0]?.url;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   if (!isSupabaseConfigured()) {
-    return { title: slug };
+    return buildPageMetadata({
+      title: slug,
+      path: `/products/${slug}`,
+    });
   }
   const supabase = await createClient();
   const { data } = await supabase
@@ -20,10 +31,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .eq("slug", slug)
     .single();
 
-  return {
-    title: data?.seo_title ?? data?.name,
-    description: data?.seo_desc ?? undefined,
-  };
+  const title = data?.seo_title ?? data?.name ?? slug;
+  const description =
+    data?.seo_desc ??
+    (data?.name
+      ? `Discover ${data.name} — a signature RazzaqLuxe fragrance handcrafted in Pakistan with premium oud, attar, and niche perfumery.`
+      : undefined);
+
+  return buildPageMetadata({
+    title,
+    description,
+    path: `/products/${slug}`,
+    image: pickPrimaryImage(data?.product_images),
+  });
 }
 
 export default async function ProductPage({ params }: Props) {

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Nunito } from "next/font/google";
 import "./globals.css";
 import "react-loading-skeleton/dist/skeleton.css";
-import { siteConfig } from "@/lib/site";
+import { rootMetadataDefaults } from "@/lib/seo/metadata";
 import { StoreHydration } from "@/components/providers";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -28,40 +28,7 @@ const nunito = Nunito({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: siteConfig.name,
-    template: siteConfig.titleTemplate,
-  },
-  description: siteConfig.description,
-  keywords: [
-    "razzaq luxe",
-    "luxury fashion pakistan",
-    "fragrances pakistan",
-    "lawn wear",
-    "formal wear pakistan",
-    "luxury lifestyle",
-  ],
-  authors: [{ name: siteConfig.name }],
-  openGraph: {
-    type: "website",
-    locale: "en_PK",
-    url: siteUrl,
-    siteName: siteConfig.name,
-    title: siteConfig.name,
-    description: siteConfig.description,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: siteConfig.name,
-    description: siteConfig.description,
-    creator: siteConfig.twitterHandle,
-  },
-  robots: { index: true, follow: true },
-};
+export const metadata: Metadata = rootMetadataDefaults;
 
 export const viewport: Viewport = {
   themeColor: "#1B262C",

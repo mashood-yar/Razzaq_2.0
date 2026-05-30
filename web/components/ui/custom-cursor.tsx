@@ -4,14 +4,6 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from "re
 
 type CursorMode = "default" | "link" | "product" | "cart" | "text";
 
-type Sparkle = {
-  id: string;
-  x: number;
-  y: number;
-  size: number;
-  color: string;
-};
-
 type BurstParticle = {
   id: string;
   x: number;
@@ -30,9 +22,8 @@ const GOLD = "#D4A832";
 const SPARKLE_COLORS = [GOLD, OCEAN_PRIMARY, OCEAN_MID, OCEAN_LIGHT];
 const BURST_CHARS = ["✦", "✧", "·"] as const;
 const LERP = 0.12;
-const SPARKLE_THROTTLE_MS = 50;
-const MAX_SPARKLES = 12;
 const BURST_COUNT = 8;
+const MODE_DETECT_MS = 100;
 
 const INTERACTIVE_SELECTOR =
   'a, button, [role="button"], input[type="submit"], input[type="button"], label[for], select, summary';
@@ -92,42 +83,21 @@ function pick<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]!;
 }
 
-function StarShape({ size, color }: { size: number; color: string }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill={color}
-      aria-hidden
-      className="block"
-    >
-      <path d="M12 2l2.2 6.8H21l-5.6 4.1 2.1 6.9L12 15.8 6.5 19.8l2.1-6.9L3 8.8h6.8L12 2z" />
-    </svg>
-  );
-}
-
 export function CustomCursor() {
-  const [dotPos, setDotPos] = useState({ x: -100, y: -100 });
-  const [ringPos, setRingPos] = useState({ x: -100, y: -100 });
   const [mode, setMode] = useState<CursorMode>("default");
   const [visible, setVisible] = useState(false);
-  const [sparkles, setSparkles] = useState<Sparkle[]>([]);
   const [bursts, setBursts] = useState<BurstParticle[]>([]);
   const [ringClickPulse, setRingClickPulse] = useState(false);
 
+  const dotRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef({ x: -100, y: -100 });
-  const ringRef = useRef({ x: -100, y: -100 });
+  const ringPosRef = useRef({ x: -100, y: -100 });
   const rafRef = useRef(0);
-  const lastSparkleRef = useRef(0);
-  const sparkleColorIndex = useRef(0);
   const mountedRef = useRef(true);
   const clickPulseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const removeSparkle = useCallback((id: string) => {
-    if (!mountedRef.current) return;
-    setSparkles((prev) => prev.filter((s) => s.id !== id));
-  }, []);
+  const lastModeDetectRef = useRef(0);
+  const pendingModeTargetRef = useRef<{ x: number; y: number } | null>(null);
 
   const removeBurst = useCallback((id: string) => {
     if (!mountedRef.current) return;
@@ -143,46 +113,78 @@ export function CustomCursor() {
   }, []);
 
   useEffect(() => {
+    let running = true;
+
+    const applyRingPosition = (x: number, y: number) => {
+      const ring = ringRef.current;
+      if (!ring) return;
+      ring.style.left = `${x}px`;
+      ring.style.top = `${y}px`;
+    };
+
     const tick = () => {
+      if (!running) return;
+
       const { x: mx, y: my } = mouseRef.current;
-      ringRef.current.x += (mx - ringRef.current.x) * LERP;
-      ringRef.current.y += (my - ringRef.current.y) * LERP;
-      setRingPos({ x: ringRef.current.x, y: ringRef.current.y });
+      ringPosRef.current.x += (mx - ringPosRef.current.x) * LERP;
+      ringPosRef.current.y += (my - ringPosRef.current.y) * LERP;
+      applyRingPosition(ringPosRef.current.x, ringPosRef.current.y);
+
+      const pending = pendingModeTargetRef.current;
+      if (pending) {
+        const now = performance.now();
+        if (now - lastModeDetectRef.current >= MODE_DETECT_MS) {
+          lastModeDetectRef.current = now;
+          pendingModeTargetRef.current = null;
+          const target = document.elementFromPoint(pending.x, pending.y);
+          setMode(detectCursorMode(target));
+        }
+      }
+
       rafRef.current = requestAnimationFrame(tick);
     };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
+
+    const startLoop = () => {
+      if (running && document.visibilityState === "visible") {
+        rafRef.current = requestAnimationFrame(tick);
+      }
+    };
+
+    const stopLoop = () => {
+      cancelAnimationFrame(rafRef.current);
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        stopLoop();
+      } else {
+        startLoop();
+      }
+    };
+
+    startLoop();
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      running = false;
+      stopLoop();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, []);
 
   useEffect(() => {
-    const spawnSparkle = (x: number, y: number) => {
-      const now = performance.now();
-      if (now - lastSparkleRef.current < SPARKLE_THROTTLE_MS) return;
-      lastSparkleRef.current = now;
-
-      const color = SPARKLE_COLORS[sparkleColorIndex.current % SPARKLE_COLORS.length]!;
-      sparkleColorIndex.current += 1;
-
-      const sparkle: Sparkle = {
-        id: `s-${now}-${Math.random().toString(36).slice(2, 8)}`,
-        x: x + randomBetween(-8, 8),
-        y: y + randomBetween(-8, 8),
-        size: randomBetween(4, 10),
-        color,
-      };
-
-      setSparkles((prev) => [...prev, sparkle].slice(-MAX_SPARKLES));
+    const applyDotPosition = (x: number, y: number) => {
+      const dot = dotRef.current;
+      if (!dot) return;
+      dot.style.left = `${x}px`;
+      dot.style.top = `${y}px`;
     };
 
     const onMouseMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY };
-      setDotPos({ x: e.clientX, y: e.clientY });
+      applyDotPosition(e.clientX, e.clientY);
       setVisible(true);
-
-      const target = document.elementFromPoint(e.clientX, e.clientY);
-      setMode(detectCursorMode(target));
-
-      spawnSparkle(e.clientX, e.clientY);
+      pendingModeTargetRef.current = { x: e.clientX, y: e.clientY };
     };
 
     const onMouseLeave = () => setVisible(false);
@@ -241,21 +243,10 @@ export function CustomCursor() {
 
   return (
     <div aria-hidden className="custom-cursor-root">
-      {sparkles.map((s) => (
-        <div
-          key={s.id}
-          className="custom-cursor-sparkle pointer-events-none fixed z-[99999] -translate-x-1/2 -translate-y-1/2 will-change-transform"
-          style={{ left: s.x, top: s.y }}
-          onAnimationEnd={() => removeSparkle(s.id)}
-        >
-          <StarShape size={s.size} color={s.color} />
-        </div>
-      ))}
-
       {bursts.map((b) => (
         <div
           key={b.id}
-          className="custom-cursor-burst pointer-events-none fixed z-[99999] -translate-x-1/2 -translate-y-1/2 font-semibold leading-none will-change-transform"
+          className="custom-cursor-burst pointer-events-none fixed z-[99999] -translate-x-1/2 -translate-y-1/2 font-semibold leading-none"
           style={
             {
               left: b.x,
@@ -273,10 +264,11 @@ export function CustomCursor() {
       ))}
 
       <div
-        className="pointer-events-none fixed z-[99999] will-change-transform"
+        ref={dotRef}
+        className="pointer-events-none fixed z-[99999]"
         style={{
-          left: dotPos.x,
-          top: dotPos.y,
+          left: -100,
+          top: -100,
           opacity: visible ? 1 : 0,
           transform: `translate(-50%, -50%) scale(${isLink ? 0 : 1})`,
           transition: "transform 180ms ease, opacity 120ms ease",
@@ -289,10 +281,11 @@ export function CustomCursor() {
       </div>
 
       <div
-        className="pointer-events-none fixed z-[99999] flex items-center justify-center will-change-transform"
+        ref={ringRef}
+        className="pointer-events-none fixed z-[99999] flex items-center justify-center"
         style={{
-          left: ringPos.x,
-          top: ringPos.y,
+          left: -100,
+          top: -100,
           opacity: visible ? (ringClickPulse ? undefined : 1) : 0,
           transform: isText
             ? "translate(-50%, -50%)"

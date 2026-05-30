@@ -113,6 +113,13 @@ export interface Product {
   tags: string[];
   seo_title: string | null;
   seo_desc: string | null;
+  is_trending?: boolean;
+  is_premium?: boolean;
+  on_sale?: boolean;
+  sale_price?: number | null;
+  discount_percent?: number | null;
+  sale_start_at?: string | null;
+  sale_end_at?: string | null;
   created_at: string;
   updated_at: string;
   // joins

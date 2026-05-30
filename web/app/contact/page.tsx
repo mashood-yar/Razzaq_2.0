@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { ContactForm } from "@/components/contact/contact-form";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
-  title: "Contact",
+export const metadata: Metadata = buildPageMetadata({
+  title: "Contact RazzaqLuxe",
   description:
-    "Reach Razzaq Luxe — customer support, order queries, and business enquiries.",
-};
+    "Reach RazzaqLuxe for customer support, order enquiries, boutique visits, and business partnerships across Pakistan.",
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (

@@ -12,6 +12,7 @@ import {
 import { ArticleReadingProgress } from "@/components/journal/article-reading-progress";
 import { ArticleShareButtons } from "@/components/journal/article-share-buttons";
 import { ArticleRelated } from "@/components/journal/article-related";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
 export async function generateStaticParams() {
   return ARTICLES.map((a) => ({ slug: a.slug }));
@@ -25,19 +26,13 @@ export async function generateMetadata({
   const { slug } = await params;
   const a = getArticleBySlug(slug);
   if (!a) return {};
-  const ogImage =
-    a.image.startsWith("http://") || a.image.startsWith("https://")
-      ? a.image
-      : `${(process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/$/, "") || ""}${a.image.startsWith("/") ? a.image : `/${a.image}`}`;
-  return {
+  return buildPageMetadata({
     title: a.title,
     description: a.excerpt,
-    openGraph: {
-      title: a.title,
-      description: a.excerpt,
-      images: ogImage ? [{ url: ogImage, alt: a.title }] : undefined,
-    },
-  };
+    path: `/journal/${slug}`,
+    image: a.image,
+    openGraphType: "article",
+  });
 }
 
 function PullQuote({ text }: { text: string }) {

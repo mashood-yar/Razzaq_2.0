@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { fetchLegacyProductsForHomeBestSellers } from "@/lib/catalog/fetch-catalog";
-import { siteConfig } from "@/lib/site";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 import { GoldBrandText } from "@/components/brand/gold-brand-text";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product/product-card";
@@ -54,10 +54,12 @@ const SaleBanner = dynamic(
   { loading: () => <SectionCardSkeleton height={160} /> },
 );
 
-export const metadata: Metadata = {
-  title: "Luxury Fashion & Lifestyle",
-  description: `${siteConfig.description} Explore luxury fashion, curated collections, and the Razzaq Luxe lifestyle.`,
-};
+export const metadata: Metadata = buildPageMetadata({
+  title: "RazzaqLuxe — Premium Pakistani Fragrances & Luxury Lifestyle",
+  description:
+    "Discover handcrafted oud, attar, and niche luxury fragrances from Pakistan. Explore signature scents, curated collections, and the RazzaqLuxe lifestyle.",
+  path: "/",
+});
 
 const collections = [
   {

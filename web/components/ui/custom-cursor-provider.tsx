@@ -4,16 +4,25 @@ import { useEffect, useState } from "react";
 import { CustomCursor } from "@/components/ui/custom-cursor";
 
 export function CustomCursorProvider() {
-  const [isTouch, setIsTouch] = useState(true);
+  const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
-    const mq = window.matchMedia("(hover: none)");
-    const update = () => setIsTouch(mq.matches);
+    const hoverMq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const motionMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const update = () => {
+      setEnabled(hoverMq.matches && !motionMq.matches);
+    };
+
     update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
+    hoverMq.addEventListener("change", update);
+    motionMq.addEventListener("change", update);
+    return () => {
+      hoverMq.removeEventListener("change", update);
+      motionMq.removeEventListener("change", update);
+    };
   }, []);
 
-  if (isTouch) return null;
+  if (!enabled) return null;
   return <CustomCursor />;
 }

@@ -1,10 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { HOUSE_PRODUCTS } from "@/lib/house-products";
+import type { HomeFeaturedMarqueeProduct } from "@/lib/home-featured-products";
 
-function MarqueeTrack({ reverse }: { reverse?: boolean }) {
-  const sequence = HOUSE_PRODUCTS.flatMap((p) => [
+function MarqueeTrack({
+  products,
+  reverse,
+}: {
+  products: HomeFeaturedMarqueeProduct[];
+  reverse?: boolean;
+}) {
+  const sequence = products.flatMap((p) => [
     { type: "link" as const, ...p },
     { type: "dot" as const },
   ]);
@@ -43,11 +49,7 @@ function MarqueeTrack({ reverse }: { reverse?: boolean }) {
   );
 }
 
-function ProductLink({
-  product,
-}: {
-  product: (typeof HOUSE_PRODUCTS)[number];
-}) {
+function ProductLink({ product }: { product: HomeFeaturedMarqueeProduct }) {
   return (
     <Link
       href={`/products/${product.slug}`}
@@ -64,7 +66,14 @@ function ProductLink({
   );
 }
 
-export function SignatureScentsMarquee() {
+export function SignatureScentsMarquee({
+  products = [],
+}: {
+  products?: HomeFeaturedMarqueeProduct[];
+}) {
+  const productsList = products ?? [];
+  if (productsList.length === 0) return null;
+
   return (
     <section
       aria-labelledby="signature-scents-heading"
@@ -78,19 +87,19 @@ export function SignatureScentsMarquee() {
           Signature line
         </h2>
         <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
-          Our house fragrances — Sporty, Habibi, Flourine, and Khan&apos;s Aura. Boutique in{" "}
+          Our house fragrances — Khan&apos;s Aura, Flora, Sporty, and Legend. Boutique in{" "}
           <strong className="font-medium text-foreground">Quetta, Pakistan</strong>. Hover for a preview; click to shop.
         </p>
       </div>
 
       <div className="pb-12 md:pb-16">
         <div className="flex flex-col gap-7 md:gap-9 motion-reduce:hidden">
-          <MarqueeTrack />
-          <MarqueeTrack reverse />
+          <MarqueeTrack products={productsList} />
+          <MarqueeTrack products={productsList} reverse />
         </div>
 
         <div className="hidden flex-wrap items-center justify-center gap-x-3 gap-y-4 px-6 pb-10 text-center motion-reduce:flex md:gap-x-6">
-          {HOUSE_PRODUCTS.map((p, i) => (
+          {productsList.map((p, i) => (
             <span key={p.slug} className="flex items-center gap-x-3 md:gap-x-6">
               {i > 0 ? (
                 <span className="select-none text-muted-foreground" aria-hidden>

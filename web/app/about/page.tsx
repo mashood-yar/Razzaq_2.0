@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { GoldBrandText } from "@/components/brand/gold-brand-text";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
-  title: "About",
+export const metadata: Metadata = buildPageMetadata({
+  title: "About RazzaqLuxe",
   description:
-    "Razzaq Luxe — fragrance house in Quetta, Pakistan. Signature scents Sporty, Habibi, Flourine, and Khan\u2019s Aura.",
-};
+    "RazzaqLuxe — a Pakistani fragrance house rooted in Quetta. Signature scents Sporty, Habibi, Flourine, and Khan\u2019s Aura, crafted for discerning wearers.",
+  path: "/about",
+});
 
 const milestones = [
   { year: "Origins", text: "Razzaq Luxe grows from a Quetta boutique — local craft, uncompromising quality." },

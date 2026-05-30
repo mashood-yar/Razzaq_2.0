@@ -17,10 +17,22 @@ import type { Product as DbProduct } from "@/lib/types";
 import { mapDbProductToLegacy } from "@/lib/catalog/map-db-product";
 import { formatPKR } from "@/lib/utils";
 
+function useDebouncedValue<T>(value: T, delayMs: number): T {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const id = window.setTimeout(() => setDebounced(value), delayMs);
+    return () => clearTimeout(id);
+  }, [value, delayMs]);
+
+  return debounced;
+}
+
 export function SearchModal() {
   const open = useUiStore((s) => s.searchOpen);
   const setOpen = useUiStore((s) => s.setSearchOpen);
   const [q, setQ] = useState("");
+  const debouncedQ = useDebouncedValue(q, 200);
   const [catalog, setCatalog] = useState<LegacyProduct[]>([]);
   const [catalogLoaded, setCatalogLoaded] = useState(false);
 
@@ -44,7 +56,7 @@ export function SearchModal() {
   }, [open]);
 
   const results = useMemo(() => {
-    const t = q.trim().toLowerCase();
+    const t = debouncedQ.trim().toLowerCase();
     if (!t) return catalog.slice(0, 6);
     return catalog
       .filter(
@@ -54,7 +66,7 @@ export function SearchModal() {
           p.mainNotes.some((n) => n.toLowerCase().includes(t)),
       )
       .slice(0, 8);
-  }, [catalog, q]);
+  }, [catalog, debouncedQ]);
 
   return (
     <Dialog
@@ -116,7 +128,7 @@ export function SearchModal() {
               Catalog unavailable. Check connection or try again later.
             </li>
           )}
-          {catalogLoaded && catalog.length > 0 && results.length === 0 && q.trim() !== "" && (
+          {catalogLoaded && catalog.length > 0 && results.length === 0 && debouncedQ.trim() !== "" && (
             <li className="p-6 text-center text-sm text-muted-foreground">
               No matches. Try another note or name.
             </li>

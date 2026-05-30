@@ -28,6 +28,7 @@ import {
 
 const nav = [
   { href: "/shop", label: "Shop" },
+  { href: "/highlights", label: "Highlights" },
   { href: "/about", label: "About" },
   { href: "/journal", label: "Journal" },
   { href: "/contact", label: "Contact" },

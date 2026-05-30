@@ -9,6 +9,7 @@ import { siteConfig } from "@/lib/site";
 const footerNav = {
   shop: [
     { href: "/shop", label: "All Products" },
+    { href: "/highlights", label: "Highlights" },
     { href: "/shop?category=fragrances", label: "Fragrances" },
     { href: "/shop?category=lawn", label: "Lawn" },
     { href: "/shop?category=formal", label: "Formal" },

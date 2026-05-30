@@ -1,10 +1,20 @@
 export const siteConfig = {
-  name: "Razzaq Luxe",
-  titleTemplate: "%s · Razzaq Luxe",
+  name: "RazzaqLuxe",
+  defaultTitle: "RazzaqLuxe — Premium Pakistani Fragrances & Luxury Lifestyle",
+  titleTemplate: "%s | RazzaqLuxe",
   description:
-    "Razzaq Luxe — luxury fragrances from Quetta, Pakistan. Sporty, Habibi, Flourine, Khan\u2019s Aura. Shop online or visit our boutique.",
-  ogImage: "/og.jpg",
+    "Discover handcrafted oud, attar, and niche luxury fragrances from Pakistan. RazzaqLuxe delivers premium Pakistani perfumery nationwide — Sporty, Habibi, Flourine, and Khan\u2019s Aura.",
+  ogImage: "/images/default-og.jpg",
   twitterHandle: "@razzaqluxe",
+  keywords: [
+    "razzaqluxe",
+    "luxury fragrances pakistan",
+    "pakistani oud",
+    "attar pakistan",
+    "niche perfumery",
+    "luxury lifestyle pakistan",
+    "quetta fragrance house",
+  ],
 };
 
 export function getSiteUrl() {

@@ -1,10 +1,15 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const reduceMotion = useReducedMotion();
+
+  if (reduceMotion) {
+    return <>{children}</>;
+  }
 
   return (
     <AnimatePresence mode="wait">

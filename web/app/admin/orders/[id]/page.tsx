@@ -4,10 +4,17 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  AdminPageHeader,
+  AdminCard,
+  AdminCardHeader,
+  AdminStatusBadge,
+  AdminEmptyState,
+  AdminLoading,
+  AdminFormSection,
+} from "@/components/admin/admin-ui";
 import {
   Select,
   SelectContent,
@@ -149,11 +156,16 @@ export default function OrderDetailPage() {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
+    return <AdminLoading label="Loading order…" />;
   }
 
   if (!order) {
-    return <div className="text-center py-8">Order not found</div>;
+    return (
+      <AdminEmptyState
+        title="Order not found"
+        description="This order may have been removed or the link is invalid."
+      />
+    );
   }
 
   const payBadgeClass =
@@ -163,103 +175,114 @@ export default function OrderDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start">
-        <Button variant="ghost" size="icon" onClick={() => router.back()}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full shrink-0 hover:bg-ocean-primary/15"
+          onClick={() => router.back()}
+        >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div className="flex-1 space-y-1">
-          <h1 className="text-3xl font-display font-bold">Order {order.order_number}</h1>
-          <p className="text-muted-foreground">{formatDate(order.created_at)}</p>
-          <div className="flex flex-wrap items-center gap-2 pt-2">
-            <span className="text-sm text-muted-foreground">Fulfillment</span>
-            <Select value={order.status} onValueChange={handleStatusUpdate} disabled={updating}>
-              <SelectTrigger className="w-[260px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pending_confirmation">Pending confirmation</SelectItem>
-                <SelectItem value="confirmed">Confirmed</SelectItem>
-                <SelectItem value="processing">Processing</SelectItem>
-                <SelectItem value="shipped">Shipped</SelectItem>
-                <SelectItem value="delivered">Delivered</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="mt-4 grid max-w-lg gap-3">
-            <div>
-              <Label>Courier name (required to ship)</Label>
-              <Input
-                value={courierName}
-                onChange={(e) => setCourierName(e.target.value)}
-                placeholder="e.g. TCS"
-              />
+        <div className="flex-1 space-y-4">
+          <AdminPageHeader
+            title={`Order ${order.order_number}`}
+            subtitle={formatDate(order.created_at)}
+            breadcrumb="Orders"
+          />
+          <AdminFormSection title="Fulfillment status">
+            <div className="space-y-4">
+              <Select value={order.status} onValueChange={handleStatusUpdate} disabled={updating}>
+                <SelectTrigger className="w-full max-w-xs rounded-full border-border-subtle bg-ocean-deep/50">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending_confirmation">Pending confirmation</SelectItem>
+                  <SelectItem value="confirmed">Confirmed</SelectItem>
+                  <SelectItem value="processing">Processing</SelectItem>
+                  <SelectItem value="shipped">Shipped</SelectItem>
+                  <SelectItem value="delivered">Delivered</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="grid max-w-lg gap-3">
+                <div>
+                  <Label className="font-body">Courier name (required to ship)</Label>
+                  <Input
+                    value={courierName}
+                    onChange={(e) => setCourierName(e.target.value)}
+                    placeholder="e.g. TCS"
+                    className="admin-input mt-1 rounded-full"
+                  />
+                </div>
+                <div>
+                  <Label className="font-body">Tracking number (required to ship)</Label>
+                  <Input
+                    value={trackingInput}
+                    onChange={(e) => setTrackingInput(e.target.value)}
+                    className="admin-input mt-1 rounded-full"
+                  />
+                </div>
+                <div>
+                  <Label className="font-body">Cancellation reason (when cancelling)</Label>
+                  <Input
+                    value={cancellationReason}
+                    onChange={(e) => setCancellationReason(e.target.value)}
+                    className="admin-input mt-1 rounded-full"
+                  />
+                </div>
+              </div>
             </div>
-            <div>
-              <Label>Tracking number (required to ship)</Label>
-              <Input
-                value={trackingInput}
-                onChange={(e) => setTrackingInput(e.target.value)}
-              />
-            </div>
-            <div>
-              <Label>Cancellation reason (when cancelling)</Label>
-              <Input
-                value={cancellationReason}
-                onChange={(e) => setCancellationReason(e.target.value)}
-              />
-            </div>
-          </div>
+          </AdminFormSection>
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Order Items</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {orderItems.length === 0 ? (
-              <p className="text-muted-foreground">No items</p>
-            ) : (
-              <div className="space-y-4">
-                {orderItems.map((item) => (
-                  <div key={item.id} className="flex items-center gap-4">
-                    {item.image_url ? (
-                      <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md">
-                        <Image
-                          src={item.image_url}
-                          alt={item.product_name}
-                          fill
-                          sizes="64px"
-                          unoptimized
-                          className="object-cover"
-                        />
-                      </span>
-                    ) : null}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium">{item.product_name}</p>
-                      {item.variant_label && (
-                        <p className="text-sm text-muted-foreground">{item.variant_label}</p>
-                      )}
-                      <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-medium">{formatPKR(Number(item.unit_price))}</p>
-                      <p className="text-sm text-muted-foreground">{formatPKR(Number(item.total_price))}</p>
-                    </div>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <AdminCard padding="lg">
+          <AdminCardHeader title="Order Items" />
+          {orderItems.length === 0 ? (
+            <p className="font-body text-sm text-muted-foreground">No items</p>
+          ) : (
+            <div className="space-y-3">
+              {orderItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center gap-4 rounded-xl border border-border-subtle/50 bg-ocean-deep/30 p-3"
+                >
+                  {item.image_url ? (
+                    <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-border-subtle/60">
+                      <Image
+                        src={item.image_url}
+                        alt={item.product_name}
+                        fill
+                        sizes="64px"
+                        unoptimized
+                        className="object-cover"
+                      />
+                    </span>
+                  ) : null}
+                  <div className="min-w-0 flex-1">
+                    <p className="font-body font-semibold">{item.product_name}</p>
+                    {item.variant_label && (
+                      <p className="font-body text-xs text-muted-foreground">{item.variant_label}</p>
+                    )}
+                    <p className="font-body text-xs text-muted-foreground">Qty: {item.quantity}</p>
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  <div className="text-right">
+                    <p className="font-body font-medium">{formatPKR(Number(item.unit_price))}</p>
+                    <p className="font-display text-sm font-semibold text-gold-light">
+                      {formatPKR(Number(item.total_price))}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </AdminCard>
 
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
+          <AdminCard padding="lg">
+            <AdminCardHeader title="Order Summary" />
+            <div className="space-y-2 font-body text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Subtotal</span>
                 <span>{formatPKR(Number(order.subtotal_pkr))}</span>
@@ -272,48 +295,44 @@ export default function OrderDetailPage() {
                 <span className="text-muted-foreground">Shipping</span>
                 <span>{formatPKR(Number(order.shipping_pkr))}</span>
               </div>
-              <div className="flex justify-between font-bold text-lg pt-2 border-t border-border">
+              <div className="flex justify-between border-t border-border-subtle pt-3 font-display text-lg font-bold">
                 <span>Total</span>
-                <span>{formatPKR(Number(order.total_pkr))}</span>
+                <span className="text-gold-light">{formatPKR(Number(order.total_pkr))}</span>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </AdminCard>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Payment</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <AdminCard padding="lg">
+            <AdminCardHeader title="Payment" />
+            <div className="space-y-4 font-body text-sm">
               <div className="flex justify-between gap-4">
                 <span className="text-muted-foreground">Method</span>
-                <span className="font-medium text-right">
-                  {PAYMENT_METHOD_LABELS[order.payment_method] ??
-                    order.payment_method}
+                <span className="text-right font-semibold">
+                  {PAYMENT_METHOD_LABELS[order.payment_method] ?? order.payment_method}
                 </span>
               </div>
               {order.transaction_id ? (
                 <div className="flex justify-between gap-4">
-                  <span className="text-muted-foreground">Customer transaction ID</span>
-                  <span className="font-mono text-sm break-all text-right">
+                  <span className="text-muted-foreground">Transaction ID</span>
+                  <span className="break-all text-right font-mono text-xs">
                     {order.transaction_id}
                   </span>
                 </div>
               ) : null}
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm text-muted-foreground">Payment status</span>
-                <Badge className={payBadgeClass} variant="outline">
+                <AdminStatusBadge className={payBadgeClass} variant="outline">
                   {PAYMENT_STATUS_LABELS[order.payment_status as PaymentStatus] ??
                     order.payment_status}
-                </Badge>
+                </AdminStatusBadge>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Update payment status</p>
+                <p className="text-muted-foreground">Update payment status</p>
                 <Select
                   value={order.payment_status}
                   onValueChange={(v) => handlePaymentStatusUpdate(v as PaymentStatus)}
                   disabled={updating}
                 >
-                  <SelectTrigger className="mt-1.5 w-full max-w-xs">
+                  <SelectTrigger className="mt-1.5 w-full max-w-xs rounded-full border-border-subtle bg-ocean-deep/50">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -325,19 +344,17 @@ export default function OrderDetailPage() {
                   </SelectContent>
                 </Select>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </AdminCard>
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Confirmation code (support)</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm">
+      <AdminCard padding="lg">
+        <AdminCardHeader title="Confirmation code (support)" />
+        <div className="space-y-2 font-body text-sm">
           <p>
             Active code:{" "}
-            <span className="font-mono font-semibold">
+            <span className="font-mono font-semibold text-ocean-light">
               {order.confirmation_code ?? "— (verified or expired)"}
             </span>
           </p>
@@ -345,62 +362,48 @@ export default function OrderDetailPage() {
             Wrong-code attempts: {order.confirmation_attempts ?? 0}
             {order.confirmation_locked ? " · locked" : ""}
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </AdminCard>
 
-      <Card>
-        <CardContent className="space-y-4">
-          <div className="flex items-start gap-4">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                <span>{order.ship_phone}</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
-                <address className="not-italic">
-                  {order.ship_first_name} {order.ship_last_name}<br />
-                  {order.ship_address1}<br />
-                  {order.ship_address2 && <>{order.ship_address2}<br /></>}
-                  {order.ship_city}, {order.ship_province}<br />
-                  {order.ship_country} {order.ship_postal_code}
-                </address>
-              </div>
-            </div>
+      <AdminCard padding="lg">
+        <AdminCardHeader title="Shipping Address" icon={MapPin} />
+        <div className="space-y-3 font-body text-sm">
+          <div className="flex items-center gap-2">
+            <Phone className="h-4 w-4 text-ocean-light" />
+            <span>{order.ship_phone}</span>
           </div>
-        </CardContent>
-      </Card>
+          <address className="not-italic leading-relaxed text-muted-foreground">
+            {order.ship_first_name} {order.ship_last_name}<br />
+            {order.ship_address1}<br />
+            {order.ship_address2 && <>{order.ship_address2}<br /></>}
+            {order.ship_city}, {order.ship_province}<br />
+            {order.ship_country} {order.ship_postal_code}
+          </address>
+        </div>
+      </AdminCard>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Customer Info</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="font-medium">{order.customer_name || "Guest"}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Mail className="h-4 w-4 text-muted-foreground" />
+      <AdminCard padding="lg">
+        <AdminCardHeader title="Customer Info" icon={Mail} />
+        <div className="space-y-2 font-body text-sm">
+          <p className="font-semibold">{order.customer_name || "Guest"}</p>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Mail className="h-4 w-4" />
             <span>{order.customer_email}</span>
           </div>
           {order.customer_phone && (
-            <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Phone className="h-4 w-4" />
               <span>{order.customer_phone}</span>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </AdminCard>
 
       {order.notes && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Notes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">{order.notes}</p>
-          </CardContent>
-        </Card>
+        <AdminCard padding="lg">
+          <AdminCardHeader title="Notes" />
+          <p className="font-body text-sm text-muted-foreground">{order.notes}</p>
+        </AdminCard>
       )}
     </div>
   );

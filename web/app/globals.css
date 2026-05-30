@@ -194,6 +194,183 @@
   .shipping-banner {
     @apply bg-ocean-primary py-2.5 text-center text-sm font-medium text-primary-foreground;
   }
+
+  /* ── Admin panel (dashboard workflow) ── */
+  .admin-shell {
+    @apply font-body;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .admin-shell,
+    .admin-shell * {
+      cursor: auto !important;
+    }
+    .admin-shell button,
+    .admin-shell a,
+    .admin-shell [role="button"],
+    .admin-shell input[type="checkbox"],
+    .admin-shell label[for] {
+      cursor: pointer !important;
+    }
+    .admin-shell input,
+    .admin-shell textarea,
+    .admin-shell select {
+      cursor: text !important;
+    }
+  }
+
+  .admin-card {
+    @apply rounded-2xl border border-border-subtle/80 bg-ocean-surface/90 shadow-ocean;
+  }
+
+  .admin-stat-card {
+    @apply rounded-2xl border border-border-subtle/80 bg-ocean-surface/90 p-5 shadow-ocean transition-colors hover:border-ocean-mid/40;
+  }
+
+  .admin-table-wrap {
+    @apply -mx-1 overflow-x-auto rounded-xl border border-border-subtle/60 px-1 pb-2;
+  }
+
+  .admin-table {
+    @apply w-full table-fixed border-collapse font-body text-sm;
+  }
+
+  .admin-table-head {
+    @apply sticky top-0 z-10 bg-ocean-primary/30 backdrop-blur-sm;
+  }
+
+  .admin-th {
+    @apply whitespace-nowrap px-4 py-3 text-left align-middle text-xs font-semibold uppercase tracking-wider text-ocean-light;
+  }
+
+  .admin-th-center {
+    @apply text-center;
+  }
+
+  .admin-th-right {
+    @apply text-right;
+  }
+
+  .admin-tr {
+    @apply border-b border-border-subtle/50 transition-colors even:bg-ocean-deep/30 hover:bg-ocean-primary/15 last:border-b-0;
+  }
+
+  .admin-td {
+    @apply px-4 py-3 align-middle text-foreground;
+  }
+
+  .admin-td-center {
+    @apply text-center;
+  }
+
+  .admin-td-right {
+    @apply text-right;
+  }
+
+  .admin-empty-state {
+    @apply relative flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border-subtle/60 py-16 text-center;
+  }
+
+  .admin-empty-blob {
+    @apply pointer-events-none absolute h-40 w-40 rounded-full opacity-20 blur-3xl;
+    background: radial-gradient(circle, #0f4c75 0%, transparent 70%);
+  }
+
+  .admin-form-section {
+    @apply rounded-2xl border border-border-subtle/60 bg-ocean-deep/40 p-5;
+  }
+
+  .admin-bulk-bar {
+    @apply flex flex-col gap-3 rounded-xl border border-ocean-primary/30 bg-ocean-primary/10 p-4 lg:flex-row lg:items-center lg:justify-between;
+  }
+
+  .admin-filter-row {
+    @apply mb-4 flex flex-col gap-3 md:flex-row md:items-center;
+  }
+
+  .admin-search-field {
+    @apply relative min-w-0 flex-1;
+  }
+
+  .admin-search-field svg {
+    @apply pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground;
+  }
+
+  .admin-search-field input {
+    @apply h-11 pl-10;
+  }
+
+  .admin-select-trigger {
+    @apply h-11 w-full shrink-0 rounded-full border-border-subtle bg-ocean-deep/50 md:w-[180px];
+  }
+
+  .admin-dropzone {
+    @apply cursor-pointer rounded-2xl border-2 border-dashed border-border-subtle/80 bg-ocean-deep/30 p-8 text-center transition-colors hover:border-ocean-mid/50 hover:bg-ocean-primary/5;
+  }
+
+  .admin-dropzone-active {
+    @apply border-gold-light/60 bg-gold-light/5;
+  }
+
+  .admin-skeleton {
+    @apply shimmer-organic;
+  }
+
+  .admin-spinner {
+    @apply h-8 w-8 rounded-full border-2 border-ocean-mid/30 border-t-ocean-mid;
+    animation: admin-spin 0.8s linear infinite;
+  }
+
+  .admin-nav-link {
+    @apply relative flex items-center gap-3 rounded-xl border border-transparent px-4 py-2.5 font-body text-sm font-medium leading-none transition-all duration-200;
+  }
+
+  .admin-nav-link svg {
+    @apply shrink-0;
+  }
+
+  .admin-nav-link-active {
+    @apply border-ocean-mid/30 bg-ocean-primary/40 text-foreground shadow-sm;
+  }
+
+  .admin-nav-link-active::before {
+    content: "";
+    @apply absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-gold-light;
+  }
+
+  .admin-nav-link-inactive {
+    @apply text-muted-foreground hover:border-ocean-primary/20 hover:bg-ocean-primary/15 hover:text-ocean-light;
+  }
+
+  .admin-input {
+    @apply flex h-11 w-full rounded-full border border-border-subtle bg-ocean-deep/50 px-4 font-body text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ocean-mid/50 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .admin-btn-primary {
+    @apply inline-flex h-10 items-center justify-center gap-2 rounded-full bg-ocean-primary px-5 font-body text-sm font-semibold text-primary-foreground transition-colors hover:bg-ocean-mid disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .admin-btn-outline {
+    @apply inline-flex h-10 items-center justify-center gap-2 rounded-full border border-border-subtle bg-transparent px-5 font-body text-sm font-semibold text-foreground transition-colors hover:border-ocean-mid hover:bg-ocean-primary/15 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .admin-btn-destructive {
+    @apply inline-flex h-10 items-center justify-center gap-2 rounded-full bg-destructive px-5 font-body text-sm font-semibold text-destructive-foreground transition-opacity hover:opacity-90 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .admin-sidebar {
+    @apply flex w-64 flex-col border-r border-border-subtle bg-ocean-surface;
+  }
+
+  .admin-topbar {
+    @apply flex items-center justify-between gap-4 border-b border-border-subtle bg-ocean-surface/95 px-5 py-3 backdrop-blur-sm md:px-8 md:py-4 lg:px-10;
+  }
+
+  @keyframes admin-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
 }
 
 /* Luxury session intro — preserved for intro-animation.tsx */
