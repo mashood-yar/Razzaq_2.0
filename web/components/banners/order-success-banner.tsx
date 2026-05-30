@@ -29,7 +29,7 @@ export function OrderSuccessBanner({ orderId }: OrderSuccessBannerProps) {
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      className="order-success-confetti relative overflow-hidden rounded-[2rem] border border-border bg-[#1B262C] px-6 py-12 text-center sm:px-10"
+      className="order-success-confetti relative overflow-hidden rounded-[2rem] border border-border bg-noir px-6 py-12 text-center sm:px-10"
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
         {Array.from({ length: 12 }).map((_, i) => (
@@ -39,7 +39,7 @@ export function OrderSuccessBanner({ orderId }: OrderSuccessBannerProps) {
             style={{
               left: `${8 + (i * 7) % 85}%`,
               animationDelay: `${i * 0.12}s`,
-              backgroundColor: i % 3 === 0 ? "#0F4C75" : i % 3 === 1 ? "#3282B8" : "#B8961E",
+              backgroundColor: i % 3 === 0 ? "#C49A1E" : i % 3 === 1 ? "#D4A832" : "#A07C12",
             }}
           />
         ))}
@@ -50,7 +50,7 @@ export function OrderSuccessBanner({ orderId }: OrderSuccessBannerProps) {
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="text-xs font-semibold uppercase tracking-[0.35em] text-[#0F4C75]"
+          className="text-xs font-semibold uppercase tracking-[0.35em] text-gold"
         >
           Order confirmed
         </motion.p>

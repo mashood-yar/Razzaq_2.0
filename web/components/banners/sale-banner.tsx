@@ -49,12 +49,12 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
       key={`${label}-${value}`}
       initial={{ scale: 0.92, opacity: 0.6 }}
       animate={{ scale: 1, opacity: 1 }}
-      className="flex min-w-[3.25rem] flex-col items-center rounded-2xl bg-white/15 px-2 py-2 backdrop-blur-sm sm:min-w-[4rem] sm:px-3"
+      className="flex min-w-[3.25rem] flex-col items-center rounded-2xl bg-noir/15 px-2 py-2 backdrop-blur-sm sm:min-w-[4rem] sm:px-3"
     >
-      <span className="font-display text-2xl tabular-nums text-white sm:text-3xl">
+      <span className="font-display text-2xl tabular-nums text-noir sm:text-3xl">
         {pad(value)}
       </span>
-      <span className="mt-0.5 text-[10px] uppercase tracking-widest text-white/80">
+      <span className="mt-0.5 text-[10px] uppercase tracking-widest text-noir/70">
         {label}
       </span>
     </motion.div>
@@ -79,7 +79,7 @@ export function SaleBanner() {
       whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: reduceMotion ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] }}
-      className="relative overflow-hidden rounded-[2rem] bg-[#3282B8] px-6 py-12 sm:px-12 sm:py-14"
+      className="relative overflow-hidden rounded-[2rem] bg-gold px-6 py-12 sm:px-12 sm:py-14"
     >
       <motion.div
         aria-hidden
@@ -89,7 +89,7 @@ export function SaleBanner() {
       />
       <motion.div
         aria-hidden
-        className="pointer-events-none absolute -left-10 bottom-0 h-32 w-32 rounded-full bg-[#0F4C75]/25 blur-2xl"
+        className="pointer-events-none absolute -left-10 bottom-0 h-32 w-32 rounded-full bg-noir/20 blur-2xl"
         animate={reduceMotion ? undefined : { x: [0, 12, 0] }}
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
       />
@@ -107,13 +107,13 @@ export function SaleBanner() {
           viewport={{ once: true }}
           transition={{ delay: reduceMotion ? 0 : 0.1 }}
         >
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/90">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-noir/80">
             Limited time offer
           </p>
-          <h2 className="mt-2 font-display text-3xl text-white sm:text-4xl">
+          <h2 className="mt-2 font-display text-3xl text-noir sm:text-4xl">
             Seasonal indulgence
           </h2>
-          <p className="mt-2 text-lg font-semibold text-white">Up to 30% off select pieces</p>
+          <p className="mt-2 text-lg font-semibold text-noir">Up to 30% off select pieces</p>
         </motion.div>
 
         <motion.div
@@ -137,7 +137,7 @@ export function SaleBanner() {
         >
           <Link
             href="/shop?sale=true"
-            className="inline-flex h-12 items-center justify-center rounded-full bg-white px-8 text-sm font-semibold text-[#3282B8] shadow-lg transition-transform hover:scale-105 active:scale-95"
+            className="inline-flex h-12 items-center justify-center rounded-none bg-noir px-8 text-sm font-semibold text-gold shadow-lg transition-transform hover:scale-105 active:scale-95"
           >
             Shop the sale
           </Link>

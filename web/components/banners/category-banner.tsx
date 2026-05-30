@@ -14,46 +14,46 @@ const CATEGORY_MAP: Record<string, Omit<CategoryBannerConfig, "slug">> = {
   accessories: {
     name: "Accessories",
     description: "Finishing touches — bags, scarves, and refined accents.",
-    bgClass: "bg-[#0F4C75] text-[#F3F4F1]",
-    blobClass: "bg-white/15",
+    bgClass: "bg-noir-elevated text-foreground border border-gold/20",
+    blobClass: "bg-gold/15",
   },
   clothing: {
     name: "Clothing",
     description: "Tailored silhouettes and everyday elegance.",
-    bgClass: "bg-[#3282B8] text-white",
-    blobClass: "bg-white/20",
+    bgClass: "bg-gold text-noir",
+    blobClass: "bg-noir/10",
   },
   formal: {
     name: "Formal",
     description: "Occasion-ready pieces with impeccable drape.",
-    bgClass: "bg-[#3282B8] text-white",
-    blobClass: "bg-white/20",
+    bgClass: "bg-noir text-foreground border border-gold/30",
+    blobClass: "bg-gold/10",
   },
   lawn: {
     name: "Lawn",
     description: "Breathable prints and seasonal colour stories.",
-    bgClass: "bg-[#3282B8] text-white",
-    blobClass: "bg-white/20",
+    bgClass: "bg-noir-surface text-foreground border border-border",
+    blobClass: "bg-gold/15",
   },
   home: {
     name: "Home",
     description: "Textures and scents for spaces that feel lived-in.",
-    bgClass: "bg-[#1B3A4B] text-foreground",
-    blobClass: "bg-[#0F4C75]/10",
+    bgClass: "bg-noir-elevated text-foreground border border-gold/15",
+    blobClass: "bg-gold/10",
   },
   fragrances: {
     name: "Fragrances",
     description: "Signature compositions from our Quetta atelier.",
-    bgClass: "bg-[#0F4C75] text-[#F3F4F1]",
-    blobClass: "bg-white/15",
+    bgClass: "bg-gold text-noir",
+    blobClass: "bg-noir/10",
   },
 };
 
 const DEFAULT_CONFIG: Omit<CategoryBannerConfig, "slug"> = {
   name: "Shop",
   description: "Explore our curated collection of luxury lifestyle pieces.",
-  bgClass: "bg-[#16213E] text-foreground",
-  blobClass: "bg-[#0F4C75]/10",
+  bgClass: "bg-noir-surface text-foreground border border-border",
+  blobClass: "bg-gold/10",
 };
 
 function slugToTitle(slug: string): string {

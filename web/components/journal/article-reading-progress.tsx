@@ -20,7 +20,7 @@ export function ArticleReadingProgress() {
 
   return (
     <div
-      className="fixed left-0 top-0 z-[100] h-[3px] w-full bg-[#16213E]"
+      className="fixed left-0 top-0 z-[100] h-[3px] w-full bg-noir-surface"
       role="progressbar"
       aria-valuenow={Math.round(progress * 100)}
       aria-valuemin={0}
@@ -28,7 +28,7 @@ export function ArticleReadingProgress() {
       aria-label="Reading progress"
     >
       <div
-        className="h-full bg-[#0F4C75] transition-[width] duration-150 ease-out"
+        className="h-full bg-gold transition-[width] duration-150 ease-out"
         style={{ width: `${progress * 100}%` }}
       />
     </div>

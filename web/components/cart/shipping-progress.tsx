@@ -22,11 +22,11 @@ export function ShippingProgress({ subtotal, className }: ShippingProgressProps)
       role="status"
     >
       <motion.div
-        className="h-2 overflow-hidden rounded-full bg-[#16213E]"
+        className="h-2 overflow-hidden rounded-full bg-noir-surface"
         layout
       >
         <motion.div
-          className="h-full rounded-full bg-[#0F4C75]"
+          className="h-full rounded-full bg-gold"
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ type: "spring", stiffness: 120, damping: 20 }}
@@ -34,7 +34,7 @@ export function ShippingProgress({ subtotal, className }: ShippingProgressProps)
       </motion.div>
       <p className="mt-2 text-xs text-muted-foreground">
         {unlocked ? (
-          <span className="font-medium text-[#0F4C75]">
+          <span className="font-medium text-gold">
             You&apos;ve unlocked free standard shipping!
           </span>
         ) : (

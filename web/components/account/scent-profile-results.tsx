@@ -63,7 +63,7 @@ export function ScentProfileResults({ initialProfile = null }: Props) {
   if (!profile) {
     return (
       <section
-        className="rounded-xl border border-[#3282B8]/25 bg-gradient-to-br from-[#1B262C]/80 to-[#0F4C75]/30 p-6"
+        className="rounded-xl border border-[#D4A832]/25 bg-gradient-to-br from-[#0A0A08]/80 to-[#C49A1E]/30 p-6"
         aria-labelledby="scent-profile-heading"
       >
         <h2 id="scent-profile-heading" className="font-display text-2xl text-[#D4A832]">
@@ -75,7 +75,7 @@ export function ScentProfileResults({ initialProfile = null }: Props) {
         </p>
         <Button
           type="button"
-          className="mt-5 bg-[#D4A832] text-[#1B262C] hover:bg-[#D4A832]/90"
+          className="mt-5 bg-[#D4A832] text-[#0A0A08] hover:bg-[#D4A832]/90"
           onClick={() => setQuizOpen(true)}
         >
           Begin the quiz
@@ -86,7 +86,7 @@ export function ScentProfileResults({ initialProfile = null }: Props) {
 
   return (
     <section
-      className="rounded-xl border border-[#3282B8]/25 bg-gradient-to-br from-[#1B262C]/80 to-[#0F4C75]/30 p-6"
+      className="rounded-xl border border-[#D4A832]/25 bg-gradient-to-br from-[#0A0A08]/80 to-[#C49A1E]/30 p-6"
       aria-labelledby="scent-profile-heading"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -120,9 +120,9 @@ export function ScentProfileResults({ initialProfile = null }: Props) {
           <li key={rec.slug}>
             <Link
               href={`/products/${rec.slug}`}
-              className="flex items-center gap-3 rounded-lg border border-[#3282B8]/20 bg-[#1B262C]/50 p-3 transition-colors hover:border-[#D4A832]/35"
+              className="flex items-center gap-3 rounded-lg border border-[#D4A832]/20 bg-[#0A0A08]/50 p-3 transition-colors hover:border-[#D4A832]/35"
             >
-              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-[#0F4C75]/40">
+              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-[#C49A1E]/40">
                 <SafeProductImage
                   src={rec.image}
                   alt=""
@@ -137,7 +137,7 @@ export function ScentProfileResults({ initialProfile = null }: Props) {
                   <p className="truncate text-xs text-muted-foreground">{rec.tagline}</p>
                 )}
               </div>
-              <span className="text-xs text-[#3282B8]">Shop →</span>
+              <span className="text-xs text-[#D4A832]">Shop →</span>
             </Link>
           </li>
         ))}
@@ -148,7 +148,7 @@ export function ScentProfileResults({ initialProfile = null }: Props) {
           type="button"
           variant="outline"
           size="sm"
-          className="border-[#3282B8]/40"
+          className="border-[#D4A832]/40"
           onClick={() => setQuizOpen(true)}
         >
           Retake quiz

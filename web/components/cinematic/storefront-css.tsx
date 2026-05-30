@@ -95,7 +95,7 @@ export function StorefrontExterior({
         aria-hidden
       >
         <motion.div
-          className="absolute inset-0 bg-gradient-to-b from-[#020818] via-[#061220] to-[#0A1628]"
+          className="absolute inset-0 bg-gradient-to-b from-[#020818] via-[#061220] to-[#0A0A08]"
           style={layerStyle(skyLayer)}
         />
         <div className="absolute inset-0 overflow-hidden">
@@ -148,14 +148,14 @@ export function StorefrontExterior({
         <div
           className="h-full w-full opacity-90"
           style={{
-            background: "#0A1628",
+            background: "#0A0A08",
             clipPath:
               "polygon(0% 100%, 0% 55%, 4% 40%, 7% 55%, 10% 35%, 14% 50%, 18% 28%, 22% 45%, 26% 32%, 30% 48%, 34% 25%, 38% 42%, 42% 30%, 46% 50%, 50% 22%, 54% 38%, 58% 28%, 62% 45%, 66% 32%, 70% 48%, 74% 26%, 78% 40%, 82% 30%, 86% 52%, 90% 35%, 94% 48%, 98% 38%, 100% 55%, 100% 100%)",
             filter: "drop-shadow(0 -4px 12px rgba(0,0,0,0.5))",
           }}
         />
         <motion.div
-          className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#1B3A4B]/60 to-transparent"
+          className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#181816]/60 to-transparent"
           style={layerStyle(cityLayer)}
         />
       </motion.div>
@@ -291,7 +291,7 @@ export function StorefrontExterior({
           style={{
             ...layerStyle(facadeLayer),
             background:
-              "repeating-linear-gradient(90deg, rgba(0,0,0,0.08) 0px, rgba(0,0,0,0.08) 1px, transparent 1px, transparent 48px), repeating-linear-gradient(0deg, #0D1B2A 0px, #0D1B2A 32px, #0F2235 32px, #0F2235 64px), linear-gradient(180deg, #152A3C 0%, #0D1B2A 45%, #0A1520 100%)",
+              "repeating-linear-gradient(90deg, rgba(0,0,0,0.08) 0px, rgba(0,0,0,0.08) 1px, transparent 1px, transparent 48px), repeating-linear-gradient(0deg, #0A0A08 0px, #0A0A08 32px, #0F2235 32px, #0F2235 64px), linear-gradient(180deg, #152A3C 0%, #0A0A08 45%, #0A1520 100%)",
           }}
         >
           {/* Cornice */}
@@ -299,7 +299,7 @@ export function StorefrontExterior({
             className="absolute -top-[10px] left-0 right-0 h-[14px]"
             style={{
               background:
-                "linear-gradient(180deg, #243D52 0%, #1B3344 40%, #0D1B2A 100%)",
+                "linear-gradient(180deg, #243D52 0%, #1B3344 40%, #0A0A08 100%)",
               boxShadow: "0 6px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
             }}
             aria-hidden
@@ -319,7 +319,7 @@ export function StorefrontExterior({
             className="absolute bottom-0 left-[6%] top-0 w-[28px]"
             style={{
               background:
-                "linear-gradient(90deg, #0A1520 0%, #122436 40%, #0A1520 100%)",
+                "linear-gradient(90deg, #0A1520 0%, #111110 40%, #0A1520 100%)",
               boxShadow: "inset -2px 0 6px rgba(0,0,0,0.4), inset 2px 0 4px rgba(255,255,255,0.03)",
             }}
             aria-hidden
@@ -328,7 +328,7 @@ export function StorefrontExterior({
             className="absolute bottom-0 right-[6%] top-0 w-[28px]"
             style={{
               background:
-                "linear-gradient(90deg, #0A1520 0%, #122436 40%, #0A1520 100%)",
+                "linear-gradient(90deg, #0A1520 0%, #111110 40%, #0A1520 100%)",
               boxShadow: "inset -2px 0 4px rgba(255,255,255,0.03), inset 2px 0 6px rgba(0,0,0,0.4)",
             }}
             aria-hidden
@@ -385,7 +385,7 @@ export function StorefrontExterior({
               </span>
             </div>
             <div
-              className="mt-3 flex h-[36px] w-[36px] items-center justify-center border border-[#D4A832]/30 bg-[#0D1B2A]/80 font-display text-sm font-semibold text-[#D4A832]"
+              className="mt-3 flex h-[36px] w-[36px] items-center justify-center border border-[#D4A832]/30 bg-[#0A0A08]/80 font-display text-sm font-semibold text-[#D4A832]"
               style={{
                 boxShadow: "0 0 12px rgba(212,168,50,0.15), inset 0 0 8px rgba(0,0,0,0.4)",
               }}
@@ -449,7 +449,7 @@ function BrassSign() {
         RAZZAQ LUXE
       </p>
       <p
-        className="mt-0.5 font-body text-[9px] tracking-[0.22em] text-[#B8961E]/80 sm:text-[10px]"
+        className="mt-0.5 font-body text-[9px] tracking-[0.22em] text-[#C49A1E]/80 sm:text-[10px]"
         style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}
       >
         FRAGRANCE &amp; LIFESTYLE
@@ -557,29 +557,29 @@ function WindowPanel({ side }: { side: "left" | "right" }) {
           <div className="absolute inset-x-[12%] bottom-[14%] top-[18%]" aria-hidden>
             {/* Shelf */}
             <div
-              className="absolute left-0 right-0 top-[38%] h-[3px] bg-[#0A1628]/90"
+              className="absolute left-0 right-0 top-[38%] h-[3px] bg-[#0A0A08]/90"
               style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.6)" }}
             />
             <div
-              className="absolute left-0 right-0 top-[68%] h-[3px] bg-[#0A1628]/90"
+              className="absolute left-0 right-0 top-[68%] h-[3px] bg-[#0A0A08]/90"
               style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.6)" }}
             />
             {/* Bottle silhouettes */}
             <div
-              className={`absolute top-[22%] h-[14%] w-[12%] rounded-t-sm bg-[#0A1628] ${side === "left" ? "left-[18%]" : "right-[18%]"}`}
+              className={`absolute top-[22%] h-[14%] w-[12%] rounded-t-sm bg-[#0A0A08] ${side === "left" ? "left-[18%]" : "right-[18%]"}`}
               style={{ clipPath: "polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%)" }}
             />
             <div
-              className="absolute left-[38%] top-[20%] h-[16%] w-[10%] rounded-t-full bg-[#0A1628]"
+              className="absolute left-[38%] top-[20%] h-[16%] w-[10%] rounded-t-full bg-[#0A0A08]"
             />
             <div
-              className={`absolute top-[22%] h-[14%] w-[12%] rounded-t-sm bg-[#0A1628] ${side === "left" ? "right-[18%]" : "left-[18%]"}`}
+              className={`absolute top-[22%] h-[14%] w-[12%] rounded-t-sm bg-[#0A0A08] ${side === "left" ? "right-[18%]" : "left-[18%]"}`}
               style={{ clipPath: "polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%)" }}
             />
             {/* Box products on lower shelf */}
-            <div className="absolute bottom-[8%] left-[15%] h-[18%] w-[22%] bg-[#0A1628]/95" />
-            <div className="absolute bottom-[8%] left-[42%] h-[20%] w-[16%] bg-[#0A1628]/95" />
-            <div className="absolute bottom-[8%] right-[15%] h-[16%] w-[20%] bg-[#0A1628]/95" />
+            <div className="absolute bottom-[8%] left-[15%] h-[18%] w-[22%] bg-[#0A0A08]/95" />
+            <div className="absolute bottom-[8%] left-[42%] h-[20%] w-[16%] bg-[#0A0A08]/95" />
+            <div className="absolute bottom-[8%] right-[15%] h-[16%] w-[20%] bg-[#0A0A08]/95" />
           </div>
         </div>
       </div>
@@ -629,7 +629,7 @@ function EntranceBlock({
       <div
         className="relative mb-0 h-[12px] w-[340px] max-w-[46vw]"
         style={{
-          background: "linear-gradient(180deg, #1B3344 0%, #0D1B2A 100%)",
+          background: "linear-gradient(180deg, #1B3344 0%, #0A0A08 100%)",
           boxShadow: "0 4px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)",
           clipPath: "polygon(0 0, 100% 0, 96% 100%, 4% 100%)",
         }}
@@ -758,7 +758,7 @@ function EntranceBlock({
         className="relative -mt-[1px] h-[14px] w-[320px] max-w-[44vw]"
         style={{
           background:
-            "linear-gradient(180deg, #243D52 0%, #1B3344 30%, #0D1B2A 70%, #0A1520 100%)",
+            "linear-gradient(180deg, #243D52 0%, #1B3344 30%, #0A0A08 70%, #0A1520 100%)",
           boxShadow: "0 8px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06)",
         }}
         aria-hidden
@@ -856,7 +856,7 @@ export function StorefrontInterior({ style, filter }: StorefrontInteriorProps) {
     >
       {/* Ambient base */}
       <div
-        className="absolute inset-0 bg-gradient-to-b from-[#0A1014] via-[#1A0F0A] to-[#0D1B2A]"
+        className="absolute inset-0 bg-gradient-to-b from-[#0A1014] via-[#1A0F0A] to-[#0A0A08]"
         aria-hidden
       />
 
@@ -865,7 +865,7 @@ export function StorefrontInterior({ style, filter }: StorefrontInteriorProps) {
         className="absolute inset-x-0 top-0 h-[55%]"
         style={{
           background:
-            "repeating-linear-gradient(90deg, #1A0F0A 0px, #1A0F0A 48px, #2C1810 48px, #2C1810 50px), linear-gradient(180deg, #2C1810 0%, #1A0F0A 70%, #0D1B2A 100%)",
+            "repeating-linear-gradient(90deg, #1A0F0A 0px, #1A0F0A 48px, #2C1810 48px, #2C1810 50px), linear-gradient(180deg, #2C1810 0%, #1A0F0A 70%, #0A0A08 100%)",
           boxShadow: "inset 0 -40px 80px rgba(0,0,0,0.5)",
         }}
         aria-hidden
@@ -875,7 +875,7 @@ export function StorefrontInterior({ style, filter }: StorefrontInteriorProps) {
       <div className="absolute inset-x-0 top-0 flex justify-around px-[8%] pt-2" aria-hidden>
         {[0, 1, 2, 3, 4].map((i) => (
           <div key={i} className="relative flex flex-col items-center">
-            <motion.div className="h-3 w-8 rounded-full bg-[#1B262C] shadow-[0_2px_8px_rgba(0,0,0,0.6)]" />
+            <motion.div className="h-3 w-8 rounded-full bg-[#0A0A08] shadow-[0_2px_8px_rgba(0,0,0,0.6)]" />
             <div
               className="mt-1 h-24 w-px origin-top"
               style={{
@@ -899,7 +899,7 @@ export function StorefrontInterior({ style, filter }: StorefrontInteriorProps) {
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="h-28 w-[22%] rounded-sm border border-[#D4A832]/10 bg-gradient-to-b from-[#16213E]/60 to-[#0A1628]/80"
+            className="h-28 w-[22%] rounded-sm border border-[#D4A832]/10 bg-gradient-to-b from-[#111110]/60 to-[#0A0A08]/80"
             style={{ boxShadow: "inset 0 0 20px rgba(0,0,0,0.4)" }}
           />
         ))}
@@ -910,7 +910,7 @@ export function StorefrontInterior({ style, filter }: StorefrontInteriorProps) {
         className="absolute inset-x-0 bottom-0 h-[48%]"
         style={{
           background:
-            "linear-gradient(180deg, #0D1B2A 0%, #122436 30%, #1B262C 100%)",
+            "linear-gradient(180deg, #0A0A08 0%, #111110 30%, #0A0A08 100%)",
         }}
         aria-hidden
       >

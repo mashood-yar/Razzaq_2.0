@@ -15,14 +15,14 @@ export function JournalHeader() {
         >
           <path
             d="M4 8C40 2 80 10 120 6C160 2 200 9 240 5C260 3 272 7 276 6"
-            stroke="#3282B8"
+            stroke="#D4A832"
             strokeWidth="2.5"
             strokeLinecap="round"
             fill="none"
           />
           <path
             d="M8 10C50 6 95 11 140 8C185 5 230 10 272 7"
-            stroke="#0F4C75"
+            stroke="#C49A1E"
             strokeWidth="1.5"
             strokeLinecap="round"
             fill="none"

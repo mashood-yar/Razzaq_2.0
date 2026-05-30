@@ -427,8 +427,8 @@ export function CheckoutForm({
                     onClick={() => setPaymentMethod(opt.value)}
                     className={`flex w-full items-center gap-4 rounded-[2rem] border p-4 text-left transition-colors ${
                       paymentMethod === opt.value
-                        ? "border-[#0F4C75] bg-[#0F4C75]/5 ring-2 ring-[#0F4C75]/20"
-                        : "border-border hover:border-[#1B3A4B]"
+                        ? "border-gold bg-gold/5 ring-2 ring-gold/20"
+                        : "border-border hover:border-noir-muted"
                     }`}
                   >
                     <div

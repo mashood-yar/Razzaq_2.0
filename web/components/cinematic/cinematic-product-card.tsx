@@ -33,7 +33,7 @@ export function CinematicProductCard({ product, scale, className }: CinematicPro
         className="relative flex min-h-[220px] flex-col overflow-hidden rounded-lg border border-[#D4A832]/45 shadow-[0_12px_40px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(212,168,50,0.15),inset_0_0_24px_rgba(212,168,50,0.06)] transition-all duration-500 group-hover:-translate-y-4 group-hover:border-[#D4A832]/80 group-hover:shadow-[0_24px_56px_rgba(212,168,50,0.2),inset_0_0_32px_rgba(212,168,50,0.12)] sm:min-h-[260px]"
         style={{
           background:
-            "linear-gradient(165deg, #16213E 0%, #0F1A2E 45%, #0A1628 100%)",
+            "linear-gradient(165deg, #111110 0%, #0A0A08 45%, #0A0A08 100%)",
         }}
       >
         {/* Image — 65% */}
@@ -46,11 +46,11 @@ export function CinematicProductCard({ product, scale, className }: CinematicPro
             sizes="220px"
           />
           <div
-            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A1628]/80 via-transparent to-[rgba(212,168,50,0.06)]"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A0A08]/80 via-transparent to-[rgba(212,168,50,0.06)]"
             aria-hidden
           />
           {product.badge && (
-            <span className="absolute left-2 top-2 rounded-full border border-[#D4A832]/40 bg-[#1B262C]/90 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-[#D4A832] backdrop-blur-sm">
+            <span className="absolute left-2 top-2 rounded-full border border-[#D4A832]/40 bg-[#0A0A08]/90 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-[#D4A832] backdrop-blur-sm">
               {product.badge}
             </span>
           )}
@@ -74,7 +74,7 @@ export function CinematicProductCard({ product, scale, className }: CinematicPro
             </Link>
             <Link
               href={`/products/${product.slug}`}
-              className="flex-1 rounded bg-[#D4A832] px-1.5 py-1 text-center font-body text-[9px] font-semibold uppercase tracking-wider text-[#1B262C] transition-colors hover:bg-[#B8961E] sm:text-[10px]"
+              className="flex-1 rounded bg-[#D4A832] px-1.5 py-1 text-center font-body text-[9px] font-semibold uppercase tracking-wider text-[#0A0A08] transition-colors hover:bg-[#C49A1E] sm:text-[10px]"
             >
               Buy Now
             </Link>
