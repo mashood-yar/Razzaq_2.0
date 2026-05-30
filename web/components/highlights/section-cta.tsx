@@ -17,19 +17,19 @@ type SectionCtaProps = {
 
 const VARIANTS = {
   ocean: {
-    section: "bg-[#3282B8] text-white",
-    blob: "bg-white/20",
-    button: "bg-white text-[#3282B8] hover:bg-white/95",
+    section: "bg-gold text-noir border border-gold/30",
+    blob: "bg-noir/10",
+    button: "bg-noir text-gold hover:bg-noir-surface",
   },
   gold: {
-    section: "bg-[#1B3A4B] text-foreground border border-gold/20",
+    section: "bg-noir-elevated text-foreground border border-gold/20",
     blob: "bg-gold/15",
-    button: "bg-gold text-ocean-deep hover:bg-gold-light",
+    button: "bg-gold text-noir hover:bg-gold-bright",
   },
   deep: {
-    section: "bg-[#0F4C75] text-[#F3F4F1]",
-    blob: "bg-white/15",
-    button: "bg-gold text-ocean-deep hover:bg-gold-light",
+    section: "bg-noir text-foreground border border-border",
+    blob: "bg-gold/10",
+    button: "bg-gold text-noir hover:bg-gold-bright",
   },
 } as const;
 

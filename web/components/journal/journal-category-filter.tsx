@@ -29,8 +29,8 @@ export function JournalCategoryFilter({
               onClick={() => onChange(cat)}
               className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 focus-ocean ${
                 isActive
-                  ? "bg-[#0F4C75] text-white shadow-sm"
-                  : "border-2 border-[#3282B8] bg-transparent text-[#3282B8] hover:bg-[#3282B8]/10"
+                  ? "bg-gold text-noir shadow-sm"
+                  : "border-2 border-gold/40 bg-transparent text-gold hover:bg-gold/10"
               }`}
             >
               {cat}

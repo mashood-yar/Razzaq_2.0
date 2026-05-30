@@ -54,7 +54,7 @@ export function ArticleShareButtons({ title, slug }: ArticleShareButtonsProps) {
       <button
         type="button"
         onClick={shareWhatsApp}
-        className="focus-ocean inline-flex items-center gap-2 rounded-full bg-[#0F4C75] px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-105 active:scale-95"
+        className="focus-ocean inline-flex items-center gap-2 rounded-none bg-gold px-4 py-2 text-sm font-semibold text-noir transition-transform hover:scale-105 active:scale-95"
       >
         <WhatsAppIcon className="h-4 w-4" />
         WhatsApp
@@ -62,7 +62,7 @@ export function ArticleShareButtons({ title, slug }: ArticleShareButtonsProps) {
       <button
         type="button"
         onClick={copyLink}
-        className="focus-ocean inline-flex items-center gap-2 rounded-full bg-[#0F4C75] px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-105 active:scale-95"
+        className="focus-ocean inline-flex items-center gap-2 rounded-none bg-gold px-4 py-2 text-sm font-semibold text-noir transition-transform hover:scale-105 active:scale-95"
       >
         {copied ? (
           <Check className="h-4 w-4" aria-hidden="true" />

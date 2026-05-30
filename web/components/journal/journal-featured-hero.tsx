@@ -39,10 +39,10 @@ export function JournalFeaturedHero({ article }: JournalFeaturedHeroProps) {
         </div>
 
         <div className="flex flex-col justify-center lg:col-span-2">
-          <span className="inline-block w-fit -rotate-1 rounded-full bg-[#0F4C75] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+          <span className="inline-block w-fit -rotate-1 rounded-full bg-gold px-3 py-1 text-xs font-semibold uppercase tracking-wide text-noir">
             Featured · {article.category}
           </span>
-          <h2 className="mt-4 font-display text-3xl font-bold leading-tight text-foreground transition-colors group-hover:text-[#0F4C75] sm:text-4xl">
+          <h2 className="mt-4 font-display text-3xl font-bold leading-tight text-foreground transition-colors group-hover:text-gold-bright sm:text-4xl">
             {article.title}
           </h2>
           <p className="mt-4 line-clamp-3 font-body text-base leading-relaxed text-muted-foreground sm:text-lg">
@@ -55,7 +55,7 @@ export function JournalFeaturedHero({ article }: JournalFeaturedHeroProps) {
             <span aria-hidden="true">·</span>
             <span>{article.readTime}</span>
           </div>
-          <span className="mt-6 inline-flex items-center gap-2 font-semibold text-[#0F4C75] transition-transform group-hover:translate-x-1">
+          <span className="mt-6 inline-flex items-center gap-2 font-semibold text-gold transition-transform group-hover:translate-x-1">
             Read story
             <span aria-hidden="true">→</span>
           </span>

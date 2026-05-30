@@ -138,9 +138,9 @@ export function ScentProfileQuiz() {
 
   return (
     <Dialog open={open} onOpenChange={setQuizOpen}>
-      <DialogContent className="max-h-[min(92vh,720px)] max-w-xl overflow-hidden border-[#3282B8]/30 bg-gradient-to-b from-[#1B262C] to-[#0F4C75]/95 p-0 text-foreground shadow-2xl">
+      <DialogContent className="max-h-[min(92vh,720px)] max-w-xl overflow-hidden border-[#D4A832]/30 bg-gradient-to-b from-[#0A0A08] to-[#C49A1E]/95 p-0 text-foreground shadow-2xl">
         <motion.div
-          className="h-1 bg-[#0F4C75]"
+          className="h-1 bg-[#C49A1E]"
           aria-hidden
         >
           <motion.div
@@ -159,7 +159,7 @@ export function ScentProfileQuiz() {
             <DialogTitle className="font-display text-2xl text-[#D4A832]">
               {step === "results" ? "Your scent profile" : "Scent profile quiz"}
             </DialogTitle>
-            <DialogDescription className="text-sm text-[#BBE1FA]/80">
+            <DialogDescription className="text-sm text-[#C8BFA8]/80">
               {step === "results"
                 ? "Three fragrances chosen for your chemistry."
                 : "Four intimate questions — then your personalised trio."}
@@ -177,7 +177,7 @@ export function ScentProfileQuiz() {
                 transition={{ duration: 0.28 }}
                 className="mt-6"
               >
-                <p className="text-xs font-medium uppercase tracking-widest text-[#3282B8]">
+                <p className="text-xs font-medium uppercase tracking-widest text-[#D4A832]">
                   Question {(step as number) + 1} of 4
                 </p>
                 <h3 className="mt-2 font-display text-xl text-foreground">
@@ -204,7 +204,7 @@ export function ScentProfileQuiz() {
                             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A832]/60",
                             selected
                               ? "border-[#D4A832]/60 bg-[#D4A832]/15 shadow-[0_0_24px_rgba(212,168,50,0.12)]"
-                              : "border-[#3282B8]/25 bg-[#1B262C]/60 hover:border-[#3282B8]/50 hover:bg-[#0F4C75]/40",
+                              : "border-[#D4A832]/25 bg-[#0A0A08]/60 hover:border-[#D4A832]/50 hover:bg-[#C49A1E]/40",
                           )}
                         >
                           <span className="block font-medium text-foreground">
@@ -238,7 +238,7 @@ export function ScentProfileQuiz() {
                 >
                   <Sparkles className="h-6 w-6 shrink-0 text-[#D4A832]" aria-hidden />
                   <div>
-                    <p className="text-xs uppercase tracking-wider text-[#3282B8]">
+                    <p className="text-xs uppercase tracking-wider text-[#D4A832]">
                       You are
                     </p>
                     <p className="font-display text-lg text-[#D4A832]">{result.label}</p>
@@ -260,9 +260,9 @@ export function ScentProfileQuiz() {
                       <Link
                         href={`/products/${rec.slug}`}
                         onClick={() => setQuizOpen(false)}
-                        className="flex items-center gap-3 rounded-xl border border-[#3282B8]/25 bg-[#1B262C]/50 p-3 transition-colors hover:border-[#D4A832]/40 hover:bg-[#0F4C75]/30"
+                        className="flex items-center gap-3 rounded-xl border border-[#D4A832]/25 bg-[#0A0A08]/50 p-3 transition-colors hover:border-[#D4A832]/40 hover:bg-[#C49A1E]/30"
                       >
-                        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-[#0F4C75]/40">
+                        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-[#C49A1E]/40">
                           <SafeProductImage
                             src={rec.image}
                             alt=""
@@ -297,7 +297,7 @@ export function ScentProfileQuiz() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="flex-1 border-[#3282B8]/40"
+                    className="flex-1 border-[#D4A832]/40"
                     onClick={() => {
                       reset();
                     }}
@@ -305,13 +305,13 @@ export function ScentProfileQuiz() {
                     Retake quiz
                   </Button>
                   {status !== "authenticated" ? (
-                    <Button asChild className="flex-1 bg-[#D4A832] text-[#1B262C] hover:bg-[#D4A832]/90">
+                    <Button asChild className="flex-1 bg-[#D4A832] text-[#0A0A08] hover:bg-[#D4A832]/90">
                       <Link href="/login?next=/account/profile" onClick={() => setQuizOpen(false)}>
                         Sign in to save
                       </Link>
                     </Button>
                   ) : (
-                    <Button asChild className="flex-1 bg-[#D4A832] text-[#1B262C] hover:bg-[#D4A832]/90">
+                    <Button asChild className="flex-1 bg-[#D4A832] text-[#0A0A08] hover:bg-[#D4A832]/90">
                       <Link href="/account/profile" onClick={() => setQuizOpen(false)}>
                         View on profile
                       </Link>

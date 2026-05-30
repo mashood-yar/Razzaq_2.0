@@ -17,21 +17,21 @@ export function EmptyCartCta({ onNavigate }: EmptyCartCtaProps) {
     >
       <div className="relative flex h-32 w-32 items-center justify-center" aria-hidden>
         <motion.div
-          className="absolute h-24 w-24 rounded-[45%_55%_60%_40%] bg-[#0F4C75]/20 blur-sm"
+          className="absolute h-24 w-24 rounded-[45%_55%_60%_40%] bg-gold/15 blur-sm"
           animate={{ y: [0, -8, 0], rotate: [0, 6, 0] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute h-20 w-20 rounded-[55%_45%_40%_60%] bg-[#3282B8]/25"
+          className="absolute h-20 w-20 rounded-[55%_45%_40%_60%] bg-gold/20"
           animate={{ y: [0, 10, 0], x: [0, 4, 0] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
         />
         <motion.div
-          className="relative flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-[#1B3A4B] bg-[#1B262C]"
+          className="relative flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-border bg-noir-surface"
           animate={{ scale: [1, 1.04, 1] }}
           transition={{ duration: 3, repeat: Infinity }}
         >
-          <span className="font-display text-2xl text-[#3282B8]">R</span>
+          <span className="font-display text-2xl text-gold">R</span>
         </motion.div>
       </div>
 

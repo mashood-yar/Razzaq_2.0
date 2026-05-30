@@ -29,7 +29,7 @@ export function ProductSocialProof() {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="mt-4 inline-flex min-h-9 items-center rounded-full bg-[#16213E] px-4 py-2"
+      className="mt-4 inline-flex min-h-9 items-center rounded-full bg-noir-surface px-4 py-2"
       role="status"
       aria-live="polite"
     >

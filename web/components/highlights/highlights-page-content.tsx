@@ -60,7 +60,7 @@ function ProductGrid({
 }) {
   if (products.length === 0) {
     return (
-      <p className="rounded-[2rem] border border-border/50 bg-ocean-surface/40 px-6 py-12 text-center text-muted-foreground">
+      <p className="rounded-[2rem] border border-border/50 bg-noir-surface/40 px-6 py-12 text-center text-muted-foreground">
         No products in this collection yet — check back soon.
       </p>
     );
@@ -93,10 +93,10 @@ export function HighlightsPageContent({
 
   return (
     <div>
-      <section className="relative overflow-hidden border-b border-border/50 bg-ocean-surface/30 px-4 pb-16 pt-28 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden border-b border-border/50 bg-noir-surface/30 px-4 pb-16 pt-28 sm:px-6 lg:px-8">
         <motion.div
           aria-hidden
-          className="pointer-events-none absolute -right-24 top-0 h-72 w-72 rounded-full bg-ocean-mid/20 blur-3xl"
+          className="pointer-events-none absolute -right-24 top-0 h-72 w-72 rounded-full bg-gold/15 blur-3xl"
           animate={reduceMotion ? undefined : { scale: [1, 1.08, 1] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         />

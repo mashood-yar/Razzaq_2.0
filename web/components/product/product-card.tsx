@@ -46,7 +46,7 @@ function badgeLabel(b: NonNullable<Product["badge"]>) {
 export function ProductCard({
   product,
   className,
-  radiusClass = "rounded-[2rem]",
+  radiusClass = "rounded-sm",
   highlightLabel,
 }: {
   product: Product;
@@ -106,7 +106,7 @@ export function ProductCard({
     >
       <motion.div
         className={cn(
-          "relative aspect-[3/4] overflow-hidden rounded-[2rem] border border-border-subtle/60 bg-ocean-surface shadow-card transition-transform duration-300 [@media(hover:hover)]:group-hover:-rotate-2 [@media(hover:hover)]:group-hover:shadow-ocean",
+          "relative aspect-[2/3] overflow-hidden rounded-sm border border-border bg-noir-surface shadow-card transition-transform duration-500 [@media(hover:hover)]:group-hover:shadow-nocturne",
           radiusClass,
         )}
         variants={imageVariants}
@@ -123,14 +123,14 @@ export function ProductCard({
           />
         </Link>
         {product.badge && (
-          <Badge className="absolute left-3 top-3 z-10" variant="default">
+          <Badge className="absolute left-3 top-3 z-10 rounded-none bg-gold-warm text-[10px] uppercase tracking-[0.18em] text-noir" variant="default">
             {badgeLabel(product.badge)}
           </Badge>
         )}
         {resolvedHighlight && (
           <span
             className={cn(
-              "absolute right-3 top-3 z-10 rounded-full px-2.5 py-0.5 text-xs font-semibold",
+              "absolute right-3 top-3 z-10 rounded-none px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.18em]",
               highlightLabelClasses(resolvedHighlight),
             )}
           >
@@ -145,7 +145,7 @@ export function ProductCard({
           <motion.div className="flex min-w-0 gap-2 px-3 pb-3">
             <button
               type="button"
-              className="flex h-9 flex-1 items-center justify-center gap-1 rounded-full bg-ocean-surface/95 text-xs font-semibold text-foreground ring-1 ring-border-subtle/60 backdrop-blur-sm"
+              className="flex h-9 flex-1 items-center justify-center gap-1 rounded-none border border-border bg-noir-surface/95 text-[10px] font-medium uppercase tracking-wider text-foreground backdrop-blur-sm"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -158,7 +158,7 @@ export function ProductCard({
             <button
               ref={bagRef}
               type="button"
-              className="flex h-9 flex-1 items-center justify-center gap-1 rounded-full bg-ocean-primary text-xs font-semibold text-primary-foreground hover:bg-ocean-mid"
+              className="flex h-9 flex-1 items-center justify-center gap-1 rounded-none bg-gold-warm text-[10px] font-medium uppercase tracking-wider text-noir hover:bg-gold-bright"
               onClick={handleAdd}
             >
               <ShoppingBag className="h-3.5 w-3.5 shrink-0" aria-hidden />
@@ -170,7 +170,7 @@ export function ProductCard({
 
       <div className="mt-4 flex flex-1 flex-col px-1">
         <Link href={`/products/${product.slug}`}>
-          <h3 className="font-display text-lg font-semibold leading-tight text-foreground transition-colors hover:text-primary">
+          <h3 className="font-display text-lg font-normal tracking-wide text-foreground transition-colors hover:text-gold-bright">
             {product.name}
           </h3>
         </Link>

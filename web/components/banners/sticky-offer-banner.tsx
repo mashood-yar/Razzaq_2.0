@@ -67,27 +67,27 @@ export function StickyOfferBanner() {
           aria-label="Special offer"
         >
           <motion.div
-            className="flex items-center gap-3 rounded-2xl border border-[#1B3A4B]/40 bg-[#1B262C] px-4 py-3 shadow-2xl sm:px-5"
+            className="flex items-center gap-3 rounded-2xl border border-border bg-noir-surface px-4 py-3 shadow-2xl sm:px-5"
             whileHover={{ scale: 1.01 }}
           >
             <div className="min-w-0 flex-1">
-              <p className="font-display text-sm text-[#1B262C] sm:text-base">
+              <p className="font-display text-sm text-foreground sm:text-base">
                 10% off your first order
               </p>
-              <p className="text-xs text-[#1B3A4B]/90">
+              <p className="text-xs text-muted-foreground">
                 Use code <span className="font-semibold text-gold">RAZZAQ10</span> at checkout
               </p>
             </div>
             <Link
               href="/shop"
-              className="shrink-0 rounded-full bg-[#3282B8] px-4 py-2 text-xs font-semibold text-white transition-transform hover:scale-105 active:scale-95 sm:text-sm"
+              className="shrink-0 rounded-none bg-gold px-4 py-2 text-xs font-semibold text-noir transition-transform hover:scale-105 active:scale-95 sm:text-sm"
             >
               Shop now
             </Link>
             <button
               type="button"
               onClick={dismiss}
-              className="shrink-0 rounded-full p-1.5 text-[#1B3A4B]/70 hover:bg-white/10 hover:text-[#1B262C]"
+              className="shrink-0 rounded-full p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
               aria-label="Dismiss offer"
             >
               <X className="h-4 w-4" />

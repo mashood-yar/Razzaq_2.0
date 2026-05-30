@@ -15,11 +15,11 @@ type BurstParticle = {
   color: string;
 };
 
-const OCEAN_PRIMARY = "#0F4C75";
-const OCEAN_MID = "#3282B8";
-const OCEAN_LIGHT = "#BBE1FA";
-const GOLD = "#D4A832";
-const SPARKLE_COLORS = [GOLD, OCEAN_PRIMARY, OCEAN_MID, OCEAN_LIGHT];
+const GOLD = "#C49A1E";
+const GOLD_BRIGHT = "#D4A832";
+const CREAM = "#F5F0E8";
+const MUTED = "#C8BFA8";
+const SPARKLE_COLORS = [GOLD, GOLD_BRIGHT, CREAM, MUTED];
 const BURST_CHARS = ["✦", "✧", "·"] as const;
 const LERP = 0.12;
 const BURST_COUNT = 8;
@@ -234,11 +234,11 @@ export function CustomCursor() {
   const isText = mode === "text";
 
   const ringSize = isProduct ? 56 : isLink ? 48 : 32;
-  const ringBorderColor = isCart ? GOLD : isLink || isProduct ? OCEAN_MID : OCEAN_LIGHT;
+  const ringBorderColor = isCart ? GOLD : isLink || isProduct ? GOLD_BRIGHT : MUTED;
   const ringBackground = isCart
     ? "rgba(212, 168, 50, 0.2)"
     : isLink
-      ? "rgba(15, 76, 117, 0.2)"
+      ? "rgba(196, 154, 30, 0.15)"
       : "transparent";
 
   return (
@@ -276,7 +276,7 @@ export function CustomCursor() {
       >
         <span
           className="block rounded-full"
-          style={{ width: 8, height: 8, backgroundColor: OCEAN_PRIMARY }}
+          style={{ width: 8, height: 8, backgroundColor: GOLD }}
         />
       </div>
 
@@ -296,7 +296,7 @@ export function CustomCursor() {
           borderWidth: isText ? 0 : 1.5,
           borderStyle: "solid",
           borderColor: ringBorderColor,
-          backgroundColor: isText ? OCEAN_MID : ringBackground,
+          backgroundColor: isText ? GOLD_BRIGHT : ringBackground,
           transition:
             "width 200ms ease, height 200ms ease, border-radius 200ms ease, background-color 200ms ease, border-color 200ms ease",
           animation: ringClickPulse
@@ -306,7 +306,7 @@ export function CustomCursor() {
       >
         {isProduct && (
           <span
-            className="text-[10px] font-semibold tracking-wide text-ocean-light"
+            className="text-[10px] font-semibold tracking-wide text-noir"
             style={{ fontFamily: "var(--font-nunito), Nunito, sans-serif" }}
           >
             View

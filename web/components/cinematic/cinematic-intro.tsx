@@ -292,7 +292,7 @@ function CinematicIntroContent({ products }: CinematicIntroProps) {
             <motion.button
               type="button"
               onClick={skip}
-              className="fixed bottom-6 right-6 z-[60] rounded-full border border-[#D4A832]/30 bg-[#1B262C]/60 px-4 py-2 font-body text-xs font-semibold uppercase tracking-wider text-[#D4A832] backdrop-blur-sm transition-colors hover:border-[#D4A832]/60 hover:bg-[#16213E]/80"
+              className="fixed bottom-6 right-6 z-[60] rounded-full border border-[#D4A832]/30 bg-[#0A0A08]/60 px-4 py-2 font-body text-xs font-semibold uppercase tracking-wider text-[#D4A832] backdrop-blur-sm transition-colors hover:border-[#D4A832]/60 hover:bg-[#111110]/80"
               style={{ opacity: skipOpacity }}
               aria-label="Skip cinematic intro"
             >
@@ -308,7 +308,7 @@ function CinematicIntroContent({ products }: CinematicIntroProps) {
 function CinematicIntroLoading() {
   return (
     <div className="relative" style={{ height: "600vh" }}>
-      <div className="sticky top-0 z-40 flex h-screen w-full items-center justify-center overflow-hidden bg-[#1B262C]">
+      <div className="sticky top-0 z-40 flex h-screen w-full items-center justify-center overflow-hidden bg-[#0A0A08]">
         <CinematicIntroPlaceholder />
       </div>
     </div>

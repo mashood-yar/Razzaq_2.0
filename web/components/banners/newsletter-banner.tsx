@@ -44,10 +44,11 @@ export function NewsletterBanner() {
       whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: reduceMotion ? 0 : 0.5 }}
-      className="newsletter-banner-corners relative overflow-hidden rounded-[2rem] bg-[#1B3A4B] px-6 py-14 sm:px-12"
+      className="newsletter-banner-corners relative overflow-hidden rounded-sm border border-border bg-noir-surface px-6 py-14 sm:px-12"
     >
       <div className="relative z-10 mx-auto max-w-xl text-center">
-        <h2 className="font-display text-3xl text-foreground sm:text-4xl">
+        <span className="eyebrow">Newsletter</span>
+        <h2 className="mt-3 font-display text-3xl font-light text-foreground sm:text-4xl">
           Join the RazzaqLuxe Family
         </h2>
         <p className="mt-3 text-sm text-muted-foreground">
@@ -55,7 +56,7 @@ export function NewsletterBanner() {
         </p>
 
         {status === "success" ? (
-          <p className="mt-8 font-display text-xl italic text-[#0F4C75]">
+          <p className="mt-8 font-display text-xl italic text-gold-bright">
             You&apos;re in — welcome to the family.
           </p>
         ) : (
@@ -74,7 +75,7 @@ export function NewsletterBanner() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               disabled={status === "loading"}
-              className="input-luxe h-12 flex-1 bg-ocean-surface/90"
+              className="input-luxe h-12 flex-1 bg-noir-elevated/90"
             />
             <button
               type="submit"

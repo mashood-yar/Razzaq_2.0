@@ -65,7 +65,7 @@ export function JournalScroll({ articles, featuredSlug }: JournalScrollProps) {
     !search.trim();
 
   return (
-    <div className="relative min-h-screen bg-[#1B262C]">
+    <div className="relative min-h-screen bg-noir">
       {/* Stronger grain overlay — page-specific */}
       <div
         className="pointer-events-none absolute inset-0 z-0 bg-grain opacity-[0.06] mix-blend-multiply"
