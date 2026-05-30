@@ -1,116 +1,128 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ParallaxSection } from "@/components/cinematic/parallax-section";
+import { GoldBrandText } from "@/components/brand/gold-brand-text";
+import { Button } from "@/components/ui/button";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
-  title: "The House of Razzaq Luxe",
+export const metadata: Metadata = buildPageMetadata({
+  title: "About RazzaqLuxe",
   description:
-    "Discover the philosophy, craftsmanship, and origin of Razzaq Luxe — where fine fragrances meet uncompromising luxury.",
-};
+    "RazzaqLuxe — a Pakistani fragrance house rooted in Quetta. Signature scents Sporty, Habibi, Flourine, and Khan\u2019s Aura, crafted for discerning wearers.",
+  path: "/about",
+});
+
+const stats = [
+  { value: "1K+", label: "Happy Customers" },
+  { value: "7", label: "Signature Scents" },
+  { value: "4+", label: "Years of Craft" },
+  { value: "100%", label: "Pakistani Heritage" },
+];
 
 export default function AboutPage() {
   return (
-    <div className="bg-obsidian min-h-screen text-ivory">
-      {/* Hero Section */}
-      <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
-        <Image
-          src="/about-hero.png"
-          alt="Razzaq Luxe Heritage"
-          fill
-          className="object-cover opacity-40 grayscale"
-          priority
-          sizes="100vw"
+    <div>
+      <section className="relative flex min-h-[70vh] items-end overflow-hidden bg-noir pt-[100px]">
+        <div
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(196,154,30,0.08),transparent_50%),linear-gradient(to_top,#0A0A08_0%,#111110_100%)]"
+          aria-hidden
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-obsidian/40 to-obsidian" />
-        <div className="relative z-10 text-center px-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-gold mb-6">
-            Our Heritage
-          </p>
-          <h1 className="max-w-4xl font-display text-[clamp(3rem,6vw,6rem)] leading-none italic font-light">
-            The Pursuit of Perfection
+        <div className="relative z-10 mx-auto w-full max-w-4xl px-5 pb-20 pt-8 sm:px-6 md:pb-28">
+          <span className="eyebrow mb-5 block">Our Story</span>
+          <h1 className="font-display text-[clamp(2.5rem,10vw,5rem)] font-light leading-[0.95] tracking-tight text-foreground">
+            Born in <em className="text-gold-bright">Quetta</em>,
+            <br />
+            Made for the World
           </h1>
+          <p className="mt-6 max-w-lg text-base font-light leading-relaxed text-text-secondary">
+            A fragrance house built on the belief that Pakistan deserves its own voice in the
+            language of luxury scent.
+          </p>
         </div>
       </section>
 
-      {/* Cinematic Pull-Quote */}
-      <section className="py-48 px-6 sm:px-12 lg:px-24">
-        <ParallaxSection>
-          <div className="mx-auto max-w-4xl text-center">
-            <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl leading-snug font-light text-ivory italic">
-              &quot;We don&apos;t just blend fragrances. We orchestrate emotions, bottling the essence of quiet confidence.&quot;
-            </h2>
-            <div className="mt-12 h-[1px] w-16 bg-gold mx-auto" />
-            <p className="mt-8 text-sm uppercase tracking-widest text-smoke font-medium">
-              — The Founders, Quetta
+      <section className="border-y border-border bg-noir-surface py-16">
+        <div className="mx-auto grid max-w-4xl grid-cols-2 gap-10 px-5 sm:grid-cols-4 sm:px-6">
+          {stats.map((s) => (
+            <div key={s.label} className="text-center">
+              <span className="font-display text-4xl font-light text-gold-bright sm:text-5xl">
+                {s.value}
+              </span>
+              <span className="mt-2 block text-[10px] font-medium uppercase tracking-[0.25em] text-muted-foreground">
+                {s.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div className="section-nocturne mx-auto max-w-4xl space-y-20 px-5 sm:px-6">
+        <section className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-noir-surface">
+            <Image
+              src="/images/areeb.png"
+              alt="Razzaq Luxe founder"
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 480px"
+            />
+            <span className="absolute bottom-4 left-4 text-[10px] uppercase tracking-[0.2em] text-text-secondary">
+              Quetta, Pakistan · 2020
+            </span>
+          </div>
+          <div>
+            <span className="eyebrow">The Origin</span>
+            <h2 className="text-display mt-5">A Dream Born in the Balochistan Mountains</h2>
+            <p className="mt-6 text-sm font-light leading-relaxed text-text-secondary">
+              <GoldBrandText text="Razzaq Luxe was founded with one conviction: that the rich, ancient olfactory culture of Pakistan — rose valleys, frankincense trade routes, saffron markets — deserved to be captured in bottles worthy of the world stage." />
+            </p>
+            <p className="mt-4 text-sm font-light leading-relaxed text-muted-foreground">
+              Our founder spent years training in perfumery, studying regional raw materials, and
+              listening to what Pakistani men and women wanted to smell like. The result is a house
+              line built for presence in our climate — Sporty, Habibi, Flourine, and Khan&apos;s Aura.
             </p>
           </div>
-        </ParallaxSection>
-      </section>
+        </section>
 
-      {/* Editorial Story */}
-      <section className="py-32 px-6 sm:px-12 lg:px-24 bg-charcoal border-y border-graphite">
-        <div className="mx-auto max-w-[1200px] grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-          <ParallaxSection>
-            <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[2px]">
-              <Image
-                src="https://images.unsplash.com/photo-1615529182904-14819c35db37?auto=format&fit=crop&w=1200&q=80"
-                alt="Craftsmanship"
-                fill
-                className="object-cover grayscale hover:grayscale-0 transition-all duration-1000"
-              />
-            </div>
-          </ParallaxSection>
-          
-          <div className="flex flex-col gap-10">
-            <h3 className="font-display text-4xl sm:text-5xl font-light text-gold italic">
-              Uncompromising Craft
-            </h3>
-            <div className="space-y-6 text-smoke text-lg leading-loose font-light">
-              <p>
-                Razzaq Luxe was born in Quetta from a singular obsession: to redefine luxury perfumery for the modern connoisseur. What started as a boutique vision has grown into a house known for its impeccable standards.
-              </p>
-              <p>
-                Each composition—whether the vibrant energy of Sporty or the profound depth of Khan&apos;s Aura—is meticulously balanced. We source the finest raw materials, ensuring that every note unfolds with perfect clarity and lasts throughout the day.
-              </p>
-              <p>
-                Our philosophy is simple: True luxury never shouts. It is felt in the weight of the bottle, the mist of the atomizer, and the indelible trail left behind.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+        <section>
+          <span className="eyebrow">Timeline</span>
+          <h2 className="text-display mt-3">Milestones</h2>
+          <ol className="mt-10 space-y-8 border-l border-border pl-8">
+            {milestones.map((m) => (
+              <li key={m.year} className="relative">
+                <span className="absolute -left-[39px] top-1.5 h-3 w-3 bg-gold-warm" />
+                <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-gold-warm">
+                  {m.year}
+                </p>
+                <p className="mt-2 text-sm font-light text-muted-foreground">
+                  <GoldBrandText text={m.text} />
+                </p>
+              </li>
+            ))}
+          </ol>
+        </section>
 
-      {/* Flagship Boutique */}
-      <section className="py-48 px-6 sm:px-12 lg:px-24">
-        <div className="mx-auto max-w-[1200px] text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-gold mb-8">
-            The Flagship
+        <section className="border border-border bg-noir-surface p-8 sm:p-12">
+          <h2 className="font-display text-3xl font-light">Philosophy & craftsmanship</h2>
+          <p className="mt-6 text-sm font-light leading-relaxed text-text-secondary">
+            Each composition is balanced for our climate and occasions — bright openings, durable
+            hearts, and bases that stay close without overwhelming. We listen to customers in-store
+            in Quetta and refine the line with the same obsession that started the house.
           </p>
-          <h2 className="font-display text-5xl sm:text-6xl font-light text-ivory mb-12">
-            Experience the House in Quetta
-          </h2>
-          <p className="max-w-2xl mx-auto text-smoke text-lg leading-loose font-light mb-16">
-            Immerse yourself in the world of Razzaq Luxe. Discover our full signature line, receive personal layering consultations, and explore the raw materials that define our craft.
-          </p>
-          <Link href="/contact" className="btn-secondary">
-            Plan Your Visit
-          </Link>
-        </div>
-      </section>
+        </section>
 
-      {/* Cinematic Film (Optional) */}
-      <section className="relative h-[60vh] overflow-hidden">
-        <video
-          className="absolute inset-0 h-full w-full object-cover grayscale opacity-30"
-          src="/hero-final-bg.mp4"
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
-        <div className="absolute inset-0 bg-obsidian/40 mix-blend-multiply" />
-      </section>
+        <section>
+          <h2 className="font-display text-3xl font-light">Visit us</h2>
+          <p className="mt-6 text-sm font-light leading-relaxed text-muted-foreground">
+            Our flagship boutique is in <strong className="text-foreground">Quetta, Balochistan</strong>.
+            Try the full signature line, ask for layering tips, or pick up your order in person.
+            Saturday–Thursday, 10 AM – 8 PM PKT.
+          </p>
+          <Button asChild variant="secondary" size="lg" className="mt-8">
+            <Link href="/contact">Contact us</Link>
+          </Button>
+        </section>
+      </div>
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -29,6 +29,7 @@ import {
 
 const nav = [
   { href: "/shop", label: "Shop" },
+  { href: "/highlights", label: "Highlights" },
   { href: "/about", label: "About" },
   { href: "/journal", label: "Journal" },
   { href: "/contact", label: "Contact" },
@@ -39,9 +40,15 @@ export function SiteHeader() {
   const pathname = usePathname();
   const { dismissed: announcementDismissed, setDismissed: dismissAnnouncement } =
     useAnnouncementDismissed();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const setSearchOpen = useUiStore((s) => s.setSearchOpen);
   const setCartOpen = useUiStore((s) => s.setCartOpen);
   const itemCount = useCartStore((s) =>
@@ -56,7 +63,7 @@ export function SiteHeader() {
 
   if (pathname?.startsWith("/admin")) return null;
 
-  const headerTop = announcementDismissed ? "top-4" : "top-11";
+  const headerTop = announcementDismissed ? "top-0" : "top-10";
 
   // Mobile bottom nav helper
   const isActive = (path: string) => {
@@ -77,71 +84,78 @@ export function SiteHeader() {
       */}
       <header
         className={cn(
-          "hidden lg:block pointer-events-none fixed inset-x-0 z-50 px-4 transition-[top] duration-300",
+          "pointer-events-none fixed inset-x-0 z-50 transition-[top] duration-300",
           headerTop,
         )}
       >
-        <div 
+        <div
           className={cn(
-            "pointer-events-auto mx-auto grid h-[72px] w-full max-w-[1440px] grid-cols-3 items-center px-12 xl:px-24 transition-all duration-500",
-            scrolled ? "bg-[rgba(8,7,5,0.94)] backdrop-blur-xl border-b border-[rgba(201,160,80,0.12)]" : "bg-transparent border-b border-transparent"
+            "site-nav-bar pointer-events-auto flex items-center justify-between px-5 sm:px-6",
+            scrolled && "scrolled",
           )}
         >
-          {/* Left: Logo */}
-          <div className="flex items-center">
-            <Link
-              href="/"
-              className="font-display text-[19px] font-medium tracking-[0.2em] text-[var(--cream-bone)]"
-              aria-label="Razzaq Luxe — home"
-            >
-              RAZZAQ LUXE
-            </Link>
-          </div>
+          <Link
+            href="/"
+            className="font-display text-sm italic uppercase tracking-[0.3em] text-foreground transition-colors hover:text-gold-bright"
+            aria-label="Razzaq Luxe — home"
+          >
+            Razzaq Luxe
+          </Link>
 
-          {/* Center: Nav */}
-          <nav className="flex justify-center gap-8" aria-label="Main">
-            {nav.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "font-body text-[10px] font-semibold uppercase tracking-[0.28em] transition-colors duration-150",
-                  pathname === item.href || pathname.startsWith(item.href + "/")
-                    ? "text-[var(--gold-warm)]"
-                    : "text-[var(--cream-muted)] hover:text-[var(--cream-bone)]",
-                )}
-              >
-                {item.label}
-              </Link>
-            ))}
+          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 lg:flex" aria-label="Main">
+              {nav.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "text-[11px] font-medium uppercase tracking-[0.18em] transition-colors hover:text-gold-bright",
+                    pathname === item.href || pathname.startsWith(item.href + "/")
+                      ? "text-gold-bright"
+                      : "text-text-secondary",
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
           </nav>
 
-          {/* Right: Icons */}
-          <div className="flex justify-end items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <button
+              type="button"
+              className="p-2 text-text-secondary transition-colors hover:text-gold-bright lg:hidden"
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-nav"
+              onClick={() => setMobileOpen(true)}
+            >
+              <Menu className="h-5 w-5" aria-hidden />
+              <span className="sr-only">Open menu</span>
+            </button>
             <Button
               variant="ghost"
-              className="h-10 w-10 px-0 text-[var(--cream-warm)] hover:text-[var(--gold-warm)]"
+              size="icon"
+              className="text-text-secondary hover:text-gold-bright"
               aria-label="Search"
               onClick={() => setSearchOpen(true)}
             >
-              <Search className="h-[22px] w-[22px]" />
+              <Search className="h-[18px] w-[18px]" />
             </Button>
-            <Button variant="ghost" className="h-10 w-10 px-0 text-[var(--cream-warm)] hover:text-[var(--gold-warm)]" asChild>
-              <Link href="/wishlist" aria-label="Wishlist" className="flex items-center justify-center">
-                <Heart className="h-[22px] w-[22px]" aria-hidden />
+            <Button variant="ghost" size="icon" className="text-text-secondary hover:text-gold-bright" asChild>
+              <Link href="/wishlist" aria-label="Wishlist">
+                <Heart className="h-[18px] w-[18px]" aria-hidden />
               </Link>
             </Button>
             <HeaderAccountDropdown />
             <Button
               id="cart-fly-anchor"
               variant="ghost"
-              className="relative h-10 w-10 px-0 text-[var(--cream-warm)] hover:text-[var(--gold-warm)]"
+              size="icon"
+              className="relative text-text-secondary hover:text-gold-bright"
               aria-label={`Cart${itemCount ? `, ${itemCount} items` : ""}`}
               onClick={() => setCartOpen(true)}
             >
-              <ShoppingCart className="h-[22px] w-[22px]" />
+              <ShoppingCart className="h-[18px] w-[18px]" />
               {itemCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[var(--gold-warm)] px-1 font-body text-[9px] font-bold text-[var(--bg-void)]">
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center bg-gold-warm px-0.5 text-[10px] font-medium text-noir">
                   {itemCount > 99 ? "99+" : itemCount}
                 </span>
               )}
@@ -257,7 +271,7 @@ export function SiteHeader() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex lg:hidden bg-void"
+            className="fixed inset-0 z-[200] lg:hidden"
             role="dialog"
             aria-modal="true"
             aria-label="Mobile menu"
@@ -266,29 +280,24 @@ export function SiteHeader() {
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 260 }}
-              className="flex h-full w-full flex-col bg-[var(--bg-void)] relative"
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="relative flex h-full w-full flex-col justify-center bg-noir p-6 sm:p-10"
             >
-              <div className="flex flex-col pt-12 pb-8 px-8 border-b border-[var(--border-fine)] relative">
-                <h2 className="font-display text-[20px] font-medium text-[var(--cream-bone)]">RAZZAQ LUXE</h2>
-                <p className="font-body text-[12px] font-light italic text-[var(--cream-ghost)]">Quetta, Pakistan</p>
-                <button
-                  type="button"
-                  className="absolute right-4 top-4 flex h-12 w-12 items-center justify-center text-[var(--cream-ghost)] active:text-[var(--gold-warm)]"
-                  onClick={() => setMobileMenuOpen(false)}
-                  aria-label="Close menu"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-              </div>
-
-              <nav className="flex flex-col px-8 pt-8" aria-label="Mobile Main">
+              <button
+                type="button"
+                className="absolute right-5 top-5 p-2 text-muted-foreground transition-colors hover:text-foreground"
+                onClick={() => setMobileOpen(false)}
+                aria-label="Close menu"
+              >
+                <X className="h-6 w-6" />
+              </button>
+              <nav className="flex flex-col" aria-label="Mobile">
                 {nav.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="group flex items-center border-b border-[var(--border-fine)] py-5"
-                    onClick={() => setMobileMenuOpen(false)}
+                    className="border-b border-border py-4 font-display text-[clamp(2rem,8vw,3.5rem)] font-light leading-snug text-foreground transition-colors hover:text-gold-warm"
+                    onClick={() => setMobileOpen(false)}
                   >
                     <span className="font-display text-[2rem] text-[var(--cream-bone)] transition-all group-active:text-[var(--gold-warm)] group-active:translate-x-2">
                       {item.label}
@@ -300,36 +309,23 @@ export function SiteHeader() {
               <div className="flex flex-col px-8 pt-8 gap-4">
                 <Link
                   href={user ? "/account" : "/login"}
-                  className="font-body text-[14px] text-[var(--cream-muted)] active:text-[var(--gold-warm)]"
-                  onClick={() => setMobileMenuOpen(false)}
+                  className="mt-2 flex items-center gap-3 border-b border-border py-4 text-sm font-medium uppercase tracking-[0.15em] text-text-secondary transition-colors hover:text-gold-warm"
+                  onClick={() => setMobileOpen(false)}
                 >
                   My Account
                 </Link>
-                <Link
-                  href="/wishlist"
-                  className="font-body text-[14px] text-[var(--cream-muted)] active:text-[var(--gold-warm)]"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Wishlist
-                </Link>
-                <Link
-                  href="/account/orders"
-                  className="font-body text-[14px] text-[var(--cream-muted)] active:text-[var(--gold-warm)]"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Track Order
-                </Link>
-              </div>
-
-              <div className="mt-auto px-8 pb-12 flex flex-col gap-1">
-                <p className="font-body text-[12px] font-light text-[var(--cream-ghost)] flex items-center gap-2">
-                  <Mail className="h-3 w-3" /> sultanbarak77@gmail.com
-                </p>
-                <p className="font-body text-[12px] font-light text-[var(--cream-ghost)] flex items-center gap-2">
-                  <Clock className="h-3 w-3" /> Sat–Thu · 10 AM – 8 PM PKT
-                </p>
-              </div>
+              </nav>
+              <p className="mt-12 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                Quetta, Pakistan · Since 2020
+              </p>
             </motion.aside>
+            <button
+              type="button"
+              className="hidden"
+              aria-hidden
+              tabIndex={-1}
+              onClick={() => setMobileOpen(false)}
+            />
           </motion.div>
         )}
       </AnimatePresence>

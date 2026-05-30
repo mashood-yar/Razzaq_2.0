@@ -4,8 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -22,9 +20,24 @@ import {
   PAYMENT_STATUS_LABELS,
   PAYMENT_STATUS_COLORS,
 } from "@/lib/utils";
-import { Search } from "lucide-react";
+import { Search, ShoppingCart } from "lucide-react";
 import toast from "react-hot-toast";
 import type { Order, PaymentStatus, PaymentMethod } from "@/lib/types";
+import {
+  AdminPageHeader,
+  AdminCard,
+  AdminSearchField,
+  AdminFilterRow,
+  AdminTable,
+  AdminTableHead,
+  AdminTableBody,
+  AdminTh,
+  AdminTr,
+  AdminTd,
+  AdminStatusBadge,
+  AdminEmptyState,
+  AdminLoading,
+} from "@/components/admin/admin-ui";
 
 const ORDER_STATUSES = [
   "all",
@@ -90,24 +103,25 @@ export default function OrdersPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-3xl font-bold">Orders</h1>
-        <p className="text-muted-foreground">Manage customer orders</p>
-      </div>
+      <AdminPageHeader
+        title="Orders"
+        subtitle="Manage customer orders"
+        breadcrumb="Sales"
+      />
 
-      <Card className="p-4">
-        <div className="mb-4 flex flex-col gap-4 md:flex-row">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <AdminCard>
+        <AdminFilterRow>
+          <AdminSearchField>
+            <Search />
             <Input
               placeholder="Order #, name, phone, email…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10"
+              className="admin-input"
             />
-          </div>
+          </AdminSearchField>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full md:w-[200px]">
+            <SelectTrigger className="admin-select-trigger md:w-[200px]">
               <SelectValue placeholder="Order status" />
             </SelectTrigger>
             <SelectContent>
@@ -120,7 +134,7 @@ export default function OrdersPage() {
             </SelectContent>
           </Select>
           <Select value={payFilter} onValueChange={setPayFilter}>
-            <SelectTrigger className="w-full md:w-[210px]">
+            <SelectTrigger className="admin-select-trigger md:w-[210px]">
               <SelectValue placeholder="Payment status" />
             </SelectTrigger>
             <SelectContent>
@@ -133,7 +147,7 @@ export default function OrdersPage() {
             </SelectContent>
           </Select>
           <Select value={methodFilter} onValueChange={setMethodFilter}>
-            <SelectTrigger className="w-full md:w-[180px]">
+            <SelectTrigger className="admin-select-trigger">
               <SelectValue placeholder="Method" />
             </SelectTrigger>
             <SelectContent>
@@ -145,84 +159,85 @@ export default function OrdersPage() {
               ))}
             </SelectContent>
           </Select>
-        </div>
+        </AdminFilterRow>
 
         {loading ? (
-          <div className="py-8 text-center text-muted-foreground">Loading...</div>
+          <AdminLoading label="Loading orders…" />
         ) : orders.length === 0 ? (
-          <div className="py-8 text-center text-muted-foreground">No orders found</div>
+          <AdminEmptyState
+            title="No orders found"
+            description="Orders will appear here when customers checkout."
+            icon={ShoppingCart}
+          />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="p-3 text-left font-medium">Order #</th>
-                  <th className="p-3 text-left font-medium">Customer</th>
-                  <th className="p-3 text-left font-medium">Phone</th>
-                  <th className="p-3 text-left font-medium">Total</th>
-                  <th className="p-3 text-left font-medium">Payment</th>
-                  <th className="p-3 text-left font-medium">Status</th>
-                  <th className="p-3 text-left font-medium">Date</th>
-                  <th className="p-3 text-left font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr
-                    key={order.id}
-                    className="border-b border-border hover:bg-muted/50"
-                  >
-                    <td className="p-3 font-medium">{order.order_number}</td>
-                    <td className="p-3">
-                      <div>
-                        <p className="font-medium">{order.customer_name || "—"}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {order.customer_email}
-                        </p>
-                      </div>
-                    </td>
-                    <td className="p-3 text-sm">{order.customer_phone ?? "—"}</td>
-                    <td className="p-3">{formatPKR(Number(order.total_pkr))}</td>
-                    <td className="p-3">
-                      <div>
-                        <p className="text-sm">
-                          {PAYMENT_METHOD_LABELS[order.payment_method] ??
-                            order.payment_method}
-                        </p>
-                        <Badge
-                          variant="outline"
-                          className={`text-xs ${PAYMENT_STATUS_COLORS[order.payment_status as PaymentStatus] ?? ""}`}
-                        >
-                          {PAYMENT_STATUS_LABELS[order.payment_status as PaymentStatus] ??
-                            order.payment_status}
-                        </Badge>
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <Badge
-                        className={
-                          STATUS_COLORS[order.status as keyof typeof STATUS_COLORS] || ""
-                        }
+          <AdminTable>
+            <AdminTableHead>
+              <AdminTr>
+                <AdminTh>Order #</AdminTh>
+                <AdminTh>Customer</AdminTh>
+                <AdminTh>Phone</AdminTh>
+                <AdminTh className="admin-th-right">Total</AdminTh>
+                <AdminTh>Payment</AdminTh>
+                <AdminTh>Status</AdminTh>
+                <AdminTh>Date</AdminTh>
+                <AdminTh className="admin-th-center">Actions</AdminTh>
+              </AdminTr>
+            </AdminTableHead>
+            <AdminTableBody>
+              {orders.map((order) => (
+                <AdminTr key={order.id}>
+                  <AdminTd className="font-body font-semibold">{order.order_number}</AdminTd>
+                  <AdminTd>
+                    <div>
+                      <p className="font-body font-medium">{order.customer_name || "—"}</p>
+                      <p className="font-body text-xs text-muted-foreground">
+                        {order.customer_email}
+                      </p>
+                    </div>
+                  </AdminTd>
+                  <AdminTd className="font-body text-sm">{order.customer_phone ?? "—"}</AdminTd>
+                  <AdminTd className="admin-td-right font-display font-semibold text-gold-light">
+                    {formatPKR(Number(order.total_pkr))}
+                  </AdminTd>
+                  <AdminTd>
+                    <div>
+                      <p className="font-body text-sm">
+                        {PAYMENT_METHOD_LABELS[order.payment_method] ??
+                          order.payment_method}
+                      </p>
+                      <AdminStatusBadge
+                        variant="outline"
+                        className={`mt-1 ${PAYMENT_STATUS_COLORS[order.payment_status as PaymentStatus] ?? ""}`}
                       >
-                        {STATUS_LABELS[order.status as keyof typeof STATUS_LABELS] ||
-                          order.status}
-                      </Badge>
-                    </td>
-                    <td className="p-3 text-sm">{formatDate(order.created_at)}</td>
-                    <td className="p-3">
-                      <Link href={`/admin/orders/${order.id}`}>
-                        <Button variant="outline" size="sm">
-                          View
-                        </Button>
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                        {PAYMENT_STATUS_LABELS[order.payment_status as PaymentStatus] ??
+                          order.payment_status}
+                      </AdminStatusBadge>
+                    </div>
+                  </AdminTd>
+                  <AdminTd>
+                    <AdminStatusBadge
+                      className={
+                        STATUS_COLORS[order.status as keyof typeof STATUS_COLORS] || ""
+                      }
+                    >
+                      {STATUS_LABELS[order.status as keyof typeof STATUS_LABELS] ||
+                        order.status}
+                    </AdminStatusBadge>
+                  </AdminTd>
+                  <AdminTd className="font-body text-sm">{formatDate(order.created_at)}</AdminTd>
+                  <AdminTd className="admin-td-center">
+                    <Link href={`/admin/orders/${order.id}`}>
+                      <Button variant="outline" size="sm" className="rounded-full border-border-subtle">
+                        View
+                      </Button>
+                    </Link>
+                  </AdminTd>
+                </AdminTr>
+              ))}
+            </AdminTableBody>
+          </AdminTable>
         )}
-      </Card>
+      </AdminCard>
     </div>
   );
 }

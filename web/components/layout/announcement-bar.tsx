@@ -56,13 +56,13 @@ export function AnnouncementBar({ dismissed, onDismiss }: AnnouncementBarProps) 
     <motion.div
       initial={{ height: 0, opacity: 0 }}
       animate={{ height: "auto", opacity: 1 }}
-      className="fixed inset-x-0 top-0 z-[60] bg-[var(--bg-obsidian)] text-[var(--cream-muted)] border-b border-[var(--border-fine)]"
+      className="fixed inset-x-0 top-0 z-[60] bg-gold-warm text-noir"
       role="region"
       aria-label="Store announcements"
     >
       <Link
         href="/shop"
-        className="group flex min-h-9 items-center justify-center gap-2 px-10 py-2.5 text-center transition-colors hover:bg-[var(--bg-dusk)]"
+        className="group flex min-h-10 items-center justify-center gap-2 px-10 py-2.5 text-center text-[11px] font-medium uppercase tracking-[0.2em] transition-opacity hover:opacity-90"
       >
         <AnimatePresence mode="wait">
           <motion.span
@@ -71,11 +71,12 @@ export function AnnouncementBar({ dismissed, onDismiss }: AnnouncementBarProps) 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.35 }}
-            className="font-body font-semibold text-[10px] tracking-[0.2em] uppercase"
+            className="font-body [&_strong]:font-semibold"
           >
             {MESSAGES[index].includes("RAZZAQ10") ? (
               <>
-                USE CODE <span className="text-[var(--gold-warm)]">RAZZAQ10</span> FOR 10% OFF YOUR FIRST ORDER
+                Use code <span className="font-semibold underline">RAZZAQ10</span> for 10%
+                off your first order
               </>
             ) : (
               MESSAGES[index]
@@ -86,7 +87,7 @@ export function AnnouncementBar({ dismissed, onDismiss }: AnnouncementBarProps) 
       <button
         type="button"
         onClick={dismiss}
-        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-[2px] p-1.5 text-[var(--cream-ghost)] transition-colors hover:text-[var(--gold-warm)]"
+        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-none p-1.5 text-noir/70 transition-colors hover:bg-noir/10 hover:text-noir"
         aria-label="Dismiss announcements"
       >
         <X className="h-4 w-4" />

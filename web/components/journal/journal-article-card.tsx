@@ -41,7 +41,7 @@ export function JournalArticleCard({
     >
       {/* Pushpin */}
       <span
-        className="absolute left-1/2 top-0 z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--gold-warm)] shadow-sm"
+        className="absolute left-1/2 top-0 z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold shadow-[0_2px_4px_rgba(44,44,36,0.25)] ring-2 ring-gold/30"
         aria-hidden="true"
       />
 
@@ -61,7 +61,7 @@ export function JournalArticleCard({
       <div className={`flex flex-1 flex-col ${compact ? "p-4" : "p-6 sm:p-7"} bg-[var(--bg-dusk)]`}>
         <div className="flex items-center justify-between gap-2 mb-3">
           <span
-            className="inline-block rounded-[2px] bg-[var(--gold-warm)] px-2 py-1 text-[9px] font-semibold tracking-[0.2em] uppercase text-[var(--bg-void)]"
+            className="inline-block -rotate-1 rounded-full bg-gold px-3 py-0.5 text-xs font-semibold text-noir"
           >
             {article.category}
           </span>
@@ -71,7 +71,7 @@ export function JournalArticleCard({
         <h2
           className={`font-display italic font-light leading-snug text-[var(--cream-bone)] ${compact ? "text-xl" : "text-[1.75rem]"}`}
         >
-          <Link href={`/journal/${article.slug}`} className="hover:text-[var(--gold-warm)] transition-colors">
+          <Link href={`/journal/${article.slug}`} className="hover:text-gold-bright">
             {article.title}
           </Link>
         </h2>
@@ -82,8 +82,8 @@ export function JournalArticleCard({
           {article.excerpt}
         </p>
 
-        <div className="mt-5 flex items-center gap-3 border-t border-[var(--border-fine)] pt-4">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--gold-warm)]/10 font-body text-[10px] tracking-wider font-bold text-[var(--gold-warm)]">
+        <div className="mt-4 flex items-center gap-3 border-t border-border/60 pt-4">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold/15 font-display text-xs font-bold text-gold">
             {article.author
               .split(" ")
               .map((w) => w[0])

@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { requireUser } from "@/lib/auth/session";
 import { CheckoutForm } from "@/components/checkout/checkout-form";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Checkout",
-  description: "Complete your Razzaq Luxe order.",
-};
+  description: "Complete your RazzaqLuxe order with secure payment and nationwide delivery.",
+  path: "/checkout",
+  noIndex: true,
+});
 
 export default async function CheckoutPage() {
   await requireUser();

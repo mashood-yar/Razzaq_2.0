@@ -10,7 +10,7 @@ import { GoldBrandText } from "@/components/brand/gold-brand-text";
 const items = [
   {
     quote:
-      "Habibi is the fragrance I wear when I want to feel at home wherever I land. Razzaq Luxe nailed warmth without heaviness.",
+      "Legend is the fragrance I wear when I want to feel at home wherever I land. Razzaq Luxe nailed warmth without heaviness.",
     name: "Ayesha K.",
     role: "Architect",
     image:
@@ -26,7 +26,7 @@ const items = [
   },
   {
     quote:
-      "Khan\u2019s Aura fills a room politely and lingers beautifully. Flourine surprised me — sharp, unforgettable.",
+      "Khan\u2019s Aura fills a room politely and lingers beautifully. Flora surprised me — sharp, unforgettable.",
     name: "Sadia M.",
     role: "Stylist",
     image:

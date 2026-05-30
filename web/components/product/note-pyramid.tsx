@@ -15,7 +15,7 @@ export function NotePyramid({ product }: { product: Product }) {
 
   return (
     <div className="relative mx-auto max-w-md space-y-3">
-      <div className="pointer-events-none absolute inset-x-8 top-1/2 -z-10 h-32 bg-navy-brand/10 blur-3xl" />
+      <div className="pointer-events-none absolute inset-x-8 top-1/2 -z-10 h-32 bg-gold/10 blur-3xl" />
       {tiers.map((tier) => (
         <motion.div
           key={tier.label}

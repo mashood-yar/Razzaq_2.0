@@ -5,11 +5,17 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { tryCreateBrowserClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { formatPKR, formatDate, STATUS_COLORS, STATUS_LABELS } from "@/lib/utils";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ShoppingBag } from "lucide-react";
 import type { Order, Profile } from "@/lib/types";
+import {
+  AdminPageHeader,
+  AdminCard,
+  AdminCardHeader,
+  AdminStatusBadge,
+  AdminEmptyState,
+  AdminLoading,
+} from "@/components/admin/admin-ui";
 
 export default function AdminCustomerDetailPage() {
   const params = useParams();
@@ -58,39 +64,61 @@ export default function AdminCustomerDetailPage() {
   }, [id, supabase]);
 
   if (loading) {
-    return <div className="text-center py-12 text-muted-foreground">Loading…</div>;
+    return <AdminLoading label="Loading customer…" />;
   }
 
   if (!profile) {
     return (
       <div className="space-y-4">
-        <p className="text-muted-foreground">Customer not found.</p>
-        <Button variant="outline" onClick={() => router.push("/admin/customers")}>
+        <AdminEmptyState
+          title="Customer not found"
+          description="This profile may have been removed."
+        />
+        <Button variant="outline" className="admin-btn-outline" onClick={() => router.push("/admin/customers")}>
           Back to customers
         </Button>
       </div>
     );
   }
 
+  const totalSpent = orders.reduce((sum, o) => sum + Number(o.total_pkr), 0);
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => router.push("/admin/customers")}>
+      <div className="flex items-start gap-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full hover:bg-ocean-primary/15"
+          onClick={() => router.push("/admin/customers")}
+        >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div>
-          <h1 className="text-3xl font-display font-bold">
-            {profile.full_name || "Customer"}
-          </h1>
-          <p className="text-muted-foreground">Order history & profile</p>
-        </div>
+        <AdminPageHeader
+          title={profile.full_name || "Customer"}
+          subtitle="Order history & profile"
+          breadcrumb="Customers"
+        />
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-2 text-sm sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-3">
+        <AdminCard padding="default" className="text-center">
+          <p className="font-body text-xs uppercase tracking-wider text-muted-foreground">Orders</p>
+          <p className="mt-1 font-display text-2xl font-bold">{orders.length}</p>
+        </AdminCard>
+        <AdminCard padding="default" className="text-center">
+          <p className="font-body text-xs uppercase tracking-wider text-muted-foreground">Total spent</p>
+          <p className="mt-1 font-display text-2xl font-bold text-gold-light">{formatPKR(totalSpent)}</p>
+        </AdminCard>
+        <AdminCard padding="default" className="text-center">
+          <p className="font-body text-xs uppercase tracking-wider text-muted-foreground">Member since</p>
+          <p className="mt-1 font-body text-sm font-semibold">{formatDate(profile.created_at)}</p>
+        </AdminCard>
+      </div>
+
+      <AdminCard padding="lg">
+        <AdminCardHeader title="Profile" />
+        <div className="grid gap-3 font-body text-sm sm:grid-cols-2">
           <p>
             <span className="text-muted-foreground">Email:</span>{" "}
             {profile.email || "—"}
@@ -106,47 +134,49 @@ export default function AdminCustomerDetailPage() {
             <span className="text-muted-foreground">Joined:</span>{" "}
             {formatDate(profile.created_at)}
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </AdminCard>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Orders</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {orders.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No orders yet.</p>
-          ) : (
-            <div className="space-y-3">
-              {orders.map((order) => (
-                <Link
-                  key={order.id}
-                  href={`/admin/orders/${order.id}`}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-4 transition-colors hover:bg-muted/50"
-                >
-                  <div>
-                    <p className="font-medium">{order.order_number}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {formatDate(order.created_at)}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="font-medium">{formatPKR(Number(order.total_pkr))}</span>
-                    <Badge
-                      className={
-                        STATUS_COLORS[order.status as keyof typeof STATUS_COLORS] || ""
-                      }
-                    >
-                      {STATUS_LABELS[order.status as keyof typeof STATUS_LABELS] ||
-                        order.status}
-                    </Badge>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <AdminCard padding="lg">
+        <AdminCardHeader title="Orders" icon={ShoppingBag} />
+        {orders.length === 0 ? (
+          <AdminEmptyState
+            title="No orders yet"
+            description="This customer hasn't placed any orders."
+            icon={ShoppingBag}
+          />
+        ) : (
+          <div className="space-y-2">
+            {orders.map((order) => (
+              <Link
+                key={order.id}
+                href={`/admin/orders/${order.id}`}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border-subtle/50 bg-ocean-deep/30 p-4 transition-colors hover:border-ocean-mid/40 hover:bg-ocean-primary/10"
+              >
+                <div>
+                  <p className="font-body font-semibold">{order.order_number}</p>
+                  <p className="font-body text-xs text-muted-foreground">
+                    {formatDate(order.created_at)}
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="font-display font-semibold text-gold-light">
+                    {formatPKR(Number(order.total_pkr))}
+                  </span>
+                  <AdminStatusBadge
+                    className={
+                      STATUS_COLORS[order.status as keyof typeof STATUS_COLORS] || ""
+                    }
+                  >
+                    {STATUS_LABELS[order.status as keyof typeof STATUS_LABELS] ||
+                      order.status}
+                  </AdminStatusBadge>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </AdminCard>
     </div>
   );
 }

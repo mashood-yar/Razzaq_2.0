@@ -6,7 +6,7 @@ export function JournalEmptyState() {
         aria-hidden="true"
       >
         <div
-          className="mx-auto h-48 w-48 rounded-[40%_60%_55%_45%/50%_40%_60%_50%] bg-gold/10"
+          className="mx-auto h-48 w-48 rounded-[40%_60%_55%_45%/50%_40%_60%_50%] bg-noir-elevated"
           style={{ animation: "organic-float 10s ease-in-out infinite" }}
         />
       </div>

@@ -65,8 +65,8 @@ export function JournalScroll({ articles, featuredSlug }: JournalScrollProps) {
     !search.trim();
 
   return (
-    <div className="relative min-h-screen bg-[var(--bg-obsidian)]">
-      {/* Subtle overlay */}
+    <div className="relative min-h-screen bg-noir">
+      {/* Stronger grain overlay — page-specific */}
       <div
         className="pointer-events-none absolute inset-0 z-0 bg-[url('/arabesque.svg')] bg-repeat opacity-[0.02]"
         aria-hidden="true"

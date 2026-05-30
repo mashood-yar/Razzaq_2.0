@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { splitFullName } from "@/lib/checkout/split-full-name";
 import { sendOrderConfirmationCodeEmail } from "@/lib/resend/client";
 import type { CartItem, Order } from "@/lib/types";
+import { notifyMerchantNewOrder } from "@/lib/notifications/notify-merchant-new-order";
 import { customerSupportWhatsAppUrl } from "@/lib/notifications/whatsapp";
 
 function generateConfirmationCode(): string {
@@ -222,15 +223,16 @@ export async function POST(request: Request) {
     }
   }
 
+  const fullOrder: Order = {
+    ...(order as unknown as Order),
+    order_items: orderItems.map((i, idx) => ({
+      ...i,
+      id: `item-${idx}`,
+    })) as Order["order_items"],
+  };
+
   let confirmationEmailSent = false;
   try {
-    const fullOrder: Order = {
-      ...(order as unknown as Order),
-      order_items: orderItems.map((i, idx) => ({
-        ...i,
-        id: `item-${idx}`,
-      })) as Order["order_items"],
-    };
     const emailResult = await sendOrderConfirmationCodeEmail(
       fullOrder,
       plainCode,
@@ -246,6 +248,10 @@ export async function POST(request: Request) {
   } catch (e) {
     console.error("[Orders] confirmation code email failed:", e);
   }
+
+  void notifyMerchantNewOrder(fullOrder).catch((e) =>
+    console.error("[Orders] merchant notification failed:", e),
+  );
 
   const whatsappHelpUrl = customerSupportWhatsAppUrl(order.order_number);
 

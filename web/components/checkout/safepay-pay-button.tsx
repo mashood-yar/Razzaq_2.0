@@ -26,10 +26,7 @@ export function SafepayPayButton({
     <Button
       type="button"
       size="lg"
-      className={cn(
-        "w-full bg-[#0F4C75] text-white hover:bg-[#0a3d5c]",
-        className,
-      )}
+      className={cn("w-full", className)}
       disabled={disabled || loading}
       onClick={onPay}
     >

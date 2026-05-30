@@ -2,8 +2,8 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { Heart, Eye, Check } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Eye } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import type { LegacyProduct as Product } from "@/lib/products";
 import { ListingCardImages } from "@/components/product/listing-card-images";
 import { cn, formatPKR } from "@/lib/utils";
@@ -11,6 +11,15 @@ import { StarRating } from "@/components/product/star-rating";
 import { useCartStore } from "@/stores/cart-store";
 import { QuickViewModal } from "@/components/product/quick-view-modal";
 import { useFlyToCart } from "@/components/motion/fly-to-cart";
+import {
+  type HighlightLabel,
+  highlightLabelClasses,
+  highlightLabelText,
+  isLegacyProductOnSale,
+  resolveHighlightLabel,
+} from "@/lib/product-highlights";
+
+export type { HighlightLabel };
 
 // ─── UX Law: Aesthetic-Usability — badge color semantics ─────────────────────
 function badgeLabel(b: NonNullable<Product["badge"]>) {
@@ -31,9 +40,13 @@ function badgeStyle(b: NonNullable<Product["badge"]>) {
 export function ProductCard({
   product,
   className,
+  radiusClass = "rounded-sm",
+  highlightLabel,
 }: {
   product: Product;
   className?: string;
+  radiusClass?: string;
+  highlightLabel?: HighlightLabel;
 }) {
   const addItem = useCartStore((s) => s.addItem);
   const fly = useFlyToCart();
@@ -42,6 +55,13 @@ export function ProductCard({
   const [wishlisted, setWishlisted] = useState(false);
   const [added, setAdded] = useState(false);
   const defaultSize = product.sizes[1] ?? product.sizes[0];
+  const resolvedHighlight = highlightLabel ?? resolveHighlightLabel(product);
+  const onSale = isLegacyProductOnSale(product);
+  const displayPrice = defaultSize?.price ?? product.price;
+  const comparePrice =
+    onSale && product.compareAtPrice && product.compareAtPrice > displayPrice
+      ? product.compareAtPrice
+      : undefined;
 
   // ─── Doherty Threshold: optimistic add state, instant feedback ───────────
   function handleAdd(e: React.MouseEvent) {
@@ -54,7 +74,7 @@ export function ProductCard({
       productId: product.id,
       name: product.name,
       imageUrl: product.images[0],
-      price: defaultSize.price,
+      price: displayPrice,
       quantity: 1,
       variantLabel: defaultSize.label,
     });
@@ -65,15 +85,23 @@ export function ProductCard({
   const card = (
     // ─── Aesthetic-Usability: subtle card lift on hover ─────────────────────
     <motion.article
-      className={cn("group flex flex-col cursor-pointer", className)}
-      initial={{ opacity: 0, y: 36 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+      className={cn("group relative flex flex-col", className)}
+      initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-48px", amount: 0.12 }}
+      transition={{ duration: reduceMotion ? 0 : 0.4, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* Image container — Law of Proximity: image + actions grouped */}
-      <div className="relative aspect-[2/3] w-full bg-[var(--bg-dusk)] rounded-[4px] overflow-hidden mb-3 border border-[var(--border-fine)] group-hover:border-[var(--border-mid)] transition-all duration-300 group-hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
-        <Link href={`/products/${product.slug}`} className="absolute inset-0 z-0">
+      <motion.div
+        className={cn(
+          "relative aspect-[2/3] overflow-hidden rounded-sm border border-border bg-noir-surface shadow-card transition-transform duration-500 [@media(hover:hover)]:group-hover:shadow-nocturne",
+          radiusClass,
+        )}
+        variants={imageVariants}
+        initial="rest"
+        animate={showOverlay ? "hover" : "rest"}
+        whileHover={canHover && !reduceMotion ? "hover" : undefined}
+      >
+        <Link href={`/products/${product.slug}`} className="absolute inset-0 z-0 overflow-hidden">
           <ListingCardImages
             primarySrc={product.images[0]}
             secondarySrc={product.images[1]}
@@ -81,116 +109,77 @@ export function ProductCard({
             sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
         </Link>
-
-        {/* Badge — Law of Similarity: color = semantic meaning */}
         {product.badge && (
-          <span className={cn(
-            "absolute left-2.5 top-2.5 z-10 font-body font-semibold text-[9px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full",
-            badgeStyle(product.badge)
-          )}>
+          <Badge className="absolute left-3 top-3 z-10 rounded-none bg-gold-warm text-[10px] uppercase tracking-[0.18em] text-noir" variant="default">
             {badgeLabel(product.badge)}
+          </Badge>
+        )}
+        {resolvedHighlight && (
+          <span
+            className={cn(
+              "absolute right-3 top-3 z-10 rounded-none px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.18em]",
+              highlightLabelClasses(resolvedHighlight),
+            )}
+          >
+            {highlightLabelText(resolvedHighlight)}
           </span>
         )}
+        <motion.div
+          variants={overlayVariants}
+          transition={{ duration: 0.2 }}
+          className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/50 to-transparent lg:hidden"
+        >
+          <motion.div className="px-3 pb-3">
+            <button
+              type="button"
+              className="flex h-9 w-full items-center justify-center gap-1 rounded-none border border-border bg-noir-surface/95 text-[10px] font-medium uppercase tracking-wider text-foreground backdrop-blur-sm"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setQuickOpen(true);
+              }}
+            >
+              <Eye className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              Quick view
+            </button>
+          </motion.div>
+        </motion.div>
+      </motion.div>
 
-        {/* Action buttons — Fitts's Law: 40px targets, always accessible on mobile */}
-        <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5 z-10">
-          {/* Wishlist — always visible */}
-          <motion.button
-            whileTap={{ scale: 0.85 }}
-            className={cn(
-              "w-[38px] h-[38px] flex items-center justify-center rounded-full backdrop-blur-sm transition-all duration-200",
-              wishlisted
-                ? "bg-[var(--rose-dust)]/20 text-[var(--rose-dust)] border border-[var(--rose-dust)]/40"
-                : "bg-[var(--bg-obsidian)]/75 text-[var(--cream-ghost)] border border-white/5 hover:text-[var(--rose-dust)] hover:border-[var(--rose-dust)]/30"
-            )}
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setWishlisted(!wishlisted); }}
-            aria-label="Add to wishlist"
-          >
-            <Heart className={cn("w-3.5 h-3.5 transition-all", wishlisted && "fill-current")} />
-          </motion.button>
-
-          {/* Quick View — appears on hover */}
-          <motion.button
-            whileTap={{ scale: 0.85 }}
-            initial={false}
-            animate={{ opacity: 0, scale: 0.8 }}
-            whileHover={{ opacity: 1, scale: 1 }}
-            className="w-[38px] h-[38px] bg-[var(--bg-obsidian)]/75 border border-white/5 flex items-center justify-center rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-200 text-[var(--cream-ghost)] hover:text-[var(--cream-bone)]"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setQuickOpen(true); }}
-            aria-label="Quick view"
-          >
-            <Eye className="w-3.5 h-3.5" />
-          </motion.button>
-        </div>
-
-        {/* Bottom gradient overlay */}
-        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-      </div>
-
-      {/* Product Info — Law of Proximity: tight, purposeful grouping */}
-      <div className="px-1 flex flex-col flex-1">
-        <Link href={`/products/${product.slug}`} className="mb-0.5">
-          <h3 className="font-display font-semibold text-[1.125rem] text-[var(--cream-bone)] transition-colors hover:text-[var(--gold-warm)] leading-tight">
+      <div className="mt-4 flex flex-1 flex-col">
+        {(product.categoryName || product.notes?.top?.[0]) && (
+          <span className="mb-1.5 block text-[10px] font-medium uppercase tracking-[0.2em] text-gold-warm">
+            {[product.categoryName, product.notes?.top?.[0]].filter(Boolean).join(" · ")}
+          </span>
+        )}
+        <Link href={`/products/${product.slug}`}>
+          <h3 className="font-display text-[clamp(1.1rem,3vw,1.4rem)] font-normal tracking-wide text-foreground transition-colors hover:text-gold-bright">
             {product.name}
           </h3>
         </Link>
-        <p className="font-body font-light text-[12px] text-[var(--cream-muted)] truncate mb-2">
-          {product.tagline}
-        </p>
-
-        {/* Rating — Law of Similarity: stars consistently gold throughout */}
-        <div className="flex items-center gap-1.5 mb-3">
+        <p className="mt-1 truncate text-xs font-light text-muted-foreground">{product.tagline}</p>
+        <div className="mt-2 flex items-center gap-2">
           <StarRating rating={product.rating} />
           <span className="text-[10px] text-[var(--cream-ghost)] font-body">({product.reviewCount})</span>
         </div>
-
-        {/* Price row */}
-        <div className="flex items-baseline gap-2 mb-3 mt-auto">
-          <span className="font-body font-bold text-[1.0625rem] text-[var(--gold-warm)]">
-            {formatPKR(defaultSize?.price ?? product.price)}
+        <div className="mt-3 flex items-baseline gap-2">
+          <span className="font-display text-lg font-medium text-gold-bright">
+            {formatPKR(displayPrice)}
           </span>
-          {product.compareAtPrice && product.compareAtPrice > (defaultSize?.price ?? product.price) && (
-            <span className="font-body font-light text-[0.8125rem] text-[var(--cream-ghost)] line-through">
-              {formatPKR(product.compareAtPrice)}
+          {comparePrice && (
+            <span className="font-body text-xs text-muted-foreground line-through">
+              {formatPKR(comparePrice)}
             </span>
           )}
         </div>
-
-        {/* Add to Cart — Doherty: animated feedback state, Fitts: full-width target */}
-        <motion.button
+        <button
           ref={bagRef}
+          type="button"
+          className="product-card-add-nocturne"
           onClick={handleAdd}
-          whileTap={{ scale: 0.97 }}
-          className={cn(
-            "w-full h-[44px] font-body font-semibold text-[10px] tracking-[0.22em] rounded-full transition-all duration-200 flex items-center justify-center gap-1.5 overflow-hidden",
-            added
-              ? "bg-[var(--sage)] text-white"
-              : "bg-[var(--gold-warm)] text-[var(--bg-void)] hover:bg-[var(--gold-bright)] hover:shadow-[0_0_20px_rgba(201,160,80,0.25)] focus:ring-2 focus:ring-[var(--gold-warm)] focus:outline-none"
-          )}
         >
-          <AnimatePresence mode="wait">
-            {added ? (
-              <motion.span
-                key="done"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                className="flex items-center gap-1.5"
-              >
-                <Check className="w-3.5 h-3.5" strokeWidth={3} /> ADDED
-              </motion.span>
-            ) : (
-              <motion.span
-                key="add"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-              >
-                ADD TO CART
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </motion.button>
+          + Add to Bag
+        </button>
       </div>
     </motion.article>
   );

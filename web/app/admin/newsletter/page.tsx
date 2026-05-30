@@ -6,10 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Mail, Send } from "lucide-react";
 import toast from "react-hot-toast";
+import {
+  AdminPageHeader,
+  AdminCard,
+  AdminCardHeader,
+  AdminFormSection,
+  AdminLoading,
+} from "@/components/admin/admin-ui";
 
 export default function NewsletterPage() {
   const supabase = useMemo(() => tryCreateBrowserClient(), []);
@@ -48,7 +54,6 @@ export default function NewsletterPage() {
     }
 
     setSending(true);
-    // Skip actual sending since Resend is not configured
     setTimeout(() => {
       setSending(false);
       setShowDialog(false);
@@ -59,79 +64,86 @@ export default function NewsletterPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      <div>
-        <h1 className="text-3xl font-display font-bold">Newsletter</h1>
-        <p className="text-muted-foreground">Send email campaigns to subscribers</p>
-      </div>
+    <div className="mx-auto max-w-4xl space-y-6">
+      <AdminPageHeader
+        title="Newsletter"
+        subtitle="Send email campaigns to subscribers"
+        breadcrumb="Marketing"
+      />
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5" />
-            Subscribers
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <p className="text-muted-foreground">Loading...</p>
-          ) : (
-            <p className="text-2xl font-bold">{subscriberCount} active subscribers</p>
-          )}
-        </CardContent>
-      </Card>
+      <AdminCard padding="lg">
+        <AdminCardHeader title="Subscribers" icon={Mail} />
+        {loading ? (
+          <AdminLoading label="Loading subscribers…" />
+        ) : (
+          <p className="font-display text-3xl font-bold text-gold-light">
+            {subscriberCount}{" "}
+            <span className="font-body text-base font-normal text-muted-foreground">
+              active subscribers
+            </span>
+          </p>
+        )}
+      </AdminCard>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Compose Newsletter</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="subject">Subject</Label>
-            <Input
-              id="subject"
-              placeholder="Enter email subject..."
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-            />
+      <AdminCard padding="lg">
+        <AdminFormSection
+          title="Compose Newsletter"
+          description="Draft your campaign message below."
+        >
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="subject" className="font-body">
+                Subject
+              </Label>
+              <Input
+                id="subject"
+                placeholder="Enter email subject..."
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                className="admin-input rounded-full"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="body" className="font-body">
+                Body
+              </Label>
+              <Textarea
+                id="body"
+                rows={12}
+                placeholder="Enter email body..."
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+                className="rounded-2xl border-border-subtle bg-ocean-deep/50 font-body"
+              />
+            </div>
+
+            <Button
+              onClick={() => setShowDialog(true)}
+              disabled={!subject || !body}
+              className="admin-btn-primary w-full"
+            >
+              <Send className="mr-2 h-4 w-4" />
+              Send Newsletter
+            </Button>
           </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="body">Body</Label>
-            <Textarea
-              id="body"
-              rows={12}
-              placeholder="Enter email body..."
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-            />
-          </div>
-
-          <Button
-            onClick={() => setShowDialog(true)}
-            disabled={!subject || !body}
-            className="w-full"
-          >
-            <Send className="w-4 h-4 mr-2" />
-            Send Newsletter
-          </Button>
-        </CardContent>
-      </Card>
+        </AdminFormSection>
+      </AdminCard>
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent>
+        <DialogContent className="border-border-subtle bg-ocean-surface">
           <DialogHeader>
-            <DialogTitle>Confirm Send</DialogTitle>
+            <DialogTitle className="font-display">Confirm Send</DialogTitle>
           </DialogHeader>
-          <p>
+          <p className="font-body text-sm text-muted-foreground">
             Are you sure you want to send this newsletter to {subscriberCount} subscribers?
           </p>
-          <div className="flex justify-end gap-2 mt-4">
-            <Button variant="outline" onClick={() => setShowDialog(false)}>
+          <div className="mt-4 flex justify-end gap-2">
+            <Button variant="outline" className="admin-btn-outline" onClick={() => setShowDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSend} disabled={sending}>
-              {sending ? "Sending..." : "Send Now"}
+            <Button className="admin-btn-primary" onClick={handleSend} disabled={sending}>
+              {sending ? "Sending…" : "Send Now"}
             </Button>
           </div>
         </DialogContent>

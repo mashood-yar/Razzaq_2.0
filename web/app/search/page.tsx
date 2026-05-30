@@ -6,6 +6,7 @@ import { SearchBar } from "@/components/search/search-bar";
 import { ListingCardImages } from "@/components/product/listing-card-images";
 import { PLACEHOLDER_PRODUCT_IMAGE } from "@/lib/catalog/map-db-product";
 import { isSupabaseConfigured } from "@/utils/supabase/public-env";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
 export const dynamic = "force-dynamic";
 
@@ -13,10 +14,15 @@ type Props = { searchParams: Promise<{ q?: string }> };
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const { q } = await searchParams;
-  return {
-    title: q ? `Search: "${q}"` : "Search",
-    description: "Search Razzaq Luxe products",
-  };
+  const query = q?.trim();
+  return buildPageMetadata({
+    title: query ? `Search: ${query}` : "Search Fragrances",
+    description: query
+      ? `Search results for "${query}" — discover luxury Pakistani fragrances at RazzaqLuxe.`
+      : "Search RazzaqLuxe for oud, attar, and niche luxury fragrances.",
+    path: query ? `/search?q=${encodeURIComponent(query)}` : "/search",
+    noIndex: Boolean(query),
+  });
 }
 
 export default async function SearchPage({ searchParams }: Props) {

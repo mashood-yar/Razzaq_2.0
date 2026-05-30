@@ -29,6 +29,14 @@ export type LegacyProduct = {
   /** Category slug from Supabase join — used for shop category banners/filters */
   categorySlug?: string;
   categoryName?: string;
+  /** Admin highlight flags from Supabase */
+  isTrending?: boolean;
+  isPremium?: boolean;
+  onSale?: boolean;
+  salePrice?: number | null;
+  discountPercent?: number | null;
+  saleStartAt?: string | null;
+  saleEndAt?: string | null;
 };
 
 export function getProductBySlugFromList(

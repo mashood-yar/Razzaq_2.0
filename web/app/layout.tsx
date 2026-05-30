@@ -2,12 +2,10 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import "react-loading-skeleton/dist/skeleton.css";
-import { siteConfig } from "@/lib/site";
+import { rootMetadataDefaults } from "@/lib/seo/metadata";
 import { StoreHydration } from "@/components/providers";
 import { AuthProvider } from "@/components/providers/auth-provider";
-import { SiteHeader } from "@/components/layout/site-header";
-import { SiteFooter } from "@/components/layout/site-footer";
-import { DeferredChrome } from "@/components/layout/deferred-chrome";
+import { AppChrome } from "@/components/layout/app-chrome";
 import { AccessDeniedBanner } from "@/components/layout/access-denied-banner";
 import { FlyToCartProvider } from "@/components/motion/fly-to-cart";
 import { AppToaster } from "@/components/providers/app-toaster";
@@ -16,55 +14,23 @@ import { CustomCursorProvider } from "@/components/ui/custom-cursor-provider";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-cormorant",
+  weight: ["300", "400", "500"],
+  style: ["normal", "italic"],
+  variable: "--font-display",
   display: "swap",
 });
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-dm-sans",
+  weight: ["300", "400", "500"],
+  variable: "--font-body",
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: siteConfig.name,
-    template: siteConfig.titleTemplate,
-  },
-  description: siteConfig.description,
-  keywords: [
-    "razzaq luxe",
-    "luxury fashion pakistan",
-    "fragrances pakistan",
-    "lawn wear",
-    "formal wear pakistan",
-    "luxury lifestyle",
-  ],
-  authors: [{ name: siteConfig.name }],
-  openGraph: {
-    type: "website",
-    locale: "en_PK",
-    url: siteUrl,
-    siteName: siteConfig.name,
-    title: siteConfig.name,
-    description: siteConfig.description,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: siteConfig.name,
-    description: siteConfig.description,
-    creator: siteConfig.twitterHandle,
-  },
-  robots: { index: true, follow: true },
-};
+export const metadata: Metadata = rootMetadataDefaults;
 
 export const viewport: Viewport = {
-  themeColor: "#1B262C",
+  themeColor: "#0A0A08",
   colorScheme: "dark",
 };
 
@@ -76,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${cormorant.variable} ${dmSans.variable} min-h-screen bg-background font-body antialiased`}
+        className={`${cormorant.variable} ${dmSans.variable} min-h-screen bg-background font-body font-light antialiased`}
       >
         <AuthProvider>
           <AppToaster />
@@ -85,12 +51,7 @@ export default function RootLayout({
           <CustomCursorProvider />
           <StoreHydration />
           <FlyToCartProvider>
-            <div className="relative z-10">
-              <SiteHeader />
-              <main className="min-h-screen flex flex-col">{children}</main>
-              <SiteFooter />
-              <DeferredChrome />
-            </div>
+            <AppChrome>{children}</AppChrome>
           </FlyToCartProvider>
         </AuthProvider>
       </body>

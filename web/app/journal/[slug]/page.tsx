@@ -12,6 +12,7 @@ import {
 import { ArticleReadingProgress } from "@/components/journal/article-reading-progress";
 import { ArticleShareButtons } from "@/components/journal/article-share-buttons";
 import { ArticleRelated } from "@/components/journal/article-related";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
 export async function generateStaticParams() {
   return ARTICLES.map((a) => ({ slug: a.slug }));
@@ -25,24 +26,18 @@ export async function generateMetadata({
   const { slug } = await params;
   const a = getArticleBySlug(slug);
   if (!a) return {};
-  const ogImage =
-    a.image.startsWith("http://") || a.image.startsWith("https://")
-      ? a.image
-      : `${(process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/$/, "") || ""}${a.image.startsWith("/") ? a.image : `/${a.image}`}`;
-  return {
+  return buildPageMetadata({
     title: a.title,
     description: a.excerpt,
-    openGraph: {
-      title: a.title,
-      description: a.excerpt,
-      images: ogImage ? [{ url: ogImage, alt: a.title }] : undefined,
-    },
-  };
+    path: `/journal/${slug}`,
+    image: a.image,
+    openGraphType: "article",
+  });
 }
 
 function PullQuote({ text }: { text: string }) {
   return (
-    <blockquote className="my-10 border-l-[2px] border-[var(--gold-warm)] py-2 pl-6 font-display text-[1.5rem] italic leading-snug text-[var(--gold-warm)] sm:text-[2rem]">
+    <blockquote className="my-8 border-l-4 border-gold py-2 pl-6 font-display text-xl italic leading-snug text-gold-bright sm:text-2xl">
       &ldquo;{text}&rdquo;
     </blockquote>
   );
@@ -66,7 +61,7 @@ export default async function ArticlePage({
     <>
       <ArticleReadingProgress />
 
-      <article className="relative min-h-screen bg-[var(--bg-obsidian)]">
+      <article className="relative min-h-screen bg-noir">
         <div
           className="pointer-events-none absolute inset-0 bg-[url('/arabesque.svg')] bg-repeat opacity-[0.02]"
           aria-hidden="true"
@@ -75,24 +70,24 @@ export default async function ArticlePage({
         <div className="relative mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
           <Link
             href="/journal"
-            className="inline-flex items-center gap-1 font-body text-[11px] font-semibold tracking-[0.2em] uppercase text-[var(--gold-warm)] transition-colors hover:text-[var(--gold-warm)]/80"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-gold transition-colors hover:text-gold-bright"
           >
             ← Back to Journal
           </Link>
 
-          <header className="mx-auto mt-16 max-w-2xl text-center">
-            <span className="inline-block rounded-[2px] bg-[var(--gold-warm)] px-3 py-1 font-body text-[10px] font-semibold tracking-[0.2em] uppercase text-[var(--bg-void)]">
+          <header className="mx-auto mt-10 max-w-2xl text-center">
+            <span className="inline-block -rotate-1 rounded-full bg-gold px-3 py-1 text-xs font-semibold text-noir">
               {article.category}
             </span>
-            <h1 className="mt-6 font-display italic font-light text-[2.5rem] leading-tight text-[var(--cream-bone)] sm:text-[3.5rem] lg:text-[4.5rem]">
+            <h1 className="mt-5 font-display text-3xl font-bold leading-tight text-foreground sm:text-4xl lg:text-5xl">
               {article.title}
             </h1>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-body text-[13px] text-[var(--cream-ghost)]">
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
               <span className="inline-flex items-center gap-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--gold-warm)]/15 font-body text-[10px] tracking-wider font-bold text-[var(--gold-warm)]">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gold/15 font-display text-xs font-bold text-gold">
                   {authorInitials(article.author)}
                 </span>
-                <span className="font-medium text-[var(--cream-bone)]">
+                <span className="font-medium text-foreground">
                   {article.author}
                 </span>
               </span>
@@ -120,7 +115,7 @@ export default async function ArticlePage({
             </div>
           </div>
 
-          <div className="mx-auto mt-16 max-w-2xl space-y-8 font-body font-light text-[16px] leading-[1.8] text-[var(--cream-bone)]">
+          <div className="mx-auto mt-12 max-w-2xl space-y-6 font-body text-lg leading-relaxed text-text-secondary">
             {article.body.map((paragraph, i) => (
               <div key={i}>
                 <p>{paragraph}</p>

@@ -25,14 +25,31 @@ export function OrderSuccessBanner({ orderId }: OrderSuccessBannerProps) {
     : "PENDING";
 
   return (
-    <div className="flex flex-col items-center text-center">
-      {/* Animated Checkmark */}
-      <div className="relative w-[120px] h-[120px] mb-12 flex items-center justify-center">
-        <motion.svg
-          width="120"
-          height="120"
-          viewBox="0 0 120 120"
-          className="absolute inset-0"
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="order-success-confetti relative overflow-hidden rounded-[2rem] border border-border bg-noir px-6 py-12 text-center sm:px-10"
+    >
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+        {Array.from({ length: 12 }).map((_, i) => (
+          <span
+            key={i}
+            className="confetti-piece"
+            style={{
+              left: `${8 + (i * 7) % 85}%`,
+              animationDelay: `${i * 0.12}s`,
+              backgroundColor: i % 3 === 0 ? "#C49A1E" : i % 3 === 1 ? "#D4A832" : "#A07C12",
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="relative z-10">
+        <motion.p
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="text-xs font-semibold uppercase tracking-[0.35em] text-gold"
         >
           <motion.circle
             cx="60"

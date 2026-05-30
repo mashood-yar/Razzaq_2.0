@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { SALE_COUNTDOWN_END_KEY } from "@/lib/banner-constants";
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
@@ -49,12 +49,12 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
       key={`${label}-${value}`}
       initial={{ scale: 0.92, opacity: 0.6 }}
       animate={{ scale: 1, opacity: 1 }}
-      className="flex min-w-[3.25rem] flex-col items-center rounded-2xl bg-white/15 px-2 py-2 backdrop-blur-sm sm:min-w-[4rem] sm:px-3"
+      className="flex min-w-[3.25rem] flex-col items-center rounded-2xl bg-noir/15 px-2 py-2 backdrop-blur-sm sm:min-w-[4rem] sm:px-3"
     >
-      <span className="font-display text-2xl tabular-nums text-white sm:text-3xl">
+      <span className="font-display text-2xl tabular-nums text-noir sm:text-3xl">
         {pad(value)}
       </span>
-      <span className="mt-0.5 text-[10px] uppercase tracking-widest text-white/80">
+      <span className="mt-0.5 text-[10px] uppercase tracking-widest text-noir/70">
         {label}
       </span>
     </motion.div>
@@ -62,6 +62,7 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
 }
 
 export function SaleBanner() {
+  const reduceMotion = useReducedMotion();
   const [endAt, setEndAt] = useState<number | null>(null);
 
   useEffect(() => {
@@ -74,22 +75,22 @@ export function SaleBanner() {
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 32 }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
-      className="relative overflow-hidden rounded-[2rem] bg-[#3282B8] px-6 py-12 sm:px-12 sm:py-14"
+      transition={{ duration: reduceMotion ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className="relative overflow-hidden rounded-[2rem] bg-gold px-6 py-12 sm:px-12 sm:py-14"
     >
       <motion.div
         aria-hidden
         className="pointer-events-none absolute -right-16 top-1/2 h-48 w-48 -translate-y-1/2 rounded-full bg-white/20 blur-3xl"
-        animate={{ scale: [1, 1.08, 1], opacity: [0.35, 0.5, 0.35] }}
+        animate={reduceMotion ? undefined : { scale: [1, 1.08, 1], opacity: [0.35, 0.5, 0.35] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
         aria-hidden
-        className="pointer-events-none absolute -left-10 bottom-0 h-32 w-32 rounded-full bg-[#0F4C75]/25 blur-2xl"
-        animate={{ x: [0, 12, 0] }}
+        className="pointer-events-none absolute -left-10 bottom-0 h-32 w-32 rounded-full bg-noir/20 blur-2xl"
+        animate={reduceMotion ? undefined : { x: [0, 12, 0] }}
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
@@ -101,26 +102,26 @@ export function SaleBanner() {
         className="relative z-10 flex flex-col items-center gap-8 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left"
       >
         <motion.div
-          initial={{ opacity: 0, x: -16 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={reduceMotion ? false : { opacity: 0, x: -16 }}
+          whileInView={reduceMotion ? undefined : { opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.1 }}
+          transition={{ delay: reduceMotion ? 0 : 0.1 }}
         >
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/90">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-noir/80">
             Limited time offer
           </p>
-          <h2 className="mt-2 font-display text-3xl text-white sm:text-4xl">
+          <h2 className="mt-2 font-display text-3xl text-noir sm:text-4xl">
             Seasonal indulgence
           </h2>
-          <p className="mt-2 text-lg font-semibold text-white">Up to 30% off select pieces</p>
+          <p className="mt-2 text-lg font-semibold text-noir">Up to 30% off select pieces</p>
         </motion.div>
 
         <motion.div
           className="flex flex-wrap justify-center gap-2 sm:gap-3"
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.15 }}
+          transition={{ delay: reduceMotion ? 0 : 0.15 }}
         >
           <CountdownUnit value={countdown.days} label="Days" />
           <CountdownUnit value={countdown.hours} label="Hours" />
@@ -129,14 +130,14 @@ export function SaleBanner() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, x: 16 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={reduceMotion ? false : { opacity: 0, x: 16 }}
+          whileInView={reduceMotion ? undefined : { opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: reduceMotion ? 0 : 0.2 }}
         >
           <Link
             href="/shop?sale=true"
-            className="inline-flex h-12 items-center justify-center rounded-full bg-white px-8 text-sm font-semibold text-[#3282B8] shadow-lg transition-transform hover:scale-105 active:scale-95"
+            className="inline-flex h-12 items-center justify-center rounded-none bg-noir px-8 text-sm font-semibold text-gold shadow-lg transition-transform hover:scale-105 active:scale-95"
           >
             Shop the sale
           </Link>

@@ -30,6 +30,14 @@ export async function GET(request: Request) {
     query = query.eq("categories.slug", category);
   }
 
+  const trending = searchParams.get("trending") === "true";
+  const premium = searchParams.get("premium") === "true";
+  const onSale = searchParams.get("on_sale") === "true";
+
+  if (trending) query = query.eq("is_trending", true);
+  if (premium) query = query.eq("is_premium", true);
+  if (onSale) query = query.eq("on_sale", true);
+
   if (collection) {
     query = query
       .select(

@@ -6,29 +6,31 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-semibold transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ocean-mid/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-95 hover:scale-105",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-none text-[11px] font-medium uppercase tracking-[0.2em] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98]",
   {
     variants: {
       variant: {
         default:
-          "bg-ocean-primary text-primary-foreground shadow-ocean hover:bg-ocean-mid",
+          "min-h-[52px] bg-gold-warm px-10 text-noir hover:bg-gold-bright",
         secondary:
-          "border-2 border-ocean-mid bg-transparent text-ocean-light hover:bg-ocean-mid/15 hover:scale-100",
+          "min-h-[52px] border border-noir-muted bg-transparent px-10 text-text-secondary hover:border-gold-warm hover:text-foreground",
         ghost:
-          "text-ocean-light hover:bg-ocean-primary/30 hover:text-foreground rounded-full hover:scale-100",
+          "rounded-none text-text-secondary hover:bg-accent hover:text-foreground",
         gold:
-          "bg-gold text-ocean-deep shadow-ocean hover:bg-gold-light hover:text-ocean-deep",
+          "min-h-[52px] bg-gold-warm px-10 text-noir hover:bg-gold-bright",
         outline:
-          "border-2 border-border-subtle bg-transparent text-foreground hover:border-ocean-mid hover:bg-ocean-surface/60",
-        link: "text-ocean-light underline-offset-4 hover:underline hover:scale-100 active:scale-100",
+          "min-h-[52px] border border-noir-muted bg-transparent px-10 text-foreground hover:border-gold-warm hover:text-gold-bright",
+        link: "normal-case tracking-normal text-gold-bright underline-offset-4 hover:underline active:scale-100",
+        "link-ghost":
+          "min-h-11 gap-1.5 rounded-none border-0 border-b border-muted-foreground bg-transparent px-0 pb-0.5 text-[11px] font-medium uppercase tracking-[0.15em] text-text-secondary hover:border-gold-warm hover:bg-transparent hover:text-gold-bright active:scale-100 [&_svg]:size-3",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "min-h-[52px] bg-destructive px-10 text-destructive-foreground hover:bg-destructive/90",
       },
       size: {
-        default: "h-12 px-8",
-        sm: "h-10 rounded-full px-5 text-xs",
-        lg: "h-14 rounded-full px-10 text-base",
-        icon: "h-12 w-12 rounded-full p-0 hover:scale-100 active:scale-100",
+        default: "min-h-[52px] px-10",
+        sm: "min-h-10 px-5 text-[10px]",
+        lg: "min-h-14 px-12 text-xs",
+        icon: "h-12 w-12 p-0 normal-case tracking-normal",
       },
     },
     defaultVariants: {

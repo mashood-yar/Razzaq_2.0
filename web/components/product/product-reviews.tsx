@@ -80,7 +80,7 @@ export function ProductReviews({ productName }: { productName: string }) {
             <Button type="submit">Submit review</Button>
           </form>
         ) : (
-          <p className="mt-6 text-sm text-navy-brand">
+          <p className="mt-6 text-sm text-gold">
             Thank you — your note will appear after moderation.
           </p>
         )}

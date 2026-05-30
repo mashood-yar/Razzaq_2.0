@@ -8,12 +8,12 @@ export function TrustBadges({ className }: { className?: string }) {
       role="list"
       aria-label="Payment and delivery partners"
     >
-      <span className="flex items-center gap-2 rounded-[2px] border border-[var(--border-fine)] bg-[var(--bg-dusk)] px-4 py-2 font-body font-normal text-[11px] text-[var(--cream-ghost)]" role="listitem">
-        <Truck className="h-3.5 w-3.5 text-[var(--gold-warm)]" aria-hidden />
+      <span className="trust-badge" role="listitem">
+        <Truck className="h-3.5 w-3.5 text-gold-warm" aria-hidden />
         TCS
       </span>
-      <span className="flex items-center gap-2 rounded-[2px] border border-[var(--border-fine)] bg-[var(--bg-dusk)] px-4 py-2 font-body font-normal text-[11px] text-[var(--cream-ghost)]" role="listitem">
-        <Truck className="h-3.5 w-3.5 text-[var(--gold-warm)]" aria-hidden />
+      <span className="trust-badge" role="listitem">
+        <Truck className="h-3.5 w-3.5 text-text-secondary" aria-hidden />
         Leopards
       </span>
       <span className="flex items-center gap-2 rounded-[2px] border border-[var(--border-fine)] bg-[var(--bg-dusk)] px-4 py-2 font-body font-normal text-[11px] text-[var(--cream-ghost)]" role="listitem">
