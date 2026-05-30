@@ -38,17 +38,17 @@ export function SiteFooter() {
 
   return (
     <footer className="border-t border-border bg-noir">
-      <div className="mx-auto max-w-4xl px-5 py-16 sm:px-6 lg:px-8">
-        <TrustBadges className="mb-10" />
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-5">
-          <div className="lg:col-span-2">
+      <div className="mx-auto max-w-4xl px-5 py-16 pb-10 sm:px-6">
+        <TrustBadges className="mb-12" />
+        <div className="grid grid-cols-2 gap-10 md:grid-cols-[2fr_1fr_1fr_1fr] md:gap-10">
+          <div className="col-span-2 md:col-span-1">
             <p className="font-display text-sm italic uppercase tracking-[0.3em] text-foreground">
               {siteConfig.name}
             </p>
-            <p className="mt-1 text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
+            <p className="mt-1 text-[11px] tracking-[0.15em] text-muted-foreground">
               Quetta, Pakistan · Since 2020
             </p>
-            <p className="mt-6 max-w-xs text-sm font-light leading-relaxed text-muted-foreground">
+            <p className="mt-6 max-w-[220px] text-[13px] font-light leading-relaxed text-muted-foreground">
               Boutique luxury fragrances — Sporty, Habibi, Flourine, Khan&apos;s Aura. Rooted in
               Quetta, shipped nationwide.
             </p>
@@ -73,7 +73,7 @@ export function SiteFooter() {
                   <li key={l.label}>
                     <Link
                       href={l.href}
-                      className="text-sm tracking-wide text-muted-foreground transition-colors hover:text-gold-bright"
+                      className="text-[13px] tracking-wide text-muted-foreground transition-colors hover:text-gold-bright"
                     >
                       {l.label}
                     </Link>

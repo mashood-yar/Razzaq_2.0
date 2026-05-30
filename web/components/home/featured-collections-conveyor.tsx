@@ -16,6 +16,7 @@ export type FeaturedCollectionItem = {
   title: string;
   href: string;
   image: string;
+  eyebrow?: string;
 };
 
 const INTERVAL_MS = 3000;
@@ -31,16 +32,25 @@ export function FeaturedCollectionsConveyor({
   const [noTransition, setNoTransition] = useState(false);
   const [stepPx, setStepPx] = useState(0);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
 
   const trackRef = useRef<HTMLDivElement>(null);
   const slideActiveRef = useRef(false);
 
   useLayoutEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduceMotion(mq.matches);
-    const onChange = () => setReduceMotion(mq.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
+    const motionMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const lgMq = window.matchMedia("(min-width: 1024px)");
+    const update = () => {
+      setReduceMotion(motionMq.matches);
+      setIsLargeScreen(lgMq.matches);
+    };
+    update();
+    motionMq.addEventListener("change", update);
+    lgMq.addEventListener("change", update);
+    return () => {
+      motionMq.removeEventListener("change", update);
+      lgMq.removeEventListener("change", update);
+    };
   }, []);
 
   const measureStep = useCallback(() => {
@@ -68,7 +78,7 @@ export function FeaturedCollectionsConveyor({
   }, [measureStep, order]);
 
   useEffect(() => {
-    if (reduceMotion || stepPx <= 0) return;
+    if (reduceMotion || isLargeScreen || stepPx <= 0) return;
 
     const id = window.setInterval(() => {
       if (slideActiveRef.current) return;
@@ -78,7 +88,7 @@ export function FeaturedCollectionsConveyor({
     }, INTERVAL_MS);
 
     return () => clearInterval(id);
-  }, [reduceMotion, stepPx, order]);
+  }, [reduceMotion, isLargeScreen, stepPx, order]);
 
   function handleTransitionEnd(e: React.TransitionEvent<HTMLDivElement>) {
     if (e.propertyName !== "transform") return;
@@ -97,22 +107,28 @@ export function FeaturedCollectionsConveyor({
   }
 
   return (
-    <div className="overflow-hidden pb-2">
+    <div className="-mx-5 overflow-x-auto scroll-smooth px-5 pb-5 scrollbar-none sm:-mx-6 sm:px-6 lg:mx-0 lg:overflow-visible lg:px-0 lg:pb-2">
       <div
         ref={trackRef}
-        className={cn("flex gap-4 will-change-transform motion-reduce:transition-none")}
-        style={{
-          transform: `translateX(${offsetPx}px)`,
-          transition: noTransition
-            ? "none"
-            : `transform ${SLIDE_DURATION_MS}ms ease-in-out`,
-        }}
-        onTransitionEnd={handleTransitionEnd}
+        className={cn(
+          "flex gap-4 will-change-transform motion-reduce:transition-none lg:grid lg:grid-cols-4 lg:gap-5 lg:will-change-auto",
+        )}
+        style={
+          isLargeScreen
+            ? undefined
+            : {
+                transform: `translateX(${offsetPx}px)`,
+                transition: noTransition
+                  ? "none"
+                  : `transform ${SLIDE_DURATION_MS}ms ease-in-out`,
+              }
+        }
+        onTransitionEnd={isLargeScreen ? undefined : handleTransitionEnd}
       >
-        {order.map((c, idx) => (
+        {(isLargeScreen ? initialItems : order).map((c, idx) => (
           <motion.div
             key={`${c.href}-${c.title}`}
-            className="min-w-0 flex-[1_1_0]"
+            className="min-w-[80vw] max-w-[320px] shrink-0 snap-center scroll-ml-5 lg:min-w-0 lg:max-w-none lg:snap-align-none"
             initial={{ opacity: 0, y: 22 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-48px" }}
@@ -120,19 +136,26 @@ export function FeaturedCollectionsConveyor({
           >
             <Link
               href={c.href}
-              className="group relative block h-72 overflow-hidden rounded-2xl"
+              className="group relative block aspect-[3/4] overflow-hidden rounded-sm bg-noir-surface"
             >
               <Image
                 src={c.image}
                 alt=""
                 fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none"
-                sizes="(max-width: 640px) 25vw, (max-width: 1024px) 22vw, 280px"
+                className="object-cover brightness-[0.7] transition-[filter,transform] duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03] group-hover:brightness-[0.85] motion-reduce:transition-none"
+                sizes="(max-width: 640px) 80vw, (max-width: 1024px) 25vw, 280px"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              <span className="absolute bottom-6 left-6 font-display text-2xl text-white">
-                {c.title}
-              </span>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A08]/85 via-transparent to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6">
+                {c.eyebrow && (
+                  <span className="mb-2 block text-[10px] font-medium uppercase tracking-[0.2em] text-gold-warm">
+                    {c.eyebrow}
+                  </span>
+                )}
+                <span className="font-display text-[clamp(1.5rem,5vw,2rem)] font-light leading-tight text-foreground">
+                  {c.title}
+                </span>
+              </div>
             </Link>
           </motion.div>
         ))}

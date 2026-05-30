@@ -6,9 +6,11 @@ import type { HomeFeaturedMarqueeProduct } from "@/lib/home-featured-products";
 function MarqueeTrack({
   products,
   reverse,
+  separator = "dot",
 }: {
   products: HomeFeaturedMarqueeProduct[];
   reverse?: boolean;
+  separator?: "dot" | "diamond";
 }) {
   const sequence = products.flatMap((p) => [
     { type: "link" as const, ...p },
@@ -21,10 +23,10 @@ function MarqueeTrack({
         cell.type === "dot" ? (
           <span
             key={`d-${idx}`}
-            className="mx-5 shrink-0 align-middle text-xs text-gold-warm opacity-70 sm:mx-6"
+            className="mx-5 shrink-0 align-middle text-[0.6rem] text-gold-warm opacity-70 sm:mx-6"
             aria-hidden
           >
-            ·
+            {separator === "diamond" ? "◆" : "·"}
           </span>
         ) : (
           <ProductLink key={`${cell.slug}-${idx}`} product={cell} />
@@ -68,34 +70,45 @@ function ProductLink({ product }: { product: HomeFeaturedMarqueeProduct }) {
 
 export function SignatureScentsMarquee({
   products = [],
+  variant = "full",
 }: {
   products?: HomeFeaturedMarqueeProduct[];
+  variant?: "full" | "minimal";
 }) {
   const productsList = products ?? [];
   if (productsList.length === 0) return null;
 
+  const isMinimal = variant === "minimal";
+
   return (
     <section
-      aria-labelledby="signature-scents-heading"
+      aria-labelledby={isMinimal ? undefined : "signature-scents-heading"}
+      aria-hidden={isMinimal ? true : undefined}
       className="w-full overflow-hidden border-y border-border bg-noir-surface py-5"
     >
-      <div className="px-5 pb-2 pt-6 md:px-8 md:pt-8">
-        <h2
-          id="signature-scents-heading"
-          className="eyebrow"
-        >
-          Signature line
-        </h2>
-        <p className="mt-2 max-w-xl text-sm font-light leading-relaxed text-muted-foreground">
-          Our house fragrances — Khan&apos;s Aura, Flora, Sporty, and Legend. Boutique in{" "}
-          <strong className="font-medium text-foreground">Quetta, Pakistan</strong>. Hover for a preview; click to shop.
-        </p>
-      </div>
+      {!isMinimal && (
+        <div className="px-5 pb-2 pt-6 md:px-8 md:pt-8">
+          <h2 id="signature-scents-heading" className="eyebrow">
+            Signature line
+          </h2>
+          <p className="mt-2 max-w-xl text-sm font-light leading-relaxed text-muted-foreground">
+            Our house fragrances — Khan&apos;s Aura, Flora, Sporty, and Legend. Boutique in{" "}
+            <strong className="font-medium text-foreground">Quetta, Pakistan</strong>. Hover for a
+            preview; click to shop.
+          </p>
+        </div>
+      )}
 
-      <div className="pb-10 md:pb-12">
-        <div className="flex flex-col gap-7 md:gap-9 motion-reduce:hidden">
-          <MarqueeTrack products={productsList} />
-          <MarqueeTrack products={productsList} reverse />
+      <div className={isMinimal ? "py-1" : "pb-10 md:pb-12"}>
+        <div
+          className={
+            isMinimal
+              ? "motion-reduce:hidden"
+              : "flex flex-col gap-7 md:gap-9 motion-reduce:hidden"
+          }
+        >
+          <MarqueeTrack products={productsList} separator={isMinimal ? "diamond" : "dot"} />
+          {!isMinimal && <MarqueeTrack products={productsList} reverse separator="dot" />}
         </div>
 
         <div className="hidden flex-wrap items-center justify-center gap-x-3 gap-y-4 px-6 pb-10 text-center motion-reduce:flex md:gap-x-6">

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ShoppingBag, Eye } from "lucide-react";
+import { Eye } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { LegacyProduct as Product } from "@/lib/products";
 import { ListingCardImages } from "@/components/product/listing-card-images";
@@ -102,7 +102,6 @@ export function ProductCard({
       whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-48px", amount: 0.12 }}
       transition={{ duration: reduceMotion ? 0 : 0.4, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={reduceMotion ? undefined : { y: -8 }}
     >
       <motion.div
         className={cn(
@@ -114,7 +113,7 @@ export function ProductCard({
         animate={showOverlay ? "hover" : "rest"}
         whileHover={canHover && !reduceMotion ? "hover" : undefined}
       >
-        <Link href={`/products/${product.slug}`} className="absolute inset-0 z-0">
+        <Link href={`/products/${product.slug}`} className="absolute inset-0 z-0 overflow-hidden">
           <ListingCardImages
             primarySrc={product.images[0]}
             secondarySrc={product.images[1]}
@@ -140,12 +139,12 @@ export function ProductCard({
         <motion.div
           variants={overlayVariants}
           transition={{ duration: 0.2 }}
-          className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/50 to-transparent"
+          className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/50 to-transparent lg:hidden"
         >
-          <motion.div className="flex min-w-0 gap-2 px-3 pb-3">
+          <motion.div className="px-3 pb-3">
             <button
               type="button"
-              className="flex h-9 flex-1 items-center justify-center gap-1 rounded-none border border-border bg-noir-surface/95 text-[10px] font-medium uppercase tracking-wider text-foreground backdrop-blur-sm"
+              className="flex h-9 w-full items-center justify-center gap-1 rounded-none border border-border bg-noir-surface/95 text-[10px] font-medium uppercase tracking-wider text-foreground backdrop-blur-sm"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -155,40 +154,44 @@ export function ProductCard({
               <Eye className="h-3.5 w-3.5 shrink-0" aria-hidden />
               Quick view
             </button>
-            <button
-              ref={bagRef}
-              type="button"
-              className="flex h-9 flex-1 items-center justify-center gap-1 rounded-none bg-gold-warm text-[10px] font-medium uppercase tracking-wider text-noir hover:bg-gold-bright"
-              onClick={handleAdd}
-            >
-              <ShoppingBag className="h-3.5 w-3.5 shrink-0" aria-hidden />
-              Add to cart
-            </button>
           </motion.div>
         </motion.div>
       </motion.div>
 
-      <div className="mt-4 flex flex-1 flex-col px-1">
+      <div className="mt-4 flex flex-1 flex-col">
+        {(product.categoryName || product.notes?.top?.[0]) && (
+          <span className="mb-1.5 block text-[10px] font-medium uppercase tracking-[0.2em] text-gold-warm">
+            {[product.categoryName, product.notes?.top?.[0]].filter(Boolean).join(" · ")}
+          </span>
+        )}
         <Link href={`/products/${product.slug}`}>
-          <h3 className="font-display text-lg font-normal tracking-wide text-foreground transition-colors hover:text-gold-bright">
+          <h3 className="font-display text-[clamp(1.1rem,3vw,1.4rem)] font-normal tracking-wide text-foreground transition-colors hover:text-gold-bright">
             {product.name}
           </h3>
         </Link>
-        <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{product.tagline}</p>
+        <p className="mt-1 truncate text-xs font-light text-muted-foreground">{product.tagline}</p>
         <div className="mt-2 flex items-center gap-2">
           <StarRating rating={product.rating} />
           <span className="text-xs text-muted-foreground">({product.reviewCount})</span>
         </div>
-        <p className={cn("mt-3", onSale ? "price-gold" : "text-foreground")}>
-          <span className={onSale ? "font-semibold text-gold" : undefined}>
+        <div className="mt-3 flex items-baseline gap-2">
+          <span className="font-display text-lg font-medium text-gold-bright">
             {formatPKR(displayPrice)}
           </span>
           {comparePrice && (
-            <span className="ml-2 font-body text-sm font-normal text-muted-foreground line-through">
+            <span className="font-body text-xs text-muted-foreground line-through">
               {formatPKR(comparePrice)}
             </span>
           )}
-        </p>
+        </div>
+        <button
+          ref={bagRef}
+          type="button"
+          className="product-card-add-nocturne"
+          onClick={handleAdd}
+        >
+          + Add to Bag
+        </button>
       </div>
     </motion.article>
   );

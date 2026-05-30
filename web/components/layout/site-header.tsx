@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu,
@@ -40,6 +40,14 @@ export function SiteHeader() {
   const { dismissed: announcementDismissed, setDismissed: dismissAnnouncement } =
     useAnnouncementDismissed();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const setSearchOpen = useUiStore((s) => s.setSearchOpen);
   const setCartOpen = useUiStore((s) => s.setCartOpen);
   const itemCount = useCartStore((s) =>
@@ -62,26 +70,21 @@ export function SiteHeader() {
           headerTop,
         )}
       >
-        <div className="nav-pill pointer-events-auto flex h-[60px] items-center justify-between px-5 sm:px-6">
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              className="p-2 text-text-secondary transition-colors hover:text-gold-bright lg:hidden"
-              aria-expanded={mobileOpen}
-              aria-controls="mobile-nav"
-              onClick={() => setMobileOpen(true)}
-            >
-              <Menu className="h-5 w-5" aria-hidden />
-              <span className="sr-only">Open menu</span>
-            </button>
-            <Link
-              href="/"
-              className="font-display text-sm italic uppercase tracking-[0.3em] text-foreground transition-colors hover:text-gold-bright"
-              aria-label="Razzaq Luxe — home"
-            >
-              Razzaq Luxe
-            </Link>
-            <nav className="ml-6 hidden items-center gap-8 lg:flex" aria-label="Main">
+        <div
+          className={cn(
+            "site-nav-bar pointer-events-auto flex items-center justify-between px-5 sm:px-6",
+            scrolled && "scrolled",
+          )}
+        >
+          <Link
+            href="/"
+            className="font-display text-sm italic uppercase tracking-[0.3em] text-foreground transition-colors hover:text-gold-bright"
+            aria-label="Razzaq Luxe — home"
+          >
+            Razzaq Luxe
+          </Link>
+
+          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 lg:flex" aria-label="Main">
               {nav.map((item) => (
                 <Link
                   key={item.href}
@@ -96,10 +99,19 @@ export function SiteHeader() {
                   {item.label}
                 </Link>
               ))}
-            </nav>
-          </div>
+          </nav>
 
           <div className="flex items-center gap-1 sm:gap-2">
+            <button
+              type="button"
+              className="p-2 text-text-secondary transition-colors hover:text-gold-bright lg:hidden"
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-nav"
+              onClick={() => setMobileOpen(true)}
+            >
+              <Menu className="h-5 w-5" aria-hidden />
+              <span className="sr-only">Open menu</span>
+            </button>
             <Button
               variant="ghost"
               size="icon"
@@ -141,7 +153,7 @@ export function SiteHeader() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex lg:hidden"
+            className="fixed inset-0 z-[200] lg:hidden"
             role="dialog"
             aria-modal="true"
             aria-label="Mobile navigation"
@@ -150,32 +162,23 @@ export function SiteHeader() {
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 280 }}
-              className="flex h-full w-[min(100%,380px)] flex-col border-r border-border bg-noir shadow-nocturne backdrop-blur-xl"
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="relative flex h-full w-full flex-col justify-center bg-noir p-6 sm:p-10"
             >
-              <div className="flex items-center justify-between border-b border-border p-4">
-                <Link
-                  href="/"
-                  className="font-display text-2xl font-light italic text-foreground"
-                  aria-label="Razzaq Luxe — home"
-                >
-                  Razzaq Luxe
-                </Link>
-                <button
-                  type="button"
-                  className="rounded-full p-2 hover:bg-muted"
-                  onClick={() => setMobileOpen(false)}
-                  aria-label="Close menu"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-              <nav className="flex flex-col gap-1 p-4" aria-label="Mobile">
+              <button
+                type="button"
+                className="absolute right-5 top-5 p-2 text-muted-foreground transition-colors hover:text-foreground"
+                onClick={() => setMobileOpen(false)}
+                aria-label="Close menu"
+              >
+                <X className="h-6 w-6" />
+              </button>
+              <nav className="flex flex-col" aria-label="Mobile">
                 {nav.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="border-b border-border px-1 py-4 font-display text-2xl font-light text-foreground transition-colors hover:text-gold-warm"
+                    className="border-b border-border py-4 font-display text-[clamp(2rem,8vw,3.5rem)] font-light leading-snug text-foreground transition-colors hover:text-gold-warm"
                     onClick={() => setMobileOpen(false)}
                   >
                     {item.label}
@@ -183,7 +186,7 @@ export function SiteHeader() {
                 ))}
                 <Link
                   href={user ? "/account" : "/login"}
-                  className="flex items-center gap-3 rounded-full px-4 py-3 text-sm font-medium text-foreground hover:bg-muted"
+                  className="mt-2 flex items-center gap-3 border-b border-border py-4 text-sm font-medium uppercase tracking-[0.15em] text-text-secondary transition-colors hover:text-gold-warm"
                   onClick={() => setMobileOpen(false)}
                 >
                   {status === "loading" ? (
@@ -198,11 +201,15 @@ export function SiteHeader() {
                   {user ? "Account" : "Sign in"}
                 </Link>
               </nav>
+              <p className="mt-12 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                Quetta, Pakistan · Since 2020
+              </p>
             </motion.aside>
             <button
               type="button"
-              className="min-w-0 flex-1 cursor-default bg-foreground/20 backdrop-blur-sm"
-              aria-label="Close menu"
+              className="hidden"
+              aria-hidden
+              tabIndex={-1}
               onClick={() => setMobileOpen(false)}
             />
           </motion.div>

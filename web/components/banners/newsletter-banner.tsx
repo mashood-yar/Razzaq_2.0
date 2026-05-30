@@ -44,67 +44,60 @@ export function NewsletterBanner() {
       whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: reduceMotion ? 0 : 0.5 }}
-      className="newsletter-banner-corners relative overflow-hidden rounded-sm border border-border bg-noir-surface px-6 py-14 sm:px-12"
+      className="relative"
     >
-      <div className="relative z-10 mx-auto max-w-xl text-center">
-        <span className="eyebrow">Newsletter</span>
-        <h2 className="mt-3 font-display text-3xl font-light text-foreground sm:text-4xl">
-          Join the RazzaqLuxe Family
-        </h2>
-        <p className="mt-3 text-sm text-muted-foreground">
-          Early access to drops, styling notes, and members-only offers.
-        </p>
+      <span className="eyebrow">Stay Close</span>
+      <h2 className="text-display mt-3 text-foreground">The Inner Circle</h2>
+      <p className="mx-auto mt-4 max-w-md text-sm font-light leading-relaxed text-text-secondary">
+        Early access to new launches, exclusive offers, and stories from the house. No noise — only
+        what matters.
+      </p>
 
-        {status === "success" ? (
-          <p className="mt-8 font-display text-xl italic text-gold-bright">
-            You&apos;re in — welcome to the family.
-          </p>
-        ) : (
-          <form
-            onSubmit={handleSubmit}
-            className="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row sm:items-center"
+      {status === "success" ? (
+        <p className="mt-10 font-display text-xl italic text-gold-bright">
+          You&apos;re in — welcome to the family.
+        </p>
+      ) : (
+        <form
+          onSubmit={handleSubmit}
+          className="mx-auto mt-10 flex max-w-md flex-col gap-0 sm:flex-row sm:items-stretch"
+        >
+          <label htmlFor="newsletter-banner-email" className="sr-only">
+            Email address
+          </label>
+          <input
+            id="newsletter-banner-email"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Your email address"
+            disabled={status === "loading"}
+            className="input-luxe h-12 flex-1 border-0 border-b border-noir-muted bg-transparent italic placeholder:text-muted-foreground"
+          />
+          <button
+            type="submit"
+            disabled={status === "loading"}
+            className="btn-luxe-primary mt-4 min-h-12 shrink-0 px-7 sm:mt-0"
           >
-            <label htmlFor="newsletter-banner-email" className="sr-only">
-              Email address
-            </label>
-            <input
-              id="newsletter-banner-email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              disabled={status === "loading"}
-              className="input-luxe h-12 flex-1 bg-noir-elevated/90"
-            />
-            <button
-              type="submit"
-              disabled={status === "loading"}
-              className="btn-luxe-primary shrink-0 px-8"
-            >
-              {status === "loading" ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                  Joining…
-                </>
-              ) : (
-                "Subscribe"
-              )}
-            </button>
-          </form>
-        )}
+            {status === "loading" ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+            ) : (
+              "Subscribe"
+            )}
+          </button>
+        </form>
+      )}
 
-        {status === "error" && (
-          <p className="mt-3 text-sm text-[#E05A5A]" role="alert">
-            {message}
-          </p>
-        )}
-
-        <p className="mt-5 text-xs text-muted-foreground">
-          We respect your inbox. Unsubscribe anytime. By subscribing you agree to receive
-          marketing emails from Razzaq Luxe.
+      {status === "error" && message && (
+        <p className="mt-4 text-sm text-destructive" role="alert">
+          {message}
         </p>
-      </div>
+      )}
+
+      <p className="mt-4 text-[11px] text-[#4A4640]">
+        No spam. Unsubscribe anytime. We respect your privacy.
+      </p>
     </motion.section>
   );
 }

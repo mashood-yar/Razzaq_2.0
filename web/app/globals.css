@@ -157,6 +157,14 @@
     @apply my-6 block h-px w-10 bg-[#C49A1E];
   }
 
+  .text-display {
+    @apply font-display text-[clamp(2rem,6vw,4rem)] font-light leading-[1.1] tracking-tight;
+  }
+
+  .section-nocturne {
+    @apply py-20 md:py-28;
+  }
+
   .focus-ocean {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C49A1E]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
@@ -199,12 +207,48 @@
     @apply flex h-12 w-full rounded-none border border-border bg-[#111110]/80 px-5 text-sm font-light text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C49A1E]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50;
   }
 
-  .nav-pill {
-    @apply sticky top-0 z-50 h-[60px] border-b border-transparent bg-noir/90 shadow-none backdrop-blur-xl transition-[border-color,background] duration-300;
+  .site-nav-bar {
+    @apply h-[60px] w-full border-b border-transparent bg-noir/90 shadow-none backdrop-blur-xl transition-[border-color,background] duration-300;
   }
 
-  .nav-pill.scrolled {
-    @apply border-border bg-noir;
+  .site-nav-bar.scrolled {
+    @apply border-border bg-noir/[0.98];
+  }
+
+  .btn-ghost-link {
+    @apply inline-flex min-h-11 items-center gap-1.5 border-0 border-b border-muted-foreground bg-transparent px-0 pb-0.5 text-[11px] font-medium uppercase tracking-[0.15em] text-text-secondary transition-colors hover:border-gold-warm hover:text-gold-bright;
+  }
+
+  .btn-ghost-link::after {
+    content: "→";
+    @apply transition-transform duration-300;
+  }
+
+  .btn-ghost-link:hover::after {
+    @apply translate-x-1;
+  }
+
+  .quiz-section-nocturne {
+    @apply relative overflow-hidden border-y border-border bg-noir-surface py-20 md:py-28;
+  }
+
+  .quiz-section-nocturne::before {
+    content: "";
+    @apply pointer-events-none absolute inset-0;
+    background-image: radial-gradient(circle, rgb(212 168 50 / 0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .value-number {
+    @apply font-display text-[2.5rem] font-light italic text-gold-warm opacity-40;
+  }
+
+  .value-line {
+    @apply mb-5 mt-4 h-px w-8 bg-gold-warm opacity-50;
+  }
+
+  .product-card-add-nocturne {
+    @apply mt-3.5 flex min-h-11 w-full items-center justify-center border border-gold-warm/40 bg-transparent text-[10px] font-medium uppercase tracking-[0.22em] text-text-secondary opacity-100 transition-[background,color,border-color,opacity] duration-300 hover:border-gold-warm hover:bg-gold-warm hover:text-noir lg:opacity-0 lg:group-hover:opacity-100;
   }
 
   .trust-badge {

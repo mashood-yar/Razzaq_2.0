@@ -160,7 +160,8 @@ const config: Config = {
         },
       },
       animation: {
-        "marquee-row": "marquee-seamless 52s linear infinite",
+        "marquee-row": "marquee-seamless 28s linear infinite",
+        "marquee-row-slow": "marquee-seamless 52s linear infinite",
         "marquee-row-reverse": "marquee-seamless 62s linear infinite reverse",
         "fade-up": "fade-up 0.7s ease-out forwards",
         "gold-shimmer": "gold-shimmer 4s linear infinite",

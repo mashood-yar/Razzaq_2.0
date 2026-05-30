@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
-import { fetchLegacyProductsForHomeBestSellers } from "@/lib/catalog/fetch-catalog";
+import {
+  fetchActiveLegacyProducts,
+  fetchLegacyProductsForHomeBestSellers,
+} from "@/lib/catalog/fetch-catalog";
+import { toHomeFeaturedMarqueeProducts } from "@/lib/home-featured-products";
 import { buildPageMetadata } from "@/lib/seo/metadata";
-import { GoldBrandText } from "@/components/brand/gold-brand-text";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product/product-card";
 import { HomeMarqueeSkeleton } from "@/components/home/home-marquee-skeleton";
@@ -64,23 +66,45 @@ export const metadata: Metadata = buildPageMetadata({
 const collections = [
   {
     title: "Men",
+    eyebrow: "Bold & Refined",
     href: "/shop?gender=men",
     image: "/images/habibi.png",
   },
   {
     title: "Women",
+    eyebrow: "Floral · Feminine",
     href: "/shop?gender=women",
     image: "/images/flourine.png",
   },
   {
     title: "Unisex",
+    eyebrow: "Universal",
     href: "/shop?gender=unisex",
     image: "/images/sporty.png",
   },
   {
     title: "Limited editions",
+    eyebrow: "House Classics",
     href: "/shop",
     image: "/images/khan.png",
+  },
+];
+
+const values = [
+  {
+    num: "I",
+    title: "Master Craftsmanship",
+    desc: "Every bottle is balanced for presence and longevity — nothing ships until it moves us in-house.",
+  },
+  {
+    num: "II",
+    title: "Rooted in Origin",
+    desc: "Born in Quetta, carrying Balochistan — rose valleys, trade routes, and frankincense in mountain air.",
+  },
+  {
+    num: "III",
+    title: "Scent with Soul",
+    desc: "We bottle feeling — named emotions and stories your skin tells for hours.",
   },
 ];
 
@@ -107,8 +131,23 @@ const ugcTiles = [
   },
 ];
 
+const FALLBACK_MARQUEE = [
+  { slug: "khans-aura", name: "Khan's Aura", tagline: "Dark oud — commanding presence." },
+  { slug: "habibi-noir", name: "Habibi Noir", tagline: "Signature depth for evening." },
+  { slug: "flourine", name: "Flourine Blanche", tagline: "Luminous florals — soft bloom." },
+  { slug: "sporty", name: "Sporty Amber", tagline: "Bright energy — everyday standout." },
+  { slug: "baji-rose", name: "Baji Rose", tagline: "Romantic rose with warmth." },
+  { slug: "bacha-wood", name: "Bacha Wood", tagline: "Woody calm — understated luxury." },
+  { slug: "girl-mystique", name: "Girl Mystique", tagline: "Mysterious floral allure." },
+];
+
 export default async function HomePage() {
-  const bestSellers = await fetchLegacyProductsForHomeBestSellers(4);
+  const [bestSellers, catalog] = await Promise.all([
+    fetchLegacyProductsForHomeBestSellers(4),
+    fetchActiveLegacyProducts(),
+  ]);
+  const marqueeProducts = toHomeFeaturedMarqueeProducts(catalog);
+  const marqueeItems = marqueeProducts.length > 0 ? marqueeProducts : FALLBACK_MARQUEE;
 
   return (
     <>
@@ -139,7 +178,7 @@ export default async function HomePage() {
         </div>
 
         <div className="relative z-10 mx-auto w-full max-w-4xl px-5 pb-20 pt-8 sm:px-6 md:pb-28">
-          <span className="eyebrow mb-5 block opacity-85">
+          <span className="mb-5 block font-body text-[11px] font-medium uppercase tracking-[0.3em] text-gold-bright opacity-85">
             Razzaq Luxe · Quetta, Pakistan
           </span>
           <h1 className="max-w-4xl font-display text-[clamp(3.2rem,13vw,8rem)] font-light leading-[0.92] tracking-tight text-foreground">
@@ -147,16 +186,13 @@ export default async function HomePage() {
             <br />
             <em className="text-gold-bright">Scent</em>
           </h1>
-          <p className="mt-6 max-w-md text-base font-light leading-relaxed text-text-secondary">
+          <p className="mt-6 max-w-[420px] text-[clamp(0.9rem,2.5vw,1.1rem)] font-light leading-relaxed text-text-secondary">
             Cinematic fragrances crafted for the discerning soul. Dark oud, rare amber, timeless
             elegance — from the heart of Balochistan.
           </p>
           <div className="mt-10 flex flex-wrap gap-5">
-            <Button asChild size="lg" className="gap-2">
-              <Link href="/shop">
-                Discover Fragrances
-                <ArrowRight className="h-4 w-4" aria-hidden />
-              </Link>
+            <Button asChild size="lg">
+              <Link href="/shop">Discover Fragrances</Link>
             </Button>
             <Button asChild variant="secondary" size="lg">
               <Link href="/about">Our Story</Link>
@@ -169,109 +205,124 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <div className="border-y border-border bg-noir-surface px-4 pb-12 pt-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <SignatureScentsMarquee />
-        </div>
-      </div>
+      <SignatureScentsMarquee variant="minimal" products={marqueeItems} />
 
-      <div className="section-alt border-t border-border px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
+      <div className="quiz-section-nocturne px-5 sm:px-6">
+        <div className="relative z-10 mx-auto max-w-4xl">
           <QuizTeaser />
         </div>
       </div>
 
-      <div className="section-sand border-t border-border px-4 py-24 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl space-y-24 lg:space-y-32">
-
-        {/* Best sellers */}
-        <section>
-          <div className="mb-14 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
-            <div>
-              <span className="eyebrow">Curated Selection</span>
-              <h2 className="mt-3 font-display text-3xl font-light sm:text-4xl">Best sellers</h2>
-              <p className="mt-3 max-w-lg text-muted-foreground">
-                Coveted compositions — quick add to cart, endless compliments.
-              </p>
-            </div>
-          </div>
-          <div className="grid gap-12 sm:grid-cols-2 sm:gap-14 lg:grid-cols-3 lg:gap-16">
-            {bestSellers.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
-        </section>
-
-        <SaleBanner />
-
-        {/* Collections */}
-        <section>
-          <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <span className="eyebrow">Collections</span>
-              <h2 className="mt-3 font-display text-3xl font-light sm:text-4xl">Featured collections</h2>
-              <p className="mt-2 max-w-lg text-muted-foreground">
-                <GoldBrandText text="Four doors into the Razzaq Luxe universe — each curated with obsessive precision." />
-              </p>
-            </div>
-            <Button asChild variant="outline" className="self-start">
-              <Link href="/shop">View all</Link>
-            </Button>
-          </div>
-          <FeaturedCollectionsConveyor items={collections} />
-        </section>
-
-        {/* Notes */}
-        <section className="rounded-sm border border-border bg-noir-surface px-6 py-16 sm:px-12">
-          <div className="mb-12 text-center">
-            <span className="eyebrow">Our palette</span>
-            <h2 className="mt-3 font-display text-3xl font-light sm:text-4xl">Crafted with Purpose</h2>
-            <p className="mt-3 text-muted-foreground">
-              Premium materials orchestrated like art.
-            </p>
-          </div>
-          <ScentWheel />
-        </section>
-
-        {/* Testimonials */}
-        <section>
-          <div className="mb-12 text-center">
-            <span className="eyebrow">Testimonials</span>
-            <h2 className="mt-3 font-display text-3xl font-light sm:text-4xl">
-              Voices of <span className="text-gold-shimmer">Razzaq Luxe</span>
-            </h2>
-            <p className="mt-3 text-muted-foreground">Trusted by fashion enthusiasts worldwide.</p>
-          </div>
-          <TestimonialCarousel />
-        </section>
-
-        {/* UGC */}
-        <section>
-          <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="font-display text-3xl sm:text-4xl">As seen on you</h2>
-              <p className="mt-2 text-muted-foreground">
-                Tag <span className="text-gold">#RazzaqLuxe</span> — we feature our community weekly.
-              </p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            {ugcTiles.map((tile) => (
-              <div
-                key={tile.id}
-                className="relative aspect-[1/1.15] overflow-hidden rounded-sm bg-muted"
-              >
-                <Image src={tile.src} alt={tile.alt} fill className="object-cover" sizes="(max-width:768px) 50vw, 25vw" />
+      <div className="section-nocturne border-t border-border bg-noir px-5 sm:px-6">
+        <div className="mx-auto max-w-4xl space-y-24 lg:space-y-28">
+          {/* Best sellers */}
+          <section>
+            <div className="mb-14 flex flex-wrap items-end justify-between gap-6">
+              <div>
+                <span className="eyebrow">Curated Selection</span>
+                <h2 className="text-display mt-3">Best Sellers</h2>
               </div>
-            ))}
-          </div>
-        </section>
+              <Button asChild variant="link-ghost" className="shrink-0">
+                <Link href="/shop">View All</Link>
+              </Button>
+            </div>
+            <div className="grid gap-12 sm:grid-cols-2 sm:gap-14 lg:grid-cols-3 lg:gap-16">
+              {bestSellers.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </section>
 
-      </div>
+          <SaleBanner />
+
+          {/* Collections */}
+          <section>
+            <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
+              <div>
+                <span className="eyebrow">Collections</span>
+                <h2 className="text-display mt-3">Featured Collections</h2>
+              </div>
+              <Button asChild variant="link-ghost" className="shrink-0">
+                <Link href="/shop">View All</Link>
+              </Button>
+            </div>
+            <FeaturedCollectionsConveyor items={collections} />
+          </section>
+
+          {/* Brand values */}
+          <section className="border-t border-border bg-noir-surface px-6 py-16 -mx-5 sm:-mx-6 sm:px-12 sm:py-20">
+            <div className="mb-12">
+              <span className="eyebrow">Crafted with Purpose</span>
+              <h2 className="text-display mt-3">Our Philosophy</h2>
+            </div>
+            <div className="grid gap-12 md:grid-cols-3 md:gap-8">
+              {values.map((v) => (
+                <article key={v.num}>
+                  <span className="value-number">{v.num}</span>
+                  <div className="value-line" />
+                  <h3 className="font-display text-2xl text-foreground">{v.title}</h3>
+                  <p className="mt-3 max-w-xs text-sm font-light leading-relaxed text-text-secondary">
+                    {v.desc}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          {/* Notes */}
+          <section className="border border-border bg-noir-surface px-6 py-16 sm:px-12">
+            <div className="mb-12 text-center">
+              <span className="eyebrow">Our palette</span>
+              <h2 className="text-display mt-3">Crafted with Purpose</h2>
+              <p className="mt-3 text-sm font-light text-muted-foreground">
+                Premium materials orchestrated like art.
+              </p>
+            </div>
+            <ScentWheel />
+          </section>
+
+          {/* Testimonials */}
+          <section>
+            <div className="mb-12">
+              <span className="eyebrow">From Our Community</span>
+              <h2 className="text-display mt-3">
+                What They <span className="text-gold-shimmer">Say</span>
+              </h2>
+            </div>
+            <TestimonialCarousel />
+          </section>
+
+          {/* UGC */}
+          <section className="border-t border-border bg-noir-elevated px-0 py-16 -mx-5 sm:-mx-6 sm:py-20">
+            <div className="mb-10 px-5 sm:px-6">
+              <span className="eyebrow">Community</span>
+              <h2 className="text-display mt-3">As Seen on You</h2>
+              <p className="mt-3 max-w-md text-sm font-light text-text-secondary">
+                Tag <span className="text-gold-bright">#RazzaqLuxe</span> — we feature our community weekly.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-1 sm:grid-cols-4">
+              {ugcTiles.map((tile) => (
+                <div
+                  key={tile.id}
+                  className="group relative aspect-square overflow-hidden bg-noir-surface"
+                >
+                  <Image
+                    src={tile.src}
+                    alt={tile.alt}
+                    fill
+                    className="object-cover brightness-[0.8] grayscale-[0.2] transition-[filter,transform] duration-500 group-hover:scale-[1.04] group-hover:brightness-100 group-hover:grayscale-0"
+                    sizes="(max-width:768px) 50vw, 25vw"
+                  />
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
       </div>
 
-      <div className="section-ocean-deep border-t border-border px-4 pb-24 pt-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
+      <div className="section-nocturne border-t border-border px-5 text-center sm:px-6">
+        <div className="mx-auto max-w-4xl">
           <NewsletterBanner />
         </div>
       </div>

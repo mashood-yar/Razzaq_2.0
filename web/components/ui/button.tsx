@@ -21,6 +21,8 @@ const buttonVariants = cva(
         outline:
           "min-h-[52px] border border-noir-muted bg-transparent px-10 text-foreground hover:border-gold-warm hover:text-gold-bright",
         link: "normal-case tracking-normal text-gold-bright underline-offset-4 hover:underline active:scale-100",
+        "link-ghost":
+          "min-h-11 gap-1.5 rounded-none border-0 border-b border-muted-foreground bg-transparent px-0 pb-0.5 text-[11px] font-medium uppercase tracking-[0.15em] text-text-secondary hover:border-gold-warm hover:bg-transparent hover:text-gold-bright active:scale-100 [&_svg]:size-3",
         destructive:
           "min-h-[52px] bg-destructive px-10 text-destructive-foreground hover:bg-destructive/90",
       },
