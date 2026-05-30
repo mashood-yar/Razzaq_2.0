@@ -8,11 +8,10 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 
 const schema = z.object({
-  name:    z.string().min(2, "Name required"),
-  email:   z.string().email("Valid email required"),
+  name: z.string().min(2, "Name required"),
+  email: z.string().email("Valid email required"),
   subject: z.string().min(2, "Subject required"),
   message: z.string().min(10, "Please write at least 10 characters"),
 });
@@ -54,62 +53,80 @@ export function ContactForm() {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl border border-border bg-charcoal/60 p-8 backdrop-blur-md"
-    >
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
       {!sent ? (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <h2 className="font-display text-2xl text-foreground">Send a Message</h2>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <Label>Name</Label>
-              <Input className="mt-1.5" {...register("name")} />
-              {errors.name && (
-                <p className="mt-1 text-xs text-error">{errors.name.message}</p>
-              )}
-            </div>
-            <div>
-              <Label>Email</Label>
-              <Input type="email" className="mt-1.5" {...register("email")} />
-              {errors.email && (
-                <p className="mt-1 text-xs text-error">{errors.email.message}</p>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <Label>Subject</Label>
-            <select
-              {...register("subject")}
-              className="mt-1.5 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-gold/60 focus:outline-none"
-            >
-              <option value="">Select a topic</option>
-              {SUBJECTS.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-            {errors.subject && (
-              <p className="mt-1 text-xs text-error">{errors.subject.message}</p>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+          <div className="space-y-2">
+            <label htmlFor="contact-name" className="label-luxe">
+              Your Name
+            </label>
+            <Input
+              id="contact-name"
+              className="input-luxe-line"
+              placeholder="Ahmed Razzaq"
+              autoComplete="name"
+              {...register("name")}
+            />
+            {errors.name && (
+              <p className="text-xs text-error">{errors.name.message}</p>
             )}
           </div>
 
-          <div>
-            <Label>Message</Label>
+          <div className="space-y-2">
+            <label htmlFor="contact-email" className="label-luxe">
+              Email Address
+            </label>
+            <Input
+              id="contact-email"
+              type="email"
+              className="input-luxe-line"
+              placeholder="your@email.com"
+              autoComplete="email"
+              {...register("email")}
+            />
+            {errors.email && (
+              <p className="text-xs text-error">{errors.email.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="contact-subject" className="label-luxe">
+              Subject
+            </label>
+            <select
+              id="contact-subject"
+              {...register("subject")}
+              className="input-luxe-line cursor-pointer appearance-none bg-transparent"
+            >
+              <option value="">Order Inquiry / Gifting / General</option>
+              {SUBJECTS.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+            {errors.subject && (
+              <p className="text-xs text-error">{errors.subject.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="contact-message" className="label-luxe">
+              Message
+            </label>
             <Textarea
-              className="mt-1.5 min-h-[140px]"
+              id="contact-message"
+              variant="line"
+              placeholder="Tell us what's on your mind..."
               {...register("message")}
-              placeholder="How can we help you?"
             />
             {errors.message && (
-              <p className="mt-1 text-xs text-error">{errors.message.message}</p>
+              <p className="text-xs text-error">{errors.message.message}</p>
             )}
           </div>
 
           {error && (
-            <p className="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+            <p className="text-sm text-error" role="alert">
               {error}
             </p>
           )}
@@ -120,8 +137,8 @@ export function ContactForm() {
         </form>
       ) : (
         <div className="py-8 text-center">
-          <p className="font-display text-3xl italic text-gold">Thank you.</p>
-          <p className="mt-3 text-sm text-muted-foreground">
+          <p className="font-display text-3xl italic text-gold-bright">Thank you.</p>
+          <p className="mt-3 text-sm font-light text-muted-foreground">
             We received your message and will get back to you within 24 hours.
           </p>
         </div>

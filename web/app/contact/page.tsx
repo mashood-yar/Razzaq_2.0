@@ -61,8 +61,10 @@ export default function ContactPage() {
           </div>
 
           <div>
-            <h2 className="mb-8 font-display text-2xl font-light">Send us a message</h2>
-            <ContactForm />
+            <h2 className="font-display text-2xl font-light text-foreground">Send Us a Message</h2>
+            <div className="mt-10">
+              <ContactForm />
+            </div>
           </div>
         </div>
       </div>

@@ -4,6 +4,8 @@ import { useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, SlidersHorizontal } from "lucide-react";
 import type { LegacyProduct as Product } from "@/lib/products";
+import type { MainNoteCategory } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +31,20 @@ import { CategoryBanner } from "@/components/banners/category-banner";
 import { isLegacyProductOnSale } from "@/lib/product-highlights";
 
 const PAGE_SIZE = 8;
+
+type QuickFilterId = "all" | "oud" | "oriental" | "floral" | "fresh";
+
+const QUICK_FILTERS: {
+  id: QuickFilterId;
+  label: string;
+  notes: MainNoteCategory[];
+}[] = [
+  { id: "all", label: "All", notes: [] },
+  { id: "oud", label: "Oud", notes: ["Woody", "Amber"] },
+  { id: "oriental", label: "Oriental", notes: ["Oriental"] },
+  { id: "floral", label: "Floral", notes: ["Floral"] },
+  { id: "fresh", label: "Fresh", notes: ["Fresh", "Citrus"] },
+];
 
 type SortKey = "featured" | "price-asc" | "price-desc" | "bestselling" | "newest";
 
@@ -112,6 +128,7 @@ export function ShopContent({ initialProducts }: { initialProducts: Product[] })
   const [sort, setSort] = useState<SortKey>("featured");
   const [filters, setFilters] = useState<ShopFiltersState>(defaultFilters);
   const [visible, setVisible] = useState(PAGE_SIZE);
+  const [quickFilter, setQuickFilter] = useState<QuickFilterId>("all");
 
   const categorySlug = searchParams.get("category");
   const saleOnly = searchParams.get("sale") === "true";
@@ -137,7 +154,65 @@ export function ShopContent({ initialProducts }: { initialProducts: Product[] })
   const slice = filtered.slice(0, visible);
   const hasMore = visible < filtered.length;
 
+  function applyQuickFilter(id: QuickFilterId) {
+    setQuickFilter(id);
+    const match = QUICK_FILTERS.find((f) => f.id === id);
+    setFilters((current) => ({
+      ...current,
+      notes: match?.notes ?? [],
+    }));
+    setVisible(PAGE_SIZE);
+  }
+
   return (
+    <>
+      <section
+        className="relative flex min-h-[45svh] items-end overflow-hidden bg-noir pt-[100px]"
+        aria-label="Fragrances collection"
+      >
+        <div
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_75%_30%,rgba(196,154,30,0.07),transparent_55%),linear-gradient(135deg,#0A0A08_0%,#181816_100%)]"
+          aria-hidden
+        />
+        <div className="relative z-10 mx-auto w-full max-w-4xl px-5 pb-16 pt-8 sm:px-6">
+          <span className="mb-5 block font-body text-[11px] font-medium uppercase tracking-[0.3em] text-gold-bright opacity-85">
+            The Collection
+          </span>
+          <h1 className="font-display text-[clamp(2.8rem,8vw,6rem)] font-light leading-[0.95] tracking-tight text-foreground">
+            All <em className="text-gold-bright">Fragrances</em>
+          </h1>
+          <p className="mt-5 max-w-md text-[15px] font-light leading-relaxed text-text-secondary">
+            Seven signatures. Each one a world. Discover the scent that speaks for you.
+          </p>
+        </div>
+      </section>
+
+      <div
+        className="sticky top-[100px] z-40 border-y border-border bg-noir-surface px-5 py-5 sm:px-6"
+        role="navigation"
+        aria-label="Filter fragrances"
+      >
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3">
+          <span className="mr-1 text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            Filter:
+          </span>
+          {QUICK_FILTERS.map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              aria-pressed={quickFilter === f.id}
+              className={cn("filter-btn", quickFilter === f.id && "filter-btn-active")}
+              onClick={() => applyQuickFilter(f.id)}
+            >
+              {f.label}
+            </button>
+          ))}
+          <span className="ml-auto text-[11px] tracking-wider text-[#4A4640]" aria-live="polite">
+            {filtered.length} Fragrance{filtered.length !== 1 ? "s" : ""}
+          </span>
+        </div>
+      </div>
+
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:flex lg:gap-12 lg:px-8 lg:py-14">
       {/* Desktop filters */}
       <div className="hidden w-64 shrink-0 lg:block">
@@ -198,11 +273,11 @@ export function ShopContent({ initialProducts }: { initialProducts: Product[] })
           </div>
         </div>
 
-        <p className="mt-6 text-sm text-muted-foreground">
+        <p className="mt-6 text-sm text-muted-foreground lg:hidden">
           {filtered.length} fragrance{filtered.length !== 1 ? "s" : ""}
         </p>
 
-        <div className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mt-10 grid gap-10 sm:grid-cols-2 sm:gap-14 lg:grid-cols-3 lg:gap-16 xl:grid-cols-3">
           {slice.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
@@ -227,5 +302,6 @@ export function ShopContent({ initialProducts }: { initialProducts: Product[] })
         )}
       </div>
     </div>
+    </>
   );
 }

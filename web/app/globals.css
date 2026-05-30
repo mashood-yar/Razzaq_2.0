@@ -207,6 +207,34 @@
     @apply flex h-12 w-full rounded-none border border-border bg-[#111110]/80 px-5 text-sm font-light text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C49A1E]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50;
   }
 
+  .input-luxe-line {
+    @apply h-auto w-full rounded-none border-0 border-b border-noir-muted bg-transparent px-0 py-3.5 text-[15px] font-light text-foreground placeholder:italic placeholder:text-muted-foreground focus-visible:border-gold-bright focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .textarea-luxe-line {
+    @apply min-h-[100px] w-full resize-y rounded-none border-0 border-b border-noir-muted bg-transparent px-0 py-3.5 text-[15px] font-light text-foreground placeholder:italic placeholder:text-muted-foreground focus-visible:border-gold-bright focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .label-luxe {
+    @apply mb-2 block font-body text-[10px] font-medium uppercase tracking-[0.25em] text-muted-foreground;
+  }
+
+  .filter-btn {
+    @apply border border-noir-muted bg-transparent px-[18px] py-2 font-body text-[11px] font-medium uppercase tracking-[0.12em] text-text-secondary transition-[border-color,color,background] duration-300 hover:border-gold-warm hover:bg-gold-subtle hover:text-gold-bright;
+  }
+
+  .filter-btn-active {
+    @apply border-gold-warm bg-gold-subtle text-gold-bright;
+  }
+
+  .quiz-pill {
+    @apply border border-noir-muted bg-transparent px-5 py-2.5 font-body text-[11px] font-medium uppercase tracking-[0.15em] text-text-secondary transition-[border-color,color,background] duration-300 hover:border-gold-warm hover:bg-gold-subtle hover:text-gold-bright;
+  }
+
+  .quiz-pill-active {
+    @apply border-gold-warm bg-gold-subtle text-gold-bright;
+  }
+
   .site-nav-bar {
     @apply h-[60px] w-full border-b border-transparent bg-noir/90 shadow-none backdrop-blur-xl transition-[border-color,background] duration-300;
   }

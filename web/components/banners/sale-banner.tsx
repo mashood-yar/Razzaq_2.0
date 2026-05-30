@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import { SALE_COUNTDOWN_END_KEY } from "@/lib/banner-constants";
 
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
@@ -45,19 +46,25 @@ function useCountdown(endAt: number) {
 
 function CountdownUnit({ value, label }: { value: number; label: string }) {
   return (
-    <motion.div
-      key={`${label}-${value}`}
-      initial={{ scale: 0.92, opacity: 0.6 }}
-      animate={{ scale: 1, opacity: 1 }}
-      className="flex min-w-[3.25rem] flex-col items-center rounded-2xl bg-noir/15 px-2 py-2 backdrop-blur-sm sm:min-w-[4rem] sm:px-3"
-    >
-      <span className="font-display text-2xl tabular-nums text-noir sm:text-3xl">
+    <div className="text-center">
+      <span className="font-display text-[clamp(3rem,8vw,5rem)] font-light leading-none tracking-tight text-foreground">
         {pad(value)}
       </span>
-      <span className="mt-0.5 text-[10px] uppercase tracking-widest text-noir/70">
+      <span className="mt-2 block text-[10px] font-medium uppercase tracking-[0.25em] text-muted-foreground">
         {label}
       </span>
-    </motion.div>
+    </div>
+  );
+}
+
+function CountdownSeparator() {
+  return (
+    <span
+      className="animate-pulse self-center pb-4 font-display text-[clamp(2rem,5vw,3.5rem)] text-gold-warm opacity-40"
+      aria-hidden
+    >
+      :
+    </span>
   );
 }
 
@@ -79,70 +86,34 @@ export function SaleBanner() {
       whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: reduceMotion ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] }}
-      className="relative overflow-hidden rounded-[2rem] bg-gold px-6 py-12 sm:px-12 sm:py-14"
+      className="border-y border-border bg-noir-elevated px-5 py-20 text-center sm:px-6 md:py-28"
+      aria-labelledby="sale-heading"
     >
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute -right-16 top-1/2 h-48 w-48 -translate-y-1/2 rounded-full bg-white/20 blur-3xl"
-        animate={reduceMotion ? undefined : { scale: [1, 1.08, 1], opacity: [0.35, 0.5, 0.35] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute -left-10 bottom-0 h-32 w-32 rounded-full bg-noir/20 blur-2xl"
-        animate={reduceMotion ? undefined : { x: [0, 12, 0] }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        aria-hidden
-        className="absolute inset-0 bg-grain opacity-[0.12] mix-blend-overlay"
-      />
+      <span className="eyebrow">Limited Time</span>
+      <h2 id="sale-heading" className="text-display mt-3 text-foreground">
+        Eid Collection Sale
+      </h2>
+      <p className="mt-2 text-[13px] tracking-widest text-muted-foreground">
+        Up to 30% off our finest oriental fragrances. Ends soon.
+      </p>
 
-      <motion.div
-        className="relative z-10 flex flex-col items-center gap-8 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left"
+      <div
+        className="mx-auto mt-12 flex max-w-2xl flex-wrap items-end justify-center gap-8"
+        aria-live="polite"
+        aria-label="Sale countdown timer"
       >
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, x: -16 }}
-          whileInView={reduceMotion ? undefined : { opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: reduceMotion ? 0 : 0.1 }}
-        >
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-noir/80">
-            Limited time offer
-          </p>
-          <h2 className="mt-2 font-display text-3xl text-noir sm:text-4xl">
-            Seasonal indulgence
-          </h2>
-          <p className="mt-2 text-lg font-semibold text-noir">Up to 30% off select pieces</p>
-        </motion.div>
+        <CountdownUnit value={countdown.days} label="Days" />
+        <CountdownSeparator />
+        <CountdownUnit value={countdown.hours} label="Hours" />
+        <CountdownSeparator />
+        <CountdownUnit value={countdown.minutes} label="Minutes" />
+        <CountdownSeparator />
+        <CountdownUnit value={countdown.seconds} label="Seconds" />
+      </div>
 
-        <motion.div
-          className="flex flex-wrap justify-center gap-2 sm:gap-3"
-          initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: reduceMotion ? 0 : 0.15 }}
-        >
-          <CountdownUnit value={countdown.days} label="Days" />
-          <CountdownUnit value={countdown.hours} label="Hours" />
-          <CountdownUnit value={countdown.minutes} label="Min" />
-          <CountdownUnit value={countdown.seconds} label="Sec" />
-        </motion.div>
-
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, x: 16 }}
-          whileInView={reduceMotion ? undefined : { opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: reduceMotion ? 0 : 0.2 }}
-        >
-          <Link
-            href="/shop?sale=true"
-            className="inline-flex h-12 items-center justify-center rounded-none bg-noir px-8 text-sm font-semibold text-gold shadow-lg transition-transform hover:scale-105 active:scale-95"
-          >
-            Shop the sale
-          </Link>
-        </motion.div>
-      </motion.div>
+      <Button asChild size="lg" className="mt-12">
+        <Link href="/shop?sale=true">Shop the Sale</Link>
+      </Button>
     </motion.section>
   );
 }
