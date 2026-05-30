@@ -83,10 +83,10 @@ export function highlightLabelText(label: HighlightLabel): string {
 export function highlightLabelClasses(label: HighlightLabel): string {
   switch (label) {
     case "most-selling":
-      return "border-transparent bg-ocean-mid text-primary-foreground";
+      return "border-transparent bg-gold-warm text-noir";
     case "on-sale":
-      return "border-transparent bg-secondary text-secondary-foreground";
+      return "border-transparent bg-foreground text-noir";
     case "premium":
-      return "border-transparent bg-gold text-ocean-deep";
+      return "border border-gold-warm bg-gold-subtle text-gold-bright";
   }
 }

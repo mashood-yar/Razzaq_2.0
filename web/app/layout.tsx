@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Nunito } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import "react-loading-skeleton/dist/skeleton.css";
 import { rootMetadataDefaults } from "@/lib/seo/metadata";
@@ -12,24 +12,25 @@ import { AppToaster } from "@/components/providers/app-toaster";
 import { IntroAnimation } from "@/components/ui/intro-animation";
 import { CustomCursorProvider } from "@/components/ui/custom-cursor-provider";
 
-const fraunces = Fraunces({
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  variable: "--font-fraunces",
+  weight: ["300", "400", "500"],
+  style: ["normal", "italic"],
+  variable: "--font-display",
   display: "swap",
 });
 
-const nunito = Nunito({
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-nunito",
+  weight: ["300", "400", "500"],
+  variable: "--font-body",
   display: "swap",
 });
 
 export const metadata: Metadata = rootMetadataDefaults;
 
 export const viewport: Viewport = {
-  themeColor: "#1B262C",
+  themeColor: "#0A0A08",
   colorScheme: "dark",
 };
 
@@ -41,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${fraunces.variable} ${nunito.variable} min-h-screen bg-background font-body antialiased`}
+        className={`${cormorant.variable} ${dmSans.variable} min-h-screen bg-background font-body font-light antialiased`}
       >
         <AuthProvider>
           <AppToaster />

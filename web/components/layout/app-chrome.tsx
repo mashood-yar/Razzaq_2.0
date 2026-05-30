@@ -16,7 +16,7 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative z-10">
       <SiteHeader />
-      <main className="min-h-screen pt-28 sm:pt-32">{children}</main>
+      <main className="min-h-screen pt-[100px]">{children}</main>
       <SiteFooter />
       <DeferredChrome />
     </div>

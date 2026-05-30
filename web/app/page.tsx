@@ -112,12 +112,12 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Hero */}
-      <section className="relative flex min-h-[calc(100vh-6rem)] flex-col justify-end overflow-hidden bg-[#1B262C]">
+      {/* Hero — Nocturne Doré */}
+      <section className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden bg-noir pt-[100px]">
         <div className="absolute inset-0 z-0">
           <div className="relative h-full w-full">
             <video
-              className="h-full w-full object-cover brightness-75"
+              className="h-full w-full object-cover opacity-55"
               autoPlay
               muted
               loop
@@ -128,34 +128,33 @@ export default async function HomePage() {
               <source src="/hero-bg.mp4" type="video/mp4" />
             </video>
             <div
-              className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/40"
+              className="absolute inset-0 bg-gradient-to-t from-[#0A0A08] via-[#0A0A08]/65 to-[#0A0A08]/15"
               aria-hidden
             />
           </div>
           <div
             aria-hidden
-            className="pointer-events-none absolute -left-24 top-1/3 h-72 w-72 rounded-full bg-[#0F4C75] blur-3xl opacity-20"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -right-16 top-1/4 h-80 w-80 rounded-full bg-[#3282B8] blur-3xl opacity-20"
+            className="pointer-events-none absolute right-0 top-0 h-[40vw] w-[40vw] rounded-full bg-[radial-gradient(circle,rgba(196,154,30,0.07),transparent_70%)]"
           />
         </div>
 
-        <div className="relative z-10 mx-auto flex max-w-7xl flex-col gap-10 px-4 pb-24 pt-32 sm:px-6 lg:px-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-gold">
-            Quetta · Fragrance house
-          </p>
-          <h1 className="max-w-4xl font-display text-5xl leading-[1.05] tracking-tight text-[#F3F4F1] sm:text-6xl lg:text-7xl">
-            Crafted for the Discerning Pakistani
+        <div className="relative z-10 mx-auto w-full max-w-4xl px-5 pb-20 pt-8 sm:px-6 md:pb-28">
+          <span className="eyebrow mb-5 block opacity-85">
+            Razzaq Luxe · Quetta, Pakistan
+          </span>
+          <h1 className="max-w-4xl font-display text-[clamp(3.2rem,13vw,8rem)] font-light leading-[0.92] tracking-tight text-foreground">
+            The Art of
+            <br />
+            <em className="text-gold-bright">Scent</em>
           </h1>
-          <p className="max-w-xl text-lg text-muted-foreground">
-            Premium fragrances and lifestyle pieces — delivered with care across Pakistan.
+          <p className="mt-6 max-w-md text-base font-light leading-relaxed text-text-secondary">
+            Cinematic fragrances crafted for the discerning soul. Dark oud, rare amber, timeless
+            elegance — from the heart of Balochistan.
           </p>
-          <div className="flex flex-wrap gap-4">
+          <div className="mt-10 flex flex-wrap gap-5">
             <Button asChild size="lg" className="gap-2">
               <Link href="/shop">
-                Shop the Collection
+                Discover Fragrances
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
             </Button>
@@ -163,13 +162,14 @@ export default async function HomePage() {
               <Link href="/about">Our Story</Link>
             </Button>
           </div>
-          <p className="text-sm font-medium text-muted-foreground">
-            Trusted by <span className="font-semibold text-gold">1,000+</span> customers nationwide
+          <p className="mt-8 text-xs text-muted-foreground">
+            Trusted by <strong className="font-medium text-gold-bright">1,000+</strong> customers
+            across Pakistan
           </p>
         </div>
       </section>
 
-      <div className="section-alt border-t border-border px-4 pb-16 pt-12 sm:px-6 lg:px-8">
+      <div className="border-y border-border bg-noir-surface px-4 pb-12 pt-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <SignatureScentsMarquee />
         </div>
@@ -186,25 +186,18 @@ export default async function HomePage() {
 
         {/* Best sellers */}
         <section>
-          <div className="mb-12 text-center">
-            <h2 className="font-display text-3xl sm:text-4xl">Best sellers</h2>
-            <p className="mt-3 text-muted-foreground">
-              Coveted compositions — quick add to cart, endless compliments.
-            </p>
+          <div className="mb-14 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+            <div>
+              <span className="eyebrow">Curated Selection</span>
+              <h2 className="mt-3 font-display text-3xl font-light sm:text-4xl">Best sellers</h2>
+              <p className="mt-3 max-w-lg text-muted-foreground">
+                Coveted compositions — quick add to cart, endless compliments.
+              </p>
+            </div>
           </div>
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-            {bestSellers.map((p, i) => (
-              <ProductCard
-                key={p.id}
-                product={p}
-                radiusClass={
-                  i % 3 === 0
-                    ? "rounded-[2.5rem_1.5rem_2rem_2rem]"
-                    : i % 3 === 1
-                      ? "rounded-[1.5rem_2.5rem_2rem_2rem]"
-                      : "rounded-[2rem_2rem_1.5rem_2.5rem]"
-                }
-              />
+          <div className="grid gap-12 sm:grid-cols-2 sm:gap-14 lg:grid-cols-3 lg:gap-16">
+            {bestSellers.map((p) => (
+              <ProductCard key={p.id} product={p} />
             ))}
           </div>
         </section>
@@ -215,12 +208,13 @@ export default async function HomePage() {
         <section>
           <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <h2 className="font-display text-3xl sm:text-4xl">Featured collections</h2>
+              <span className="eyebrow">Collections</span>
+              <h2 className="mt-3 font-display text-3xl font-light sm:text-4xl">Featured collections</h2>
               <p className="mt-2 max-w-lg text-muted-foreground">
                 <GoldBrandText text="Four doors into the Razzaq Luxe universe — each curated with obsessive precision." />
               </p>
             </div>
-            <Button asChild variant="outline">
+            <Button asChild variant="outline" className="self-start">
               <Link href="/shop">View all</Link>
             </Button>
           </div>
@@ -228,11 +222,12 @@ export default async function HomePage() {
         </section>
 
         {/* Notes */}
-        <section className="section-ocean-surface rounded-[2rem] border border-border/50 bg-ocean-surface/80 px-6 py-16 sm:px-12">
+        <section className="rounded-sm border border-border bg-noir-surface px-6 py-16 sm:px-12">
           <div className="mb-12 text-center">
-            <h2 className="font-display text-3xl sm:text-4xl">Crafted with Purpose</h2>
+            <span className="eyebrow">Our palette</span>
+            <h2 className="mt-3 font-display text-3xl font-light sm:text-4xl">Crafted with Purpose</h2>
             <p className="mt-3 text-muted-foreground">
-              Our palette — premium materials orchestrated like art.
+              Premium materials orchestrated like art.
             </p>
           </div>
           <ScentWheel />
@@ -241,8 +236,9 @@ export default async function HomePage() {
         {/* Testimonials */}
         <section>
           <div className="mb-12 text-center">
-            <h2 className="font-display text-3xl sm:text-4xl">
-              Voices of <span className="text-gold">Razzaq Luxe</span>
+            <span className="eyebrow">Testimonials</span>
+            <h2 className="mt-3 font-display text-3xl font-light sm:text-4xl">
+              Voices of <span className="text-gold-shimmer">Razzaq Luxe</span>
             </h2>
             <p className="mt-3 text-muted-foreground">Trusted by fashion enthusiasts worldwide.</p>
           </div>
@@ -263,7 +259,7 @@ export default async function HomePage() {
             {ugcTiles.map((tile) => (
               <div
                 key={tile.id}
-                className="relative aspect-[1/1.15] overflow-hidden rounded-[2rem] bg-muted"
+                className="relative aspect-[1/1.15] overflow-hidden rounded-sm bg-muted"
               >
                 <Image src={tile.src} alt={tile.alt} fill className="object-cover" sizes="(max-width:768px) 50vw, 25vw" />
               </div>

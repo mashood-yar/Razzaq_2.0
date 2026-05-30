@@ -21,7 +21,7 @@ function MarqueeTrack({
         cell.type === "dot" ? (
           <span
             key={`d-${idx}`}
-            className="mx-6 shrink-0 align-middle text-2xl text-muted-foreground sm:mx-10 sm:text-[1.65rem]"
+            className="mx-5 shrink-0 align-middle text-xs text-gold-warm opacity-70 sm:mx-6"
             aria-hidden
           >
             ·
@@ -53,7 +53,7 @@ function ProductLink({ product }: { product: HomeFeaturedMarqueeProduct }) {
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group relative shrink-0 align-middle font-body text-[clamp(1.65rem,4.8vw,2.75rem)] font-normal tracking-tight text-foreground outline-none transition-[transform,color] duration-300 ease-out hover:z-10 hover:text-gold focus-visible:z-10 focus-visible:text-gold motion-safe:hover:scale-105 motion-reduce:hover:scale-100"
+      className="group relative shrink-0 align-middle font-display text-[clamp(1rem,2.5vw,1.3rem)] font-light italic tracking-wide text-text-secondary outline-none transition-[color] duration-300 ease-out hover:z-10 hover:text-gold-warm focus-visible:z-10 focus-visible:text-gold-warm"
     >
       <span>{product.name}</span>
       <span
@@ -77,22 +77,22 @@ export function SignatureScentsMarquee({
   return (
     <section
       aria-labelledby="signature-scents-heading"
-      className="w-full overflow-hidden rounded-2xl border border-brand-mist/30 bg-graphite md:rounded-3xl"
+      className="w-full overflow-hidden border-y border-border bg-noir-surface py-5"
     >
-      <div className="px-6 pb-6 pt-10 md:px-12 md:pb-8 md:pt-14">
+      <div className="px-5 pb-2 pt-6 md:px-8 md:pt-8">
         <h2
           id="signature-scents-heading"
-          className="font-body text-[11px] font-medium uppercase tracking-[0.35em] text-gold-muted"
+          className="eyebrow"
         >
           Signature line
         </h2>
-        <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-2 max-w-xl text-sm font-light leading-relaxed text-muted-foreground">
           Our house fragrances — Khan&apos;s Aura, Flora, Sporty, and Legend. Boutique in{" "}
           <strong className="font-medium text-foreground">Quetta, Pakistan</strong>. Hover for a preview; click to shop.
         </p>
       </div>
 
-      <div className="pb-12 md:pb-16">
+      <div className="pb-10 md:pb-12">
         <div className="flex flex-col gap-7 md:gap-9 motion-reduce:hidden">
           <MarqueeTrack products={productsList} />
           <MarqueeTrack products={productsList} reverse />

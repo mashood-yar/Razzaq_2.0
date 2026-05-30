@@ -11,28 +11,38 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        noir: {
+          DEFAULT: "#0A0A08",
+          surface: "#111110",
+          elevated: "#181816",
+          border: "#2A2A26",
+          muted: "#3D3D38",
+        },
         "ocean-deep": "#1B262C",
         "ocean-surface": "#16213E",
         "ocean-primary": "#0F4C75",
         "ocean-mid": "#3282B8",
         "ocean-light": "#BBE1FA",
         gold: {
-          DEFAULT: "#B8961E",
+          DEFAULT: "#C49A1E",
+          bright: "#D4A832",
+          deep: "#A07C12",
           light: "#D4A832",
-          subtle: "#F5EDD6",
+          warm: "#C49A1E",
+          subtle: "rgb(212 168 50 / 0.08)",
         },
         "gold-light": "#D4A832",
         "gold-subtle": "#F5EDD6",
-        "text-primary": "#F3F4F1",
-        "text-secondary": "#BBE1FA",
-        "text-muted": "#8BA3B5",
+        "text-primary": "#F5F0E8",
+        "text-secondary": "#C8BFA8",
+        "text-muted": "#7A7468",
         success: "#4CAF82",
         error: "#E05A5A",
         border: {
-          DEFAULT: "#0F4C75",
-          subtle: "#1B3A4B",
+          DEFAULT: "#2A2A26",
+          subtle: "#2A2A26",
         },
-        "border-subtle": "#1B3A4B",
+        "border-subtle": "#2A2A26",
 
         /* Semantic — wired to CSS variables */
         background: "var(--background)",
@@ -103,24 +113,25 @@ const config: Config = {
         "emerald-brand": "#3282B8",
       },
       fontFamily: {
-        display: ["var(--font-fraunces)", "Georgia", "serif"],
-        body: ["var(--font-nunito)", "system-ui", "sans-serif"],
-        serif: ["var(--font-fraunces)", "Georgia", "serif"],
-        sans: ["var(--font-nunito)", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "Cormorant Garamond", "Georgia", "serif"],
+        body: ["var(--font-body)", "DM Sans", "system-ui", "sans-serif"],
+        serif: ["var(--font-display)", "Cormorant Garamond", "Georgia", "serif"],
+        sans: ["var(--font-body)", "DM Sans", "system-ui", "sans-serif"],
         mono: ["Courier Prime", "Courier New", "monospace"],
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        sm: "2px",
         pill: "9999px",
-        luxe: "2rem",
+        luxe: "4px",
       },
       boxShadow: {
         navy: "0 12px 40px -12px rgba(15, 76, 117, 0.35)",
         moss: "0 12px 40px -12px rgba(15, 76, 117, 0.35)",
         ocean: "0 12px 40px -12px rgba(15, 76, 117, 0.35)",
-        card: "0 8px 32px -8px rgba(0, 0, 0, 0.35)",
+        card: "0 4px 24px rgba(0,0,0,0.6)",
+        nocturne: "0 20px 60px rgba(0,0,0,0.8)",
       },
       keyframes: {
         "marquee-seamless": {
@@ -130,6 +141,10 @@ const config: Config = {
         "fade-up": {
           "0%": { opacity: "0", transform: "translateY(16px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "gold-shimmer": {
+          "0%": { backgroundPosition: "-200% center" },
+          "100%": { backgroundPosition: "200% center" },
         },
         shimmer: {
           "0%": { backgroundPosition: "-200% 0" },
@@ -148,6 +163,7 @@ const config: Config = {
         "marquee-row": "marquee-seamless 52s linear infinite",
         "marquee-row-reverse": "marquee-seamless 62s linear infinite reverse",
         "fade-up": "fade-up 0.7s ease-out forwards",
+        "gold-shimmer": "gold-shimmer 4s linear infinite",
         shimmer: "shimmer 2s ease-in-out infinite",
         "drawer-in": "drawer-in 0.5s cubic-bezier(0.16,1,0.3,1) forwards",
         "organic-float": "organic-float 12s ease-in-out infinite",

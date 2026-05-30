@@ -4,36 +4,39 @@
 
 @layer base {
   :root {
-    --background: #1b262c;
-    --background-secondary: #16213e;
-    --foreground: #f3f4f1;
-    --primary: #0f4c75;
-    --primary-hover: #3282b8;
-    --primary-foreground: #f3f4f1;
-    --secondary: #3282b8;
-    --secondary-foreground: #f3f4f1;
-    --accent: #bbe1fa;
-    --accent-foreground: #1b262c;
-    --muted: #1b3a4b;
-    --muted-foreground: #8ba3b5;
-    --border: #1b3a4b;
-    --border-hover: #3282b8;
-    --card: #16213e;
-    --card-foreground: #f3f4f1;
+    /* Nocturne Doré — storefront tokens */
+    --background: #0a0a08;
+    --background-secondary: #111110;
+    --foreground: #f5f0e8;
+    --primary: #c49a1e;
+    --primary-hover: #d4a832;
+    --primary-foreground: #0a0a08;
+    --secondary: #181816;
+    --secondary-foreground: #c8bfa8;
+    --accent: rgb(212 168 50 / 0.08);
+    --accent-foreground: #f5f0e8;
+    --muted: #181816;
+    --muted-foreground: #7a7468;
+    --border: #2a2a26;
+    --border-hover: #3d3d38;
+    --card: #111110;
+    --card-foreground: #f5f0e8;
     --gold: #d4a832;
-    --gold-subtle: #2a2210;
+    --gold-subtle: rgb(212 168 50 / 0.08);
     --destructive: #e05a5a;
-    --destructive-foreground: #f3f4f1;
+    --destructive-foreground: #f5f0e8;
     --success: #4caf82;
-    --radius: 2rem;
+    --radius: 4px;
 
-    --text-on-light: #f3f4f1;
-    --text-muted-on-light: #8ba3b5;
-    --text-caption-on-light: #8ba3b5;
-    --text-on-dark: #f3f4f1;
-    --text-muted-on-dark: #8ba3b5;
-    --text-on-primary: #f3f4f1;
-    --text-on-ocean-mid: #f3f4f1;
+    --text-on-light: #f5f0e8;
+    --text-muted-on-light: #7a7468;
+    --text-caption-on-light: #7a7468;
+    --text-on-dark: #f5f0e8;
+    --text-muted-on-dark: #7a7468;
+    --text-on-primary: #0a0a08;
+    --text-on-ocean-mid: #f5f0e8;
+
+    --ease-luxury: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   html {
@@ -60,23 +63,23 @@
   }
 
   ::selection {
-    background-color: rgb(15 76 117 / 0.45);
-    color: #f3f4f1;
+    background-color: rgb(196 154 30 / 0.3);
+    color: #f5f0e8;
   }
 
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 3px;
+    height: 3px;
   }
   ::-webkit-scrollbar-track {
-    background: var(--muted);
+    background: var(--background);
   }
   ::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 3px;
+    background: var(--border-hover);
+    border-radius: 0;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--primary-hover);
+    background: var(--primary);
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -92,45 +95,70 @@
   }
 
   .price-gold {
-    @apply font-display font-semibold text-gold-light;
+    @apply font-display font-medium text-gold;
   }
 
   .luxe-card {
-    @apply rounded-luxe border border-border-subtle/80 bg-card text-card-foreground shadow-card transition-all duration-300;
+    @apply rounded-sm border border-border bg-card text-card-foreground shadow-card transition-all duration-500;
   }
 
   .luxe-card:hover {
-    @apply -translate-y-2 shadow-ocean;
+    @apply -translate-y-1;
+    box-shadow: 0 20px 60px rgb(0 0 0 / 0.8);
   }
 
   .organic-blob {
-    @apply pointer-events-none absolute rounded-full blur-3xl opacity-30;
-    background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+    @apply pointer-events-none absolute rounded-full blur-3xl opacity-20;
+    background: radial-gradient(circle, rgb(196 154 30 / 0.12) 0%, transparent 70%);
     animation: organic-float 14s ease-in-out infinite;
   }
 
   .section-alt {
-    @apply bg-[#16213E];
+    @apply bg-[#111110];
   }
 
   .section-sand {
-    @apply bg-[#0F4C75]/40;
+    @apply bg-[#181816];
   }
 
   .section-ocean-deep {
-    @apply bg-[#1B262C];
+    @apply bg-[#0A0A08];
   }
 
   .section-ocean-surface {
-    @apply bg-[#16213E];
+    @apply bg-[#111110];
   }
 
   .section-ocean-primary {
-    @apply bg-[#0F4C75];
+    @apply bg-[#181816];
+  }
+
+  .eyebrow {
+    @apply font-body text-[11px] font-medium uppercase tracking-[0.25em] text-[#C49A1E];
+  }
+
+  .text-gold-shimmer {
+    background: linear-gradient(
+      90deg,
+      #a07c12 0%,
+      #d4a832 30%,
+      #f0c84a 50%,
+      #d4a832 70%,
+      #a07c12 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gold-shimmer 4s linear infinite;
+  }
+
+  .line-gold {
+    @apply my-6 block h-px w-10 bg-[#C49A1E];
   }
 
   .focus-ocean {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ocean-mid/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C49A1E]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
 
   .focus-moss,
@@ -142,7 +170,7 @@
     background: linear-gradient(
       90deg,
       var(--muted) 0%,
-      #3282b8 45%,
+      #c49a1e 45%,
       var(--muted) 90%
     );
     background-size: 200% 100%;
@@ -152,35 +180,39 @@
 
 @layer components {
   .btn-luxe {
-    @apply inline-flex h-12 items-center justify-center gap-2 rounded-full px-8 text-sm font-semibold transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ocean-mid/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95 hover:scale-105 disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex min-h-[52px] items-center justify-center gap-2 rounded-none px-10 text-[11px] font-medium uppercase tracking-[0.2em] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C49A1E]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50;
   }
 
   .btn-luxe-primary {
-    @apply btn-luxe bg-ocean-primary text-primary-foreground hover:bg-ocean-mid;
+    @apply btn-luxe bg-[#C49A1E] text-[#0A0A08] hover:bg-[#D4A832];
   }
 
   .btn-luxe-secondary {
-    @apply btn-luxe border-2 border-ocean-mid bg-transparent text-ocean-light hover:bg-ocean-mid/15;
+    @apply btn-luxe border border-[#3D3D38] bg-transparent text-[#C8BFA8] hover:border-[#C49A1E] hover:text-foreground;
   }
 
   .btn-luxe-gold {
-    @apply btn-luxe bg-gold text-ocean-deep hover:bg-gold-light;
+    @apply btn-luxe-primary;
   }
 
   .input-luxe {
-    @apply flex h-12 w-full rounded-full border border-border-subtle bg-ocean-surface/80 px-5 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ocean-mid/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50;
+    @apply flex h-12 w-full rounded-none border border-border bg-[#111110]/80 px-5 text-sm font-light text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C49A1E]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .nav-pill {
-    @apply sticky top-4 z-50 mx-4 rounded-full border border-border-subtle/80 bg-ocean-surface/85 shadow-ocean backdrop-blur-xl;
+    @apply sticky top-0 z-50 h-[60px] border-b border-transparent bg-noir/90 shadow-none backdrop-blur-xl transition-[border-color,background] duration-300;
+  }
+
+  .nav-pill.scrolled {
+    @apply border-border bg-noir;
   }
 
   .trust-badge {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-border-subtle/80 bg-ocean-surface/90 px-3 py-1.5 text-xs font-medium text-muted-foreground;
+    @apply inline-flex items-center gap-1.5 rounded-none border border-border bg-[#111110]/90 px-3 py-1.5 text-xs font-medium text-muted-foreground;
   }
 
   .trust-badge-payfast {
-    @apply trust-badge font-semibold text-gold-light;
+    @apply trust-badge font-semibold text-[#D4A832];
   }
 
   .trust-badge-lock {
@@ -188,11 +220,11 @@
   }
 
   .cod-badge {
-    @apply inline-flex rounded-full bg-ocean-mid px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary-foreground;
+    @apply inline-flex rounded-none bg-[#C49A1E] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#0A0A08];
   }
 
   .shipping-banner {
-    @apply bg-ocean-primary py-2.5 text-center text-sm font-medium text-primary-foreground;
+    @apply bg-[#C49A1E] py-2.5 text-center text-[11px] font-medium uppercase tracking-[0.2em] text-[#0A0A08];
   }
 
   /* ── Admin panel (dashboard workflow) ── */
@@ -499,7 +531,7 @@
   position: absolute;
   width: 4rem;
   height: 4rem;
-  border: 2px solid rgb(15 76 117 / 0.35);
+  border: 1px solid rgb(196 154 30 / 0.35);
   pointer-events: none;
 }
 .newsletter-banner-corners::before {
