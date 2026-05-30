@@ -23,25 +23,13 @@ const config: Config = {
         "ocean-primary": "#0F4C75",
         "ocean-mid": "#3282B8",
         "ocean-light": "#BBE1FA",
-        gold: {
-          DEFAULT: "#C49A1E",
-          bright: "#D4A832",
-          deep: "#A07C12",
-          light: "#D4A832",
-          warm: "#C49A1E",
-          subtle: "rgb(212 168 50 / 0.08)",
-        },
+
         "gold-light": "#D4A832",
         "gold-subtle": "#F5EDD6",
         "text-primary": "#F5F0E8",
         "text-secondary": "#C8BFA8",
         "text-muted": "#7A7468",
-        success: "#4CAF82",
-        error: "#E05A5A",
-        border: {
-          DEFAULT: "#2A2A26",
-          subtle: "#2A2A26",
-        },
+
         "border-subtle": "#2A2A26",
 
         /* Gold System */
@@ -103,19 +91,13 @@ const config: Config = {
           DEFAULT: "var(--accent)",
           foreground: "var(--accent-foreground)",
         },
-        muted: {
-          DEFAULT: "var(--muted)",
-          foreground: "var(--muted-foreground)",
-        },
+
         destructive: {
           DEFAULT: "var(--destructive)",
           foreground: "var(--destructive-foreground)",
         },
         ring: "var(--primary)",
-        card: {
-          DEFAULT: "var(--card)",
-          foreground: "var(--card-foreground)",
-        },
+
         contrast: {
           "on-light": "var(--text-on-light)",
           "muted-on-light": "var(--text-muted-on-light)",
@@ -125,7 +107,6 @@ const config: Config = {
           "on-primary": "var(--text-on-primary)",
           "on-terracotta": "var(--text-on-ocean-mid)",
         },
-        warning: "#D4A832",
 
         /* Legacy aliases → Nocturne Doré (storefront); ocean-* kept for admin */
         "rice-paper": "#0A0A08",
@@ -138,13 +119,6 @@ const config: Config = {
         "warm-accent": "#C8BFA8",
         "luxe-gold": "#C49A1E",
         "luxe-gold-bright": "#D4A832",
-        obsidian: "#0A0A08",
-        charcoal: "#111110",
-        graphite: "#181816",
-        ash: "#7A7468",
-        smoke: "#7A7468",
-        ivory: "#F5F0E8",
-        cream: "#F5F0E8",
         brand: {
           slate: "#181816",
           mist: "#C49A1E",

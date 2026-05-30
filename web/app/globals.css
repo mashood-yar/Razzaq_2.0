@@ -255,7 +255,12 @@
   }
 
   .product-card-add-nocturne {
-    @apply mt-3.5 flex min-h-11 w-full items-center justify-center border border-gold-warm/40 bg-transparent text-[10px] font-medium uppercase tracking-[0.22em] text-text-secondary opacity-100 transition-[background,color,border-color,opacity] duration-300 hover:border-gold-warm hover:bg-gold-warm hover:text-noir lg:opacity-0 lg:group-hover:opacity-100;
+    @apply mt-3.5 flex min-h-11 w-full items-center justify-center border bg-transparent text-[10px] font-medium uppercase tracking-[0.22em] text-text-secondary transition-[background,color,border-color,opacity] duration-300 hover:bg-gold-warm hover:text-noir lg:opacity-0 lg:group-hover:opacity-100;
+    border-color: rgb(196 154 30 / 0.4);
+    opacity: 1;
+  }
+  .product-card-add-nocturne:hover {
+    border-color: var(--gold-warm);
   }
 
   .trust-badge {
@@ -392,7 +397,8 @@
   }
 
   .admin-dropzone-active {
-    @apply border-gold-light/60 bg-gold-light/5;
+    border-color: rgb(212 168 50 / 0.6);
+    background-color: rgb(212 168 50 / 0.05);
   }
 
   .admin-skeleton {

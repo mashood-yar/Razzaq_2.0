@@ -12,8 +12,7 @@ import {
   Home,
   Store,
   User,
-  Clock,
-  Mail,
+  Menu,
 } from "lucide-react";
 import type React from "react";
 import { cn } from "@/lib/utils";
@@ -54,12 +53,6 @@ export function SiteHeader() {
   const itemCount = useCartStore((s) =>
     s.items.reduce((n, i) => n + i.quantity, 0),
   );
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 60);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   if (pathname?.startsWith("/admin")) return null;
 
@@ -185,10 +178,10 @@ export function SiteHeader() {
           <Search className="h-[22px] w-[22px]" />
         </button>
 
-        {/* Center: Logo (taps to open full menu per spec) */}
+        {/* Center: Logo — taps to open slide-in menu */}
         <button 
           className="font-display text-[17px] font-medium tracking-[0.18em] text-[var(--cream-bone)] uppercase absolute left-1/2 -translate-x-1/2"
-          onClick={() => setMobileMenuOpen(true)}
+          onClick={() => setMobileOpen(true)}
         >
           RAZZAQ LUXE
         </button>
@@ -266,7 +259,7 @@ export function SiteHeader() {
         MOBILE SLIDE-IN MENU (< 1024px)
       */}
       <AnimatePresence>
-        {mobileMenuOpen && (
+        {mobileOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -280,7 +273,7 @@ export function SiteHeader() {
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
               className="relative flex h-full w-full flex-col justify-center bg-noir p-6 sm:p-10"
             >
               <button
@@ -314,7 +307,7 @@ export function SiteHeader() {
                 >
                   My Account
                 </Link>
-              </nav>
+              </div>
               <p className="mt-12 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
                 Quetta, Pakistan · Since 2020
               </p>

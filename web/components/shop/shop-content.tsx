@@ -6,14 +6,7 @@ import { ChevronDown, Check } from "lucide-react";
 import Image from "next/image";
 import type { LegacyProduct as Product } from "@/lib/products";
 import { ProductCard } from "@/components/product/product-card";
-import {
-  FilterSidebar,
-  type ShopFiltersState,
-} from "@/components/shop/filter-sidebar";
-import { CategoryBanner } from "@/components/banners/category-banner";
-import { isLegacyProductOnSale } from "@/lib/product-highlights";
-
-const PAGE_SIZE = 8;
+import { motion, AnimatePresence } from "framer-motion";
 
 const PAGE_SIZE = 12;
 type SortKey = "featured" | "price-asc" | "price-desc" | "bestselling" | "newest";
@@ -21,8 +14,7 @@ type SortKey = "featured" | "price-asc" | "price-desc" | "bestselling" | "newest
 function applyFilters(products: Product[], q: string, filterVal: string): Product[] {
   const term = q.trim().toLowerCase();
   return products.filter((p) => {
-    if (categorySlug && p.categorySlug !== categorySlug) return false;
-    if (saleOnly && !isLegacyProductOnSale(p)) return false;
+
     if (term) {
       const hit = p.name.toLowerCase().includes(term) || p.tagline.toLowerCase().includes(term);
       if (!hit) return false;

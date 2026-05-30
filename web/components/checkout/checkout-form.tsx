@@ -349,259 +349,40 @@ export function CheckoutForm({
               >
                 {/* Contact section */}
                 <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" className="mt-1.5" {...register("email")} />
-                  {errors.email && (
-                    <p className="mt-1 text-xs text-error">{errors.email.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" type="tel" placeholder="+92 300 0000000" className="mt-1.5" {...register("phone")} />
-                  {errors.phone && (
-                    <p className="mt-1 text-xs text-error">{errors.phone.message}</p>
-                  )}
-                </div>
-                <div className="sm:col-span-2">
-                  <Label htmlFor="addressLine1">Full address</Label>
-                  <Input id="addressLine1" className="mt-1.5" {...register("addressLine1")} />
-                  {errors.addressLine1 && (
-                    <p className="mt-1 text-xs text-error">{errors.addressLine1.message}</p>
-                  )}
-                </div>
-                <div className="sm:col-span-2">
-                  <Label htmlFor="addressLine2">Apartment / landmark (optional)</Label>
-                  <Input id="addressLine2" className="mt-1.5" {...register("addressLine2")} />
-                </div>
-                <div>
-                  <Label htmlFor="city">City</Label>
-                  <select id="city" {...register("city")} className="input-luxe mt-1.5">
-                    <option value="">Select city</option>
-                    {Object.entries(PK_CITIES_BY_PROVINCE).map(([province, cities]) => (
-                      <optgroup key={province} label={province}>
-                        {cities.map((city) => (
-                          <option key={city} value={city}>
-                            {city}
-                          </option>
-                        ))}
-                      </optgroup>
-                    ))}
-                  </select>
-                  {errors.city && (
-                    <p className="mt-1 text-xs text-error">{errors.city.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="province">Province</Label>
-                  <select
-                    id="province"
-                    {...register("province")}
-                    className="input-luxe mt-1.5"
-                  >
-                    <option value="">Select province</option>
-                    {PK_PROVINCES.map((p) => (
-                      <option key={p} value={p}>{p}</option>
-                    ))}
-                  </select>
-                  {errors.province && (
-                    <p className="mt-1 text-xs text-error">{errors.province.message}</p>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <Label>Promo code</Label>
-                <div className="mt-1.5 flex gap-2">
-                  <Input
-                    value={promoInput}
-                    onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
-                    placeholder="Enter code"
-                    className="uppercase"
-                    disabled={!!promoCode}
-                  />
-                  {promoCode ? (
-                    <Button type="button" variant="outline" onClick={removePromo}>
-                      Remove
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={applyPromoCode}
-                      disabled={!promoInput || promoLoading}
-                    >
-                      {promoLoading ? "…" : "Apply"}
-                    </Button>
-                  )}
-                </div>
-                {promoCode && (
-                  <p className="mt-1 text-xs text-success">
-                    Code &ldquo;{promoCode}&rdquo; applied — saving {formatPKR(promoDiscount)}
-                  </p>
-                )}
-                {promoError && (
-                  <p className="mt-1 text-xs text-error">{promoError}</p>
-                )}
-              </div>
-
-              <Button type="submit" size="lg" className="w-full">
-                Continue to shipping
-              </Button>
-            </motion.form>
-          )}
-
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              {...stepVariants}
-              transition={{ duration: 0.25 }}
-              className="space-y-6"
-            >
-              <h2 className="font-display text-3xl text-foreground">
-                Shipping method
-              </h2>
-              <div className="space-y-3">
-                {[
-                  {
-                    value: "standard" as const,
-                    label: "Standard delivery",
-                    sub: "3–5 business days · TCS / Leopards",
-                    price: sub >= 5000 ? "Free" : formatPKR(250),
-                  },
-                  {
-                    value: "express" as const,
-                    label: "Express delivery",
-                    sub: "1–2 business days · TCS",
-                    price: formatPKR(500),
-                  },
-                ].map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => setShippingMethod(opt.value)}
-                    className={`flex w-full items-center justify-between rounded-xl border p-4 text-left transition-colors ${
-                      shippingMethod === opt.value
-                        ? "border-gold/60 bg-gold/5"
-                        : "border-border hover:border-border/80"
-                    }`}
-                  >
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{opt.label}</p>
-                      <p className="text-xs text-muted-foreground">{opt.sub}</p>
-                    </div>
-                    <span className="text-sm font-medium text-gold">{opt.price}</span>
-                  </button>
-                ))}
-              </div>
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={() => setStep(1)}>
-                  Back
-                </Button>
-                <Button
-                  size="lg"
-                  className="flex-1"
-                  onClick={() => setStep(3)}
-                >
-                  Continue to payment
-                </Button>
-              </div>
-            </motion.div>
-          )}
-
-          {step === 3 && (
-            <motion.div
-              key="step3"
-              {...stepVariants}
-              transition={{ duration: 0.25 }}
-              className="space-y-6"
-            >
-              <h2 className="font-display text-3xl text-foreground">
-                Payment
-              </h2>
-              <div className="space-y-3">
-                {([
-                  {
-                    value: "cod" as const,
-                    label: "Cash on delivery",
-                    sub: "Pay in cash when your parcel arrives — available nationwide.",
-                  },
-                  {
-                    value: "bank_transfer" as const,
-                    label: "Bank / Upaisa transfer",
-                    sub: "Transfer the exact total, then enter your receipt reference below.",
-                  },
-                ]).map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => setPaymentMethod(opt.value)}
-                    className={`flex w-full items-center gap-4 rounded-[2rem] border p-4 text-left transition-colors ${
-                      paymentMethod === opt.value
-                        ? "border-gold bg-gold/5 ring-2 ring-gold/20"
-                        : "border-border hover:border-noir-muted"
-                    }`}
-                  >
-                    <div
-                      className={`h-4 w-4 shrink-0 rounded-full border-2 ${
-                        paymentMethod === opt.value
-                          ? "border-gold bg-gold"
-                          : "border-border"
-                      }`}
-                    />
-                    <div>
-                      <p className="flex flex-wrap items-center gap-2 text-sm font-medium text-foreground">
-                        {opt.label}
-                        {opt.value === "cod" ? <span className="cod-badge">COD</span> : null}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{opt.sub}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-              <TrustBadges className="justify-start" />
-
-              {submitError && (
-                <p className="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
-                  {submitError}
-                </p>
-              )}
-
-              {paymentMethod === "bank_transfer" && (
-                <div className="space-y-4 rounded-xl border border-border bg-muted/50 p-4 text-sm">
-                  <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                    Transfer exactly {formatPKR(total)}
-                  </p>
-                  <dl className="grid gap-2 text-foreground">
-                    <div>
-                      <dt className="text-muted-foreground text-xs">Bank</dt>
-                      <dd className="font-medium">{bankDisplay.bankName}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-muted-foreground text-xs">Account title</dt>
-                      <dd className="font-medium">{bankDisplay.accountTitle}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-muted-foreground text-xs">Account number</dt>
-                      <dd className="font-mono tracking-wide">{bankDisplay.accountNumber}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-muted-foreground text-xs">Upaisa number</dt>
-                      <dd className="font-mono tracking-wide">{bankDisplay.upaisaNumber}</dd>
-                    </div>
-                  </dl>
-                  <p className="text-xs leading-relaxed text-muted-foreground">
-                    Use your checkout email ({shippingDetails?.email}) in the transfer narration when possible. After payment, enter your transaction ID below.
-                  </p>
-                  <div>
-                    <Label htmlFor="bank-txn-reference">Bank / Upaisa transaction ID</Label>
-                    <Input
-                      id="bank-txn-reference"
-                      className="mt-1.5"
-                      placeholder="From your SMS or banking receipt"
-                      value={bankTxnReference}
-                      onChange={(e) => setBankTxnReference(e.target.value)}
-                      autoComplete="off"
-                    />
+                  <h2 className={sectionHeader}>
+                    <span className="w-5 h-5 rounded-full bg-[var(--gold-warm)] text-[var(--bg-void)] text-[10px] font-bold flex items-center justify-center shrink-0">1</span>
+                    Contact Information
+                  </h2>
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <Field label="Full name" error={errors.fullName?.message} className="sm:col-span-2">
+                      <input
+                        id="fullName"
+                        autoComplete="name"
+                        className={inputCls(!!errors.fullName)}
+                        placeholder="Muhammad Ali"
+                        {...register("fullName")}
+                      />
+                    </Field>
+                    <Field label="Email" error={errors.email?.message}>
+                      <input
+                        id="email"
+                        type="email"
+                        autoComplete="email"
+                        placeholder="you@example.com"
+                        className={inputCls(!!errors.email)}
+                        {...register("email")}
+                      />
+                    </Field>
+                    <Field label="Phone" error={errors.phone?.message}>
+                      <input
+                        id="phone"
+                        type="tel"
+                        autoComplete="tel"
+                        placeholder="+92 300 0000000"
+                        className={inputCls(!!errors.phone)}
+                        {...register("phone")}
+                      />
+                    </Field>
                   </div>
                 </div>
 

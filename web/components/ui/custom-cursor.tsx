@@ -17,12 +17,8 @@ type BurstParticle = {
 
 const GOLD = "#C49A1E";
 const GOLD_BRIGHT = "#D4A832";
-const CREAM = "#F5F0E8";
 const MUTED = "#C8BFA8";
-const SPARKLE_COLORS = [GOLD, GOLD_BRIGHT, CREAM, MUTED];
-const BURST_CHARS = ["✦", "✧", "·"] as const;
 const LERP = 0.12;
-const BURST_COUNT = 8;
 const MODE_DETECT_MS = 100;
 
 const INTERACTIVE_SELECTOR =
@@ -75,19 +71,11 @@ function detectCursorMode(target: Element | null): CursorMode {
   return mode;
 }
 
-function randomBetween(min: number, max: number) {
-  return min + Math.random() * (max - min);
-}
-
-function pick<T>(arr: readonly T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)]!;
-}
-
 export function CustomCursor() {
   const [mode, setMode] = useState<CursorMode>("default");
   const [visible, setVisible] = useState(false);
   const [bursts, setBursts] = useState<BurstParticle[]>([]);
-  const [ringClickPulse, setRingClickPulse] = useState(false);
+  const [ringClickPulse] = useState(false);
 
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
@@ -187,15 +175,15 @@ export function CustomCursor() {
       pendingModeTargetRef.current = { x: e.clientX, y: e.clientY };
     };
 
-    const handleMouseLeave = () => setIsVisible(false);
-    const handleMouseEnter = () => setIsVisible(true);
+    const handleMouseLeave = () => setVisible(false);
+    const handleMouseEnter = () => setVisible(true);
 
-    window.addEventListener("mousemove", updateMousePosition);
+    window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseleave", handleMouseLeave);
     window.addEventListener("mouseenter", handleMouseEnter);
 
     return () => {
-      window.removeEventListener("mousemove", updateMousePosition);
+      window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseleave", handleMouseLeave);
       window.removeEventListener("mouseenter", handleMouseEnter);
     };

@@ -25,6 +25,10 @@ const footerNav = {
     { href: "/policies/shipping-policy", label: "Shipping" },
     { href: "/policies/return-policy", label: "Returns" },
   ],
+  legal: [
+    { href: "/policies/privacy-policy", label: "Privacy Policy" },
+    { href: "/policies/terms-of-service", label: "Terms of Service" },
+  ],
 };
 
 export function SiteFooter() {
@@ -38,7 +42,7 @@ export function SiteFooter() {
         <div className="grid grid-cols-2 gap-10 md:grid-cols-[2fr_1fr_1fr_1fr] md:gap-10">
           <div className="col-span-2 md:col-span-1">
             <p className="font-display text-sm italic uppercase tracking-[0.3em] text-foreground">
-              {siteConfig.name}
+              Razzaq Luxe
             </p>
             <p className="mt-1 text-[11px] tracking-[0.15em] text-muted-foreground">
               Quetta, Pakistan · Since 2020
@@ -85,7 +89,7 @@ export function SiteFooter() {
                       href={l.href}
                       className="text-[13px] tracking-wide text-muted-foreground transition-colors hover:text-gold-bright"
                     >
-                      {link.label}
+                      {l.label}
                     </Link>
                   </li>
                 ))}
@@ -97,7 +101,7 @@ export function SiteFooter() {
         <div className="mt-12 flex flex-col items-center justify-between gap-6 border-t border-border pt-8 md:flex-row">
           <p className="text-[10px] tracking-wider text-[#4A4640]">
             © {new Date().getFullYear()}{" "}
-            <span className="font-display italic text-gold-bright">{siteConfig.name}</span>. All rights
+            <span className="font-display italic text-gold-bright">Razzaq Luxe</span>. All rights
             reserved.
           </p>
           <div className="flex flex-wrap items-center gap-4">

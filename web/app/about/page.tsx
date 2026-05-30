@@ -19,6 +19,29 @@ const stats = [
   { value: "100%", label: "Pakistani Heritage" },
 ];
 
+const milestones = [
+  {
+    year: "2020",
+    text: "Razzaq Luxe is founded in Quetta, Balochistan, with a singular vision: to create world-class fragrances rooted in Pakistani heritage.",
+  },
+  {
+    year: "2021",
+    text: "Launch of our debut collection — Sporty, Habibi, and Flourine — each crafted to reflect a distinct facet of the Pakistani spirit.",
+  },
+  {
+    year: "2022",
+    text: "Khan's Aura joins the house line, inspired by the regal tradition of Baloch hospitality and the frankincense trade routes of antiquity.",
+  },
+  {
+    year: "2023",
+    text: "We reach 1,000 happy customers across Pakistan, with growing interest from the Pakistani diaspora worldwide.",
+  },
+  {
+    year: "2024",
+    text: "Razzaq Luxe debuts its first limited-edition seasonal release, further cementing our presence as Pakistan's premier luxury fragrance house.",
+  },
+];
+
 export default function AboutPage() {
   return (
     <div>

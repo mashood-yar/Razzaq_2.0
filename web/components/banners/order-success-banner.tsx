@@ -20,9 +20,7 @@ function buildWhatsAppShareUrl(orderId?: string) {
 }
 
 export function OrderSuccessBanner({ orderId }: OrderSuccessBannerProps) {
-  const displayId = orderId
-    ? orderId.slice(0, 8).toUpperCase()
-    : "PENDING";
+  const displayId = orderId ? orderId.slice(0, 8).toUpperCase() : "PENDING";
 
   return (
     <motion.div
@@ -30,6 +28,7 @@ export function OrderSuccessBanner({ orderId }: OrderSuccessBannerProps) {
       animate={{ opacity: 1, y: 0 }}
       className="order-success-confetti relative overflow-hidden rounded-[2rem] border border-border bg-noir px-6 py-12 text-center sm:px-10"
     >
+      {/* Confetti particles */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
         {Array.from({ length: 12 }).map((_, i) => (
           <span
@@ -45,111 +44,124 @@ export function OrderSuccessBanner({ orderId }: OrderSuccessBannerProps) {
       </div>
 
       <div className="relative z-10">
-        <motion.p
+        {/* Animated checkmark SVG */}
+        <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="text-xs font-semibold uppercase tracking-[0.35em] text-gold"
+          className="flex justify-center mb-8"
         >
-          <motion.circle
-            cx="60"
-            cy="60"
-            r="58"
-            fill="transparent"
-            stroke="var(--gold-warm)"
-            strokeWidth="1.5"
-            initial={{ pathLength: 0, opacity: 0, scale: 0.5 }}
-            animate={{ pathLength: 1, opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, delay: 0.6, ease: "easeOut" }}
-          />
-          <motion.path
-            d="M38 60 L54 76 L82 44"
-            fill="transparent"
-            stroke="var(--gold-warm)"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 0.6, ease: "easeInOut" }}
-          />
-        </motion.svg>
-      </div>
-
-      <motion.h1 
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8 }}
-        className="font-display italic font-light text-[var(--type-display)] text-[var(--cream-bone)] mb-4"
-      >
-        Your order is on its way.
-      </motion.h1>
-
-      <motion.p 
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.9 }}
-        className="font-body font-light text-[15px] text-[var(--cream-muted)] mb-10"
-      >
-        Order #{displayId} <span className="opacity-40 mx-2">·</span> Confirmation sent to your email.
-      </motion.p>
-
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
-        className="w-full h-[1px] bg-[var(--border-fine)] mb-10" 
-      />
-
-      {/* Next Steps */}
-      <motion.div 
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.1 }}
-        className="flex flex-col gap-6 text-left w-full mb-12"
-      >
-        <div className="flex items-start gap-4">
-          <div className="w-1.5 h-1.5 rounded-full bg-[var(--gold-warm)] mt-2 shrink-0" />
-          <p className="font-body font-light text-[14px] text-[var(--cream-warm)]">
-            You&apos;ll receive a WhatsApp notification when your order ships.
-          </p>
-        </div>
-        <div className="flex items-start gap-4">
-          <div className="w-1.5 h-1.5 rounded-full bg-[var(--gold-warm)] mt-2 shrink-0" />
-          <p className="font-body font-light text-[14px] text-[var(--cream-warm)]">
-            Track your order anytime from My Account.
-          </p>
-        </div>
-        <div className="flex items-start gap-4">
-          <div className="w-1.5 h-1.5 rounded-full bg-[var(--gold-warm)] mt-2 shrink-0" />
-          <a href={buildWhatsAppShareUrl(orderId)} target="_blank" rel="noreferrer" className="font-body font-light text-[14px] text-[var(--cream-warm)] flex items-center gap-2 hover:text-[var(--gold-warm)] transition-colors">
-            Questions? Chat with us on WhatsApp <MessageCircle className="w-3.5 h-3.5" />
-          </a>
-        </div>
-      </motion.div>
-
-      {/* CTAs */}
-      <motion.div 
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.2 }}
-        className="flex flex-col gap-5 w-full items-center"
-      >
-        <Link 
-          href="/shop" 
-          className="flex items-center justify-center w-full h-[52px] border border-[var(--cream-bone)] text-[var(--cream-bone)] font-body font-semibold text-[11px] tracking-[0.2em] rounded-[2px] transition-colors hover:bg-[var(--cream-bone)] hover:text-[var(--bg-void)]"
-        >
-          CONTINUE SHOPPING
-        </Link>
-        {orderId && (
-          <Link 
-            href={`/order/${orderId}`}
-            className="font-body font-light text-[13px] text-[var(--cream-muted)] hover:text-[var(--gold-warm)] transition-colors mt-2"
+          <motion.svg
+            viewBox="0 0 120 120"
+            className="w-24 h-24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            VIEW MY ORDER
+            <motion.circle
+              cx="60"
+              cy="60"
+              r="58"
+              fill="transparent"
+              stroke="var(--gold-warm)"
+              strokeWidth="1.5"
+              initial={{ pathLength: 0, opacity: 0, scale: 0.5 }}
+              animate={{ pathLength: 1, opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.6, ease: "easeOut" }}
+            />
+            <motion.path
+              d="M38 60 L54 76 L82 44"
+              fill="transparent"
+              stroke="var(--gold-warm)"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.6, ease: "easeInOut" }}
+            />
+          </motion.svg>
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="font-display italic font-light text-[clamp(1.75rem,5vw,2.5rem)] text-[var(--cream-bone)] mb-4"
+        >
+          Your order is on its way.
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 }}
+          className="font-body font-light text-[15px] text-[var(--cream-muted)] mb-10"
+        >
+          Order #{displayId} <span className="opacity-40 mx-2">·</span> Confirmation sent to your email.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="w-full h-[1px] bg-[var(--border-fine)] mb-10"
+        />
+
+        {/* Next Steps */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.1 }}
+          className="flex flex-col gap-6 text-left w-full mb-12"
+        >
+          <div className="flex items-start gap-4">
+            <div className="w-1.5 h-1.5 rounded-full bg-[var(--gold-warm)] mt-2 shrink-0" />
+            <p className="font-body font-light text-[14px] text-[var(--cream-warm)]">
+              You&apos;ll receive a WhatsApp notification when your order ships.
+            </p>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="w-1.5 h-1.5 rounded-full bg-[var(--gold-warm)] mt-2 shrink-0" />
+            <p className="font-body font-light text-[14px] text-[var(--cream-warm)]">
+              Track your order anytime from My Account.
+            </p>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="w-1.5 h-1.5 rounded-full bg-[var(--gold-warm)] mt-2 shrink-0" />
+            <a
+              href={buildWhatsAppShareUrl(orderId)}
+              target="_blank"
+              rel="noreferrer"
+              className="font-body font-light text-[14px] text-[var(--cream-warm)] flex items-center gap-2 hover:text-[var(--gold-warm)] transition-colors"
+            >
+              Questions? Chat with us on WhatsApp <MessageCircle className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </motion.div>
+
+        {/* CTAs */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2 }}
+          className="flex flex-col gap-5 w-full items-center"
+        >
+          <Link
+            href="/shop"
+            className="flex items-center justify-center w-full h-[52px] border border-[var(--cream-bone)] text-[var(--cream-bone)] font-body font-semibold text-[11px] tracking-[0.2em] rounded-[2px] transition-colors hover:bg-[var(--cream-bone)] hover:text-[var(--bg-void)]"
+          >
+            CONTINUE SHOPPING
           </Link>
-        )}
-      </motion.div>
-    </div>
+          {orderId && (
+            <Link
+              href={`/order/${orderId}`}
+              className="font-body font-light text-[13px] text-[var(--cream-muted)] hover:text-[var(--gold-warm)] transition-colors mt-2"
+            >
+              VIEW MY ORDER
+            </Link>
+          )}
+        </motion.div>
+      </div>
+    </motion.div>
   );
 }

@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { FREE_SHIPPING_THRESHOLD } from "@/lib/banner-constants";
 import { formatPKR } from "@/stores/cart-store";
-import { Check } from "lucide-react";
 
 type ShippingProgressProps = {
   subtotal: number;
