@@ -5,9 +5,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { rootMetadataDefaults } from "@/lib/seo/metadata";
 import { StoreHydration } from "@/components/providers";
 import { AuthProvider } from "@/components/providers/auth-provider";
-import { SiteHeader } from "@/components/layout/site-header";
-import { SiteFooter } from "@/components/layout/site-footer";
-import { DeferredChrome } from "@/components/layout/deferred-chrome";
+import { AppChrome } from "@/components/layout/app-chrome";
 import { AccessDeniedBanner } from "@/components/layout/access-denied-banner";
 import { FlyToCartProvider } from "@/components/motion/fly-to-cart";
 import { AppToaster } from "@/components/providers/app-toaster";
@@ -52,12 +50,7 @@ export default function RootLayout({
           <CustomCursorProvider />
           <StoreHydration />
           <FlyToCartProvider>
-            <div className="relative z-10">
-              <SiteHeader />
-              <main className="min-h-screen pt-28 sm:pt-32">{children}</main>
-              <SiteFooter />
-              <DeferredChrome />
-            </div>
+            <AppChrome>{children}</AppChrome>
           </FlyToCartProvider>
         </AuthProvider>
       </body>

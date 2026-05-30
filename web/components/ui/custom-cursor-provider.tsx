@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { CustomCursor } from "@/components/ui/custom-cursor";
 
 export function CustomCursorProvider() {
+  const pathname = usePathname();
   const [enabled, setEnabled] = useState(false);
+  const isAdmin = pathname?.startsWith("/admin") ?? false;
 
   useEffect(() => {
     const hoverMq = window.matchMedia("(hover: hover) and (pointer: fine)");
@@ -23,6 +26,6 @@ export function CustomCursorProvider() {
     };
   }, []);
 
-  if (!enabled) return null;
+  if (isAdmin || !enabled) return null;
   return <CustomCursor />;
 }
