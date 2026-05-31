@@ -167,7 +167,7 @@ export function ShopContent({ initialProducts }: { initialProducts: Product[] })
           Showing {filtered.length} fragrance{filtered.length !== 1 ? "s" : ""}
         </p>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[12px] lg:gap-6">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-4 lg:gap-6">
           {slice.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}

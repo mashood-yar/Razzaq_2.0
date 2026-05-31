@@ -264,61 +264,95 @@ export function SiteHeader() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
             className="fixed inset-0 z-[200] lg:hidden"
             role="dialog"
             aria-modal="true"
             aria-label="Mobile menu"
           >
+            {/* Backdrop tap to close */}
+            <motion.div
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              onClick={() => setMobileOpen(false)}
+            />
             <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
-              className="relative flex h-full w-full flex-col justify-center bg-noir p-6 sm:p-10"
+              transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+              className="relative flex h-full w-[85vw] max-w-sm flex-col justify-center bg-noir border-r border-border px-8 py-10"
             >
-              <button
+              {/* Close button */}
+              <motion.button
                 type="button"
-                className="absolute right-5 top-5 p-2 text-muted-foreground transition-colors hover:text-foreground"
+                initial={{ opacity: 0, rotate: -45 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                transition={{ delay: 0.3, duration: 0.25 }}
+                className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-gold-warm hover:text-gold-bright"
                 onClick={() => setMobileOpen(false)}
                 aria-label="Close menu"
               >
-                <X className="h-6 w-6" />
-              </button>
+                <X className="h-4 w-4" />
+              </motion.button>
+
+              {/* Brand logo */}
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15, duration: 0.4 }}
+                className="mb-10 font-display text-[11px] italic uppercase tracking-[0.35em] text-gold-warm"
+              >
+                Razzaq Luxe
+              </motion.p>
+
               <nav className="flex flex-col" aria-label="Mobile">
-                {nav.map((item) => (
-                  <Link
+                {nav.map((item, idx) => (
+                  <motion.div
                     key={item.href}
-                    href={item.href}
-                    className="border-b border-border py-4 font-display text-[clamp(2rem,8vw,3.5rem)] font-light leading-snug text-foreground transition-colors hover:text-gold-warm"
-                    onClick={() => setMobileOpen(false)}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 + idx * 0.07, duration: 0.4, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
                   >
-                    <span className="font-display text-[2rem] text-[var(--cream-bone)] transition-all group-active:text-[var(--gold-warm)] group-active:translate-x-2">
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        "group flex items-center justify-between border-b border-border/50 py-4 font-display text-[2rem] font-light leading-snug transition-colors hover:text-gold-warm",
+                        pathname === item.href || pathname?.startsWith(item.href + "/")
+                          ? "text-gold-warm"
+                          : "text-foreground"
+                      )}
+                      onClick={() => setMobileOpen(false)}
+                    >
                       {item.label}
-                    </span>
-                  </Link>
+                      <span className="text-muted-foreground opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100 text-xl">→</span>
+                    </Link>
+                  </motion.div>
                 ))}
               </nav>
 
-              <div className="flex flex-col px-8 pt-8 gap-4">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.4 }}
+                className="mt-8 flex flex-col gap-4 border-t border-border pt-6"
+              >
                 <Link
                   href={user ? "/account" : "/login"}
-                  className="mt-2 flex items-center gap-3 border-b border-border py-4 text-sm font-medium uppercase tracking-[0.15em] text-text-secondary transition-colors hover:text-gold-warm"
+                  className="flex items-center gap-3 text-sm font-medium uppercase tracking-[0.15em] text-text-secondary transition-colors hover:text-gold-warm"
                   onClick={() => setMobileOpen(false)}
                 >
-                  My Account
+                  {user ? "My Account" : "Sign In"}
                 </Link>
-              </div>
-              <p className="mt-12 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-                Quetta, Pakistan · Since 2020
-              </p>
+              </motion.div>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.7, duration: 0.4 }}
+                className="mt-10 text-[10px] uppercase tracking-[0.25em] text-muted-foreground"
+              >
+                Quetta · Balochistan · Since 2020
+              </motion.p>
             </motion.aside>
-            <button
-              type="button"
-              className="hidden"
-              aria-hidden
-              tabIndex={-1}
-              onClick={() => setMobileOpen(false)}
-            />
           </motion.div>
         )}
       </AnimatePresence>

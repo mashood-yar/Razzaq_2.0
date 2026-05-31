@@ -214,7 +214,7 @@ export function ProductCard({
         )}
 
         <Link href={`/products/${product.slug}`}>
-          <h3 className="font-display text-[clamp(1.1rem,3vw,1.4rem)] font-normal tracking-wide text-foreground transition-colors hover:text-gold-bright">
+          <h3 className="font-display text-[clamp(0.9rem,2.5vw,1.35rem)] font-normal tracking-wide text-foreground transition-colors hover:text-gold-bright leading-snug">
             {product.name}
           </h3>
         </Link>
@@ -228,8 +228,8 @@ export function ProductCard({
         </div>
 
         {/* Price row */}
-        <div className="mt-3 flex items-baseline gap-2">
-          <span className="font-display text-lg font-medium text-gold-bright">
+        <div className="mt-2.5 flex items-baseline gap-2">
+          <span className="font-display text-base font-medium text-gold-bright">
             {formatPKR(displayPrice)}
           </span>
           {comparePrice && (

@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { GoldBrandText } from "@/components/brand/gold-brand-text";
 
 const items = [
   {
@@ -18,7 +17,7 @@ const items = [
   },
   {
     quote:
-      "Sporty stays crisp from morning meetings to dinner — signature line from a Quetta house that finally feels ours.",
+      "Sporty stays crisp from morning meetings to dinner — a signature line from a Quetta house that finally feels ours.",
     name: "Hamza R.",
     role: "Entrepreneur",
     image:
@@ -26,7 +25,7 @@ const items = [
   },
   {
     quote:
-      "Khan\u2019s Aura fills a room politely and lingers beautifully. Flora surprised me — sharp, unforgettable.",
+      "Khan\u2019s Aura fills a room politely and lingers beautifully. Flora surprised me \u2014 sharp, unforgettable.",
     name: "Sadia M.",
     role: "Stylist",
     image:
@@ -34,7 +33,7 @@ const items = [
   },
   {
     quote:
-      "Ordering was straightforward — COD confirmation took seconds. Packaging felt bespoke; I'll be back for Sporty.",
+      "Ordering was straightforward \u2014 COD confirmation took seconds. Packaging felt bespoke; I'll be back for Sporty.",
     name: "Omar N.",
     role: "Product designer",
     image:
@@ -46,72 +45,100 @@ const AUTO_ADVANCE_MS = 6500;
 
 export function TestimonialCarousel() {
   const [i, setI] = useState(0);
+  const [paused, setPaused] = useState(false);
   const cur = items[i];
+  const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (
       typeof window === "undefined" ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      paused
     ) {
+      if (timerRef.current) clearInterval(timerRef.current);
       return;
     }
-    const id = window.setInterval(() => {
+    timerRef.current = window.setInterval(() => {
       setI((x) => (x + 1) % items.length);
     }, AUTO_ADVANCE_MS);
-    return () => clearInterval(id);
-  }, []);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [paused]);
 
   return (
-    <div className="relative mx-auto max-w-4xl">
-      <Quote className="absolute -left-2 top-0 h-16 w-16 text-gold/15" aria-hidden />
+    <div
+      className="relative mx-auto max-w-3xl"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {/* Gold top-border accent */}
+      <div className="mx-auto mb-10 h-px w-16 bg-gradient-to-r from-transparent via-gold-warm to-transparent" />
+
       <AnimatePresence mode="wait">
         <motion.figure
           key={cur.name}
-          initial={{ opacity: 0, x: 24 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -24 }}
-          transition={{ duration: 0.35 }}
-          className="relative px-4 pt-8 text-center sm:px-12"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -16 }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
+          className="relative px-4 text-center sm:px-12"
         >
-          <blockquote className="font-display text-xl italic leading-relaxed text-foreground sm:text-2xl">
-            “<GoldBrandText text={cur.quote} />”
+          {/* Large decorative quote mark */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -top-4 left-1/2 -translate-x-1/2 font-display text-[120px] leading-none text-gold-warm/10 select-none"
+          >
+            &ldquo;
+          </span>
+
+          <blockquote className="relative font-display text-[clamp(1.1rem,2.5vw,1.5rem)] italic font-light leading-relaxed text-foreground">
+            &ldquo;{cur.quote}&rdquo;
           </blockquote>
-          <figcaption className="mt-10 flex flex-col items-center gap-3">
-            <div className="relative h-14 w-14 overflow-hidden rounded-full ring-2 ring-gold/40">
+
+          <figcaption className="mt-8 flex flex-col items-center gap-3">
+            <div className="relative h-12 w-12 overflow-hidden rounded-full ring-1 ring-gold-warm/30 ring-offset-2 ring-offset-background">
               <Image
                 src={cur.image}
                 alt=""
                 fill
                 className="object-cover"
-                sizes="56px"
-                /** Direct CDN avoids `/_next/image` fetch timeouts/404 when dev/proxy drops optimizer fetches */
+                sizes="48px"
                 unoptimized
               />
             </div>
             <div>
-              <p className="font-medium">{cur.name}</p>
-              <p className="text-sm text-muted-foreground">{cur.role}</p>
+              <p className="font-body text-sm font-medium text-foreground">{cur.name}</p>
+              <p className="font-body text-[11px] uppercase tracking-[0.15em] text-muted-foreground mt-0.5">
+                {cur.role}
+              </p>
             </div>
           </figcaption>
         </motion.figure>
       </AnimatePresence>
 
-      <div className="mt-10 flex justify-center gap-2">
+      {/* Controls */}
+      <div className="mt-10 flex items-center justify-center gap-3">
         <Button
           type="button"
           variant="outline"
           size="icon"
           aria-label="Previous testimonial"
+          className="h-8 w-8 rounded-full border-border/50 text-muted-foreground hover:border-gold-warm hover:text-gold-bright"
           onClick={() => setI((x) => (x - 1 + items.length) % items.length)}
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-3.5 w-3.5" />
         </Button>
-        <div className="flex items-center gap-1.5 px-2">
+        <div className="flex items-center gap-2">
           {items.map((_, idx) => (
             <button
               key={idx}
               type="button"
-              className={`h-2 rounded-full transition-all ${idx === i ? "w-6 bg-gold" : "w-2 bg-white/20"}`}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                idx === i
+                  ? "w-8 bg-gold-warm"
+                  : "w-1.5 bg-border hover:bg-muted-foreground"
+              }`}
               aria-label={`Go to testimonial ${idx + 1}`}
               aria-current={idx === i}
               onClick={() => setI(idx)}
@@ -123,9 +150,10 @@ export function TestimonialCarousel() {
           variant="outline"
           size="icon"
           aria-label="Next testimonial"
+          className="h-8 w-8 rounded-full border-border/50 text-muted-foreground hover:border-gold-warm hover:text-gold-bright"
           onClick={() => setI((x) => (x + 1) % items.length)}
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-3.5 w-3.5" />
         </Button>
       </div>
     </div>
