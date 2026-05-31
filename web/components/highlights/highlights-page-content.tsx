@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import type { HighlightsSections } from "@/lib/highlights-products";
@@ -93,19 +94,23 @@ export function HighlightsPageContent({
 
   return (
     <div>
-      <section className="relative overflow-hidden border-b border-border/50 bg-noir-surface/30 px-4 pb-16 pt-28 sm:px-6 lg:px-8">
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute -right-24 top-0 h-72 w-72 rounded-full bg-gold/15 blur-3xl"
-          animate={reduceMotion ? undefined : { scale: [1, 1.08, 1] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute -left-16 bottom-0 h-56 w-56 rounded-full bg-gold/10 blur-3xl"
-          animate={reduceMotion ? undefined : { x: [0, 16, 0] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        />
+      <section className="relative overflow-hidden border-b border-border/50 px-4 pb-16 pt-28 sm:px-6 lg:px-8">
+        <div className="absolute inset-0" aria-hidden>
+          <div className="relative h-full w-full">
+            <Image
+              src="/images/highlights-hero.png"
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover opacity-55"
+            />
+            <div
+              className="absolute inset-0 bg-gradient-to-t from-[#0A0A08] via-[#0A0A08]/65 to-[#0A0A08]/15"
+              aria-hidden
+            />
+          </div>
+        </div>
         <div className="relative z-10 mx-auto max-w-7xl text-center">
           <motion.p
             initial={reduceMotion ? false : { opacity: 0, y: 12 }}
