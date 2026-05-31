@@ -10,10 +10,6 @@ import { JournalSearchBar } from "@/components/journal/journal-search-bar";
 import { JournalCategoryFilter } from "@/components/journal/journal-category-filter";
 import { JournalArticleCard } from "@/components/journal/journal-article-card";
 import { JournalEmptyState } from "@/components/journal/journal-empty-state";
-import {
-  getCardBackground,
-  getGridPlacement,
-} from "@/components/journal/journal-utils";
 
 type JournalScrollProps = {
   articles: Article[];
@@ -66,12 +62,6 @@ export function JournalScroll({ articles, featuredSlug }: JournalScrollProps) {
 
   return (
     <div className="relative min-h-screen bg-noir">
-      {/* Stronger grain overlay — page-specific */}
-      <div
-        className="pointer-events-none absolute inset-0 z-0 bg-grain opacity-[0.06] mix-blend-multiply"
-        aria-hidden="true"
-      />
-
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
         <JournalHeader />
 
@@ -100,22 +90,13 @@ export function JournalScroll({ articles, featuredSlug }: JournalScrollProps) {
               transition={{ duration: 0.35 }}
               className={`grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 ${showFeatured ? "mt-16" : "mt-12"}`}
             >
-              {gridArticles.map((article, index) => {
-                const placement = getGridPlacement(index);
-                return (
-                  <div
-                    key={article.slug}
-                    className={placement.className}
-                    style={placement.style}
-                  >
-                    <JournalArticleCard
-                      article={article}
-                      index={index}
-                      background={getCardBackground(index)}
-                    />
-                  </div>
-                );
-              })}
+              {gridArticles.map((article, index) => (
+                <JournalArticleCard
+                  key={article.slug}
+                  article={article}
+                  index={index}
+                />
+              ))}
             </motion.div>
           )}
         </AnimatePresence>
