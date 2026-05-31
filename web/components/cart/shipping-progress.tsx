@@ -11,7 +11,9 @@ type ShippingProgressProps = {
 
 export function ShippingProgress({ subtotal, className }: ShippingProgressProps) {
   const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
-  const progress = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
+  // Endowed progress effect: base progress is slightly above 0 (e.g. 5%) if empty, or just calculate
+  const baseProgress = subtotal > 0 ? (subtotal / FREE_SHIPPING_THRESHOLD) * 100 : 5;
+  const progress = Math.min(100, baseProgress);
   const unlocked = subtotal >= FREE_SHIPPING_THRESHOLD;
 
   return (
@@ -29,7 +31,7 @@ export function ShippingProgress({ subtotal, className }: ShippingProgressProps)
           className="h-full rounded-full bg-gold"
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
-          transition={{ type: "spring", stiffness: 120, damping: 20 }}
+          transition={{ type: "spring", stiffness: 60, damping: 15 }}
         />
       </motion.div>
       <p className="mt-2 text-xs text-muted-foreground">

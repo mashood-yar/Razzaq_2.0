@@ -59,14 +59,6 @@ export default async function ProductPage({ params }: Props) {
 
   if (error || !product) notFound();
 
-  const { data: related } = await supabase
-    .from("products")
-    .select("id, name, slug, price_pkr, compare_at_price, product_images(url, is_primary, sort_order)")
-    .eq("category_id", product.category_id)
-    .eq("status", "active")
-    .neq("id", product.id)
-    .limit(4);
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return <ProductDetail product={product as any} related={(related ?? []) as any} />;
+  return <ProductDetail product={product as any} />;
 }

@@ -80,7 +80,7 @@ function FlyingThumb({
       initial={{ opacity: 0.92, scale: 1, x: 0, y: 0 }}
       animate={{ opacity: 0, scale: 0.28, x: dx, y: dy }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
       onAnimationComplete={onDone}
       style={{
         position: "fixed",

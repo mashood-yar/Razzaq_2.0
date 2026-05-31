@@ -23,55 +23,81 @@ const config: Config = {
         "ocean-primary": "#0F4C75",
         "ocean-mid": "#3282B8",
         "ocean-light": "#BBE1FA",
-        gold: {
-          DEFAULT: "#C49A1E",
-          bright: "#D4A832",
-          deep: "#A07C12",
-          light: "#D4A832",
-          warm: "#C49A1E",
-          subtle: "rgb(212 168 50 / 0.08)",
-        },
+
         "gold-light": "#D4A832",
         "gold-subtle": "#F5EDD6",
         "text-primary": "#F5F0E8",
         "text-secondary": "#C8BFA8",
         "text-muted": "#7A7468",
-        success: "#4CAF82",
-        error: "#E05A5A",
-        border: {
-          DEFAULT: "#2A2A26",
-          subtle: "#2A2A26",
-        },
+
         "border-subtle": "#2A2A26",
 
-        /* Semantic — wired to CSS variables */
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        /* Gold System */
+        gold: {
+          deep: "var(--gold-deep)",
+          earth: "var(--gold-earth)",
+          warm: "var(--gold-warm)",
+          bright: "var(--gold-bright)",
+          pale: "var(--gold-pale)",
+          DEFAULT: "var(--gold-warm)", // backward compat
+          light: "var(--gold-bright)",
+          muted: "var(--gold-earth)",
+        },
+
+        /* Cream System */
+        cream: {
+          bone: "var(--cream-bone)",
+          warm: "var(--cream-warm)",
+          muted: "var(--cream-muted)",
+          ghost: "var(--cream-ghost)",
+        },
+
+        /* Semantic */
+        ember: "var(--ember)",
+        sage: "var(--sage)",
+        "rose-dust": "var(--rose-dust)",
+        success: "var(--sage)",
+        error: "var(--ember)",
+        warning: "var(--gold-earth)",
+        info: "var(--gold-deep)",
+
+        /* Legacy Fallbacks mapping to new variables */
+        charcoal: "var(--bg-dusk)",
+        graphite: "var(--bg-ash)",
+        smoke: "var(--cream-muted)",
+        ivory: "var(--cream-bone)",
+        
+        /* Base mapped variables */
+        background: "var(--bg-obsidian)",
+        foreground: "var(--cream-bone)",
+        muted: {
+          DEFAULT: "var(--bg-ash)",
+          foreground: "var(--cream-muted)",
+        },
+        card: {
+          DEFAULT: "var(--bg-dusk)",
+          foreground: "var(--cream-bone)",
+        },
+        border: "var(--bg-ash)",
         primary: {
-          DEFAULT: "var(--primary)",
-          foreground: "var(--primary-foreground)",
+          DEFAULT: "var(--gold-warm)",
+          foreground: "var(--bg-void)",
         },
         secondary: {
-          DEFAULT: "var(--secondary)",
-          foreground: "var(--secondary-foreground)",
+          DEFAULT: "transparent",
+          foreground: "var(--cream-bone)",
         },
         accent: {
           DEFAULT: "var(--accent)",
           foreground: "var(--accent-foreground)",
         },
-        muted: {
-          DEFAULT: "var(--muted)",
-          foreground: "var(--muted-foreground)",
-        },
+
         destructive: {
           DEFAULT: "var(--destructive)",
           foreground: "var(--destructive-foreground)",
         },
         ring: "var(--primary)",
-        card: {
-          DEFAULT: "var(--card)",
-          foreground: "var(--card-foreground)",
-        },
+
         contrast: {
           "on-light": "var(--text-on-light)",
           "muted-on-light": "var(--text-muted-on-light)",
@@ -81,7 +107,6 @@ const config: Config = {
           "on-primary": "var(--text-on-primary)",
           "on-terracotta": "var(--text-on-ocean-mid)",
         },
-        warning: "#D4A832",
 
         /* Legacy aliases → Nocturne Doré (storefront); ocean-* kept for admin */
         "rice-paper": "#0A0A08",
@@ -94,13 +119,6 @@ const config: Config = {
         "warm-accent": "#C8BFA8",
         "luxe-gold": "#C49A1E",
         "luxe-gold-bright": "#D4A832",
-        obsidian: "#0A0A08",
-        charcoal: "#111110",
-        graphite: "#181816",
-        ash: "#7A7468",
-        smoke: "#7A7468",
-        ivory: "#F5F0E8",
-        cream: "#F5F0E8",
         brand: {
           slate: "#181816",
           mist: "#C49A1E",
@@ -134,12 +152,8 @@ const config: Config = {
         nocturne: "0 20px 60px rgba(0,0,0,0.8)",
       },
       keyframes: {
-        "marquee-seamless": {
-          "0%": { transform: "translateX(0)" },
-          "100%": { transform: "translateX(-50%)" },
-        },
         "fade-up": {
-          "0%": { opacity: "0", transform: "translateY(16px)" },
+          "0%": { opacity: "0", transform: "translateY(24px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
         "gold-shimmer": {
@@ -150,13 +164,9 @@ const config: Config = {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
-        "drawer-in": {
-          "0%": { transform: "translateX(100%)" },
-          "100%": { transform: "translateX(0)" },
-        },
-        "organic-float": {
-          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
-          "50%": { transform: "translate(8px, -12px) scale(1.03)" },
+        "marquee-right": {
+          "0%": { transform: "translateX(-50%)" },
+          "100%": { transform: "translateX(0%)" },
         },
       },
       animation: {

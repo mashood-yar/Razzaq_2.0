@@ -45,21 +45,10 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased font-body;
+    @apply bg-background text-foreground font-body antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
-  }
-
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    pointer-events: none;
-    opacity: 0.02;
-    mix-blend-mode: screen;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-    background-size: 180px 180px;
+    background-color: var(--bg-obsidian);
+    color: var(--cream-bone);
   }
 
   ::selection {
@@ -81,11 +70,11 @@
   ::-webkit-scrollbar-thumb:hover {
     background: var(--primary);
   }
+}
 
-  @media (hover: hover) and (pointer: fine) {
-    * {
-      cursor: none !important;
-    }
+@media (max-width: 1023px) {
+  body {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
   }
 }
 
@@ -112,6 +101,9 @@
     background: radial-gradient(circle, rgb(196 154 30 / 0.12) 0%, transparent 70%);
     animation: organic-float 14s ease-in-out infinite;
   }
+  .input::placeholder { color: var(--cream-ghost); }
+  .input:focus        { outline: none; border-color: var(--border-glow); }
+  .input.error        { border-color: var(--ember); }
 
   .section-alt {
     @apply bg-[#111110];
@@ -182,7 +174,22 @@
       var(--muted) 90%
     );
     background-size: 200% 100%;
-    animation: shimmer 2s ease-in-out infinite;
+    animation: shimmer 1.8s ease-in-out infinite;
+  }
+
+  /* Marquee utility — used in homepage scent strip */
+  .animate-marquee-right {
+    animation: marquee-right 32s linear infinite;
+  }
+
+  /* Focus ring — keyboard accessibility (Aesthetic-Usability Effect) */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold-warm)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-obsidian)];
+  }
+
+  /* Gold glow card hover — used on product cards */
+  .hover-gold-glow {
+    @apply transition-all duration-300 hover:shadow-[0_0_32px_rgba(201,160,80,0.15)] hover:border-[var(--border-mid)];
   }
 }
 
@@ -276,7 +283,12 @@
   }
 
   .product-card-add-nocturne {
-    @apply mt-3.5 flex min-h-11 w-full items-center justify-center border border-gold-warm/40 bg-transparent text-[10px] font-medium uppercase tracking-[0.22em] text-text-secondary opacity-100 transition-[background,color,border-color,opacity] duration-300 hover:border-gold-warm hover:bg-gold-warm hover:text-noir lg:opacity-0 lg:group-hover:opacity-100;
+    @apply mt-3.5 flex min-h-11 w-full items-center justify-center border bg-transparent text-[10px] font-medium uppercase tracking-[0.22em] text-text-secondary transition-[background,color,border-color,opacity] duration-300 hover:bg-gold-warm hover:text-noir lg:opacity-0 lg:group-hover:opacity-100;
+    border-color: rgb(196 154 30 / 0.4);
+    opacity: 1;
+  }
+  .product-card-add-nocturne:hover {
+    border-color: var(--gold-warm);
   }
 
   .trust-badge {
@@ -413,7 +425,8 @@
   }
 
   .admin-dropzone-active {
-    @apply border-gold-light/60 bg-gold-light/5;
+    border-color: rgb(212 168 50 / 0.6);
+    background-color: rgb(212 168 50 / 0.05);
   }
 
   .admin-skeleton {
@@ -670,123 +683,9 @@
   }
 }
 
-/* Luxury session intro — preserved for intro-animation.tsx */
-@layer components {
-  @keyframes intro-tracking-in {
-    0% {
-      letter-spacing: 0.35em;
-      opacity: 0;
-      filter: blur(4px);
-      transform: translate3d(0, 0.12em, 0) scale(0.98);
-    }
-    100% {
-      letter-spacing: 0;
-      opacity: 1;
-      filter: blur(0);
-      transform: translate3d(0, 0, 0) scale(1);
-    }
-  }
-
-  @keyframes intro-letter-luxe {
-    0% {
-      opacity: 0;
-      transform: translate3d(0, 14px, 0);
-    }
-    100% {
-      opacity: 1;
-      transform: translate3d(0, 0, 0);
-    }
-  }
-
-  @keyframes intro-line-x {
-    0% {
-      transform: translateZ(0) scaleX(0);
-      opacity: 0.6;
-    }
-    100% {
-      transform: translateZ(0) scaleX(1);
-      opacity: 1;
-    }
-  }
-
-  @keyframes intro-fade-in-up {
-    0% {
-      opacity: 0;
-      transform: translate3d(0, 12px, 0);
-    }
-    100% {
-      opacity: 1;
-      transform: translate3d(0, 0, 0);
-    }
-  }
-
-  @keyframes intro-overlay-fade-out {
-    0% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-      visibility: hidden;
-    }
-  }
-
-  .intro-letter-r {
-    will-change: transform, opacity;
-    animation-name: intro-tracking-in;
-    animation-duration: 700ms;
-    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-    animation-fill-mode: both;
-    transform: translateZ(0);
-    backface-visibility: hidden;
-  }
-
-  .intro-letter-l {
-    will-change: transform, opacity;
-    animation-name: intro-letter-luxe;
-    animation-duration: 700ms;
-    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-    animation-fill-mode: both;
-    transform: translateZ(0);
-    backface-visibility: hidden;
-  }
-
-  .intro-gold-line {
-    transform: translateZ(0) scaleX(0);
-    transform-origin: center;
-    animation-name: intro-line-x;
-    animation-duration: 700ms;
-    animation-timing-function: ease-out;
-    animation-fill-mode: forwards;
-    animation-delay: 5400ms;
-    will-change: transform;
-  }
-
-  .intro-tagline {
-    animation-name: intro-fade-in-up;
-    animation-duration: 900ms;
-    animation-timing-function: ease-out;
-    animation-fill-mode: forwards;
-    animation-delay: 6300ms;
-    opacity: 0;
-    will-change: transform, opacity;
-    transform: translateZ(0);
-  }
-
-  .intro-fade-end {
-    animation-name: intro-overlay-fade-out;
-    animation-duration: 1.2s;
-    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    animation-fill-mode: forwards;
-    animation-delay: 8200ms;
-  }
-
-  .intro-skip-exit {
-    animation-name: intro-overlay-fade-out !important;
-    animation-duration: 600ms !important;
-    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
-    animation-fill-mode: forwards !important;
-    animation-delay: 0ms !important;
-  }
+@keyframes marquee-right {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 /* Newsletter banner — ocean corner accents */
@@ -814,72 +713,53 @@
   border-radius: 0 0 1.5rem 0;
 }
 
-/* Order success — ocean confetti */
-@keyframes confetti-fall {
-  0% {
-    transform: translateY(-20%) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(120vh) rotate(720deg);
-    opacity: 0;
-  }
+@keyframes gold-shimmer {
+  from { background-position: 200% center; }
+  to   { background-position: -200% center; }
 }
 
-.order-success-confetti .confetti-piece {
+@keyframes organic-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(12px, -18px) scale(1.04); }
+  66%       { transform: translate(-8px, 10px) scale(0.97); }
+}
+
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+
+@keyframes gold-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 160, 80, 0); }
+  50%       { box-shadow: 0 0 0 8px rgba(201, 160, 80, 0.08); }
+}
+
+/* Premium: subtle noise texture overlay for depth */
+.noise-overlay::after {
+  content: "";
   position: absolute;
-  top: -0.5rem;
-  width: 0.5rem;
-  height: 0.75rem;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+}
+
+/* Premium: active state for all interactive elements */
+button:active:not(:disabled),
+[role="button"]:active:not(:disabled) {
+  transform: scale(0.985);
+  transition: transform 0.1s;
+}
+
+/* Premium: improved focus-visible accessibility */
+:focus-visible {
+  outline: 2px solid rgb(196 154 30 / 0.6);
+  outline-offset: 2px;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid rgb(196 154 30 / 0.6);
+  outline-offset: 2px;
   border-radius: 2px;
-  opacity: 0;
-  animation: confetti-fall 4s ease-in-out infinite;
-}
-
-@keyframes custom-cursor-sparkle {
-  from {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-  }
-  to {
-    transform: translate(-50%, calc(-50% - 20px)) scale(0);
-    opacity: 0;
-  }
-}
-
-@keyframes custom-cursor-burst {
-  from {
-    transform: translate(-50%, -50%) scale(1.5);
-    opacity: 1;
-  }
-  to {
-    transform: translate(
-        calc(-50% + var(--burst-x, 0px)),
-        calc(-50% + var(--burst-y, 0px))
-      )
-      scale(0);
-    opacity: 0;
-  }
-}
-
-@keyframes custom-cursor-ring-pulse {
-  from {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-  }
-  to {
-    transform: translate(-50%, -50%) scale(2);
-    opacity: 0;
-  }
-}
-
-.custom-cursor-sparkle {
-  animation: custom-cursor-sparkle 600ms ease-out forwards;
-}
-
-.custom-cursor-burst {
-  animation: custom-cursor-burst 500ms ease-out forwards;
 }

@@ -21,7 +21,7 @@ export function ListingCardImages({
     secondarySrc && secondarySrc.trim() !== primarySrc.trim() ? secondarySrc : null;
 
   return (
-    <div className={cn("relative h-full w-full overflow-hidden bg-muted", className)}>
+    <div className={cn("relative h-full w-full overflow-hidden bg-charcoal animate-pulse", className)}>
       <div className="absolute inset-0 motion-safe:transition-transform motion-safe:duration-700 motion-safe:group-hover:scale-105">
         <SafeProductImage
           src={primarySrc}

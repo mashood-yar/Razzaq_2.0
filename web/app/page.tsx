@@ -156,7 +156,7 @@ export default async function HomePage() {
         <div className="absolute inset-0 z-0">
           <div className="relative h-full w-full">
             <video
-              className="h-full w-full object-cover opacity-55"
+              className="h-full w-full object-cover opacity-45 transition-opacity duration-[2000ms]"
               autoPlay
               muted
               loop
@@ -164,10 +164,10 @@ export default async function HomePage() {
               preload="auto"
               aria-hidden
             >
-              <source src="/hero-bg.mp4" type="video/mp4" />
+              <source src="/hero-final-bg.mp4" type="video/mp4" />
             </video>
             <div
-              className="absolute inset-0 bg-gradient-to-t from-[#0A0A08] via-[#0A0A08]/65 to-[#0A0A08]/15"
+              className="absolute inset-0 bg-gradient-to-t from-[#0A0A08] via-[#0A0A08]/50 to-transparent"
               aria-hidden
             />
           </div>
@@ -181,20 +181,20 @@ export default async function HomePage() {
           <span className="mb-5 block font-body text-[11px] font-medium uppercase tracking-[0.3em] text-gold-bright opacity-85">
             Razzaq Luxe · Quetta, Pakistan
           </span>
-          <h1 className="max-w-4xl font-display text-[clamp(3.2rem,13vw,8rem)] font-light leading-[0.92] tracking-tight text-foreground">
+          <h1 className="max-w-4xl font-display text-[clamp(2.8rem,11vw,8rem)] font-light leading-[0.92] tracking-tight text-foreground">
             The Art of
             <br />
             <em className="text-gold-bright">Scent</em>
           </h1>
-          <p className="mt-6 max-w-[420px] text-[clamp(0.9rem,2.5vw,1.1rem)] font-light leading-relaxed text-text-secondary">
+          <p className="mt-6 max-w-[400px] text-[clamp(0.9rem,2.2vw,1.05rem)] font-light leading-relaxed text-text-secondary">
             Cinematic fragrances crafted for the discerning soul. Dark oud, rare amber, timeless
             elegance — from the heart of Balochistan.
           </p>
-          <div className="mt-10 flex flex-wrap gap-5">
-            <Button asChild size="lg">
+          <div className="mt-10 flex flex-col gap-3 xs:flex-row sm:flex-row sm:gap-5">
+            <Button asChild size="lg" className="w-full sm:w-auto">
               <Link href="/shop">Discover Fragrances</Link>
             </Button>
-            <Button asChild variant="secondary" size="lg">
+            <Button asChild variant="secondary" size="lg" className="w-full sm:w-auto">
               <Link href="/about">Our Story</Link>
             </Button>
           </div>
@@ -226,7 +226,7 @@ export default async function HomePage() {
                 <Link href="/shop">View All</Link>
               </Button>
             </div>
-            <div className="grid gap-12 sm:grid-cols-2 sm:gap-14 lg:grid-cols-3 lg:gap-16">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-14 lg:grid-cols-3 lg:gap-16">
               {bestSellers.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}

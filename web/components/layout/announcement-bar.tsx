@@ -8,9 +8,9 @@ import { X } from "lucide-react";
 import { ANNOUNCEMENT_DISMISS_KEY } from "@/lib/banner-constants";
 
 const MESSAGES = [
-  "Free delivery on orders above PKR 5,000",
-  "New arrivals — explore the collection",
-  "Use code RAZZAQ10 for 10% off your first order",
+  "FREE SHIPPING ON ORDERS OVER PKR 5,000",
+  "NEW ARRIVALS — EXPLORE THE COLLECTION",
+  "USE CODE RAZZAQ10 FOR 10% OFF YOUR FIRST ORDER",
 ];
 
 const ROTATE_MS = 4000;

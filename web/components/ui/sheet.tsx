@@ -37,8 +37,7 @@ const sheetVariants = cva(
           "inset-x-0 bottom-0 border-t rounded-none rounded-t-xl sm:rounded-t-xl",
         left:
           "inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm rounded-none rounded-r-xl sm:rounded-r-xl",
-        right:
-          "inset-y-0 right-0 h-full w-full border-l sm:max-w-md rounded-none rounded-l-xl sm:rounded-l-xl",
+        right: "inset-y-0 right-0 h-full w-full border-l sm:max-w-md rounded-none rounded-l-[2px] sm:rounded-l-[2px]",
       },
     },
     defaultVariants: {
@@ -71,12 +70,14 @@ const sheetSpring = {
 
 interface SheetContentProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
-    VariantProps<typeof sheetVariants> {}
+    VariantProps<typeof sheetVariants> {
+  hideClose?: boolean;
+}
 
 const SheetContent = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentProps
->(({ side = "right", className, children, ...props }, ref) => (
+>(({ side = "right", className, children, hideClose, ...props }, ref) => (
   <SheetPortal>
     <SheetOverlay />
     <SheetPrimitive.Content asChild {...props}>
@@ -88,10 +89,12 @@ const SheetContent = React.forwardRef<
         transition={sheetSpring}
       >
         {children}
-        <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
-          <X className="h-5 w-5" aria-hidden />
-          <span className="sr-only">Close</span>
-        </SheetPrimitive.Close>
+        {!hideClose && (
+          <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+            <X className="h-5 w-5" aria-hidden />
+            <span className="sr-only">Close</span>
+          </SheetPrimitive.Close>
+        )}
       </motion.div>
     </SheetPrimitive.Content>
   </SheetPortal>

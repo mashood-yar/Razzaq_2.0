@@ -290,7 +290,7 @@ export function ShopContent({ initialProducts }: { initialProducts: Product[] })
           {filtered.length} fragrance{filtered.length !== 1 ? "s" : ""}
         </p>
 
-        <div className="mt-10 grid gap-10 sm:grid-cols-2 sm:gap-14 lg:grid-cols-3 lg:gap-16 xl:grid-cols-3">
+        <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4 xl:gap-6">
           {slice.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}

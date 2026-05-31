@@ -9,7 +9,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { StarRating } from "@/components/product/star-rating";
 import { NotePyramid } from "@/components/product/note-pyramid";
 import type { LegacyProduct as Product } from "@/lib/products";
@@ -33,9 +32,9 @@ export function QuickViewModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto gap-6 border-border/50 bg-card p-6 sm:p-8">
+      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto gap-6 border border-[var(--border-fine)] bg-[var(--bg-obsidian)] p-6 sm:p-8 rounded-[4px] shadow-2xl">
         <div className="grid gap-8 md:grid-cols-2">
-          <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-muted">
+          <div className="relative aspect-[3/4] overflow-hidden rounded-[2px] bg-[var(--bg-dusk)]">
             <SafeProductImage
               src={product.images[0]}
               alt={product.name}
@@ -46,27 +45,32 @@ export function QuickViewModal({
           </div>
           <div>
             <DialogHeader className="text-left">
-              <DialogTitle className="font-display text-3xl">{product.name}</DialogTitle>
+              <DialogTitle className="font-display italic font-light text-[2.5rem] leading-none text-[var(--cream-bone)]">
+                {product.name}
+              </DialogTitle>
             </DialogHeader>
-            <p className="mt-2 text-muted-foreground">{product.tagline}</p>
+            <p className="mt-3 font-body font-light text-[15px] text-[var(--cream-muted)]">
+              {product.tagline}
+            </p>
             <div className="mt-4 flex items-center gap-3">
               <StarRating rating={product.rating} />
-              <span className="text-sm text-muted-foreground">
+              <span className="font-body text-[12px] text-[var(--cream-ghost)]">
                 {product.reviewCount} reviews
               </span>
             </div>
-            <p className="mt-6 text-2xl font-medium text-gold">
-              {formatPKR(defaultSize?.price ?? product.price)}{" "}
-              <span className="text-sm font-normal text-muted-foreground">
+            <p className="mt-8 font-body font-bold text-[1.75rem] text-[var(--gold-warm)] flex items-center gap-2">
+              {formatPKR(defaultSize?.price ?? product.price)}
+              <span className="font-body font-normal text-[14px] text-[var(--cream-ghost)] ml-2">
                 · {defaultSize?.label ?? "100 ml"}
               </span>
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button
+            <div className="mt-10 flex flex-col sm:flex-row gap-3">
+              <button
                 ref={addBtnRef}
+                className="flex-1 h-[52px] bg-[var(--gold-warm)] text-[var(--bg-void)] font-body font-semibold text-[11px] tracking-[0.2em] uppercase rounded-[2px] transition-colors hover:bg-[var(--gold-bright)]"
                 onClick={() => {
                   if (!defaultSize) return;
-                  fly(product.images[0], addBtnRef.current);
+                  if (addBtnRef.current) fly(product.images[0], addBtnRef.current);
                   addItem({
                     id: `${product.id}::${defaultSize.label}`,
                     productId: product.id,
@@ -80,16 +84,20 @@ export function QuickViewModal({
                 }}
               >
                 Add to bag
-              </Button>
-              <Button variant="secondary" asChild>
-                <Link href={`/products/${product.slug}`} onClick={() => onOpenChange(false)}>
-                  Full details
-                </Link>
-              </Button>
+              </button>
+              <Link
+                href={`/products/${product.slug}`}
+                onClick={() => onOpenChange(false)}
+                className="flex-1 h-[52px] flex items-center justify-center border border-[var(--border-mid)] text-[var(--cream-bone)] font-body font-semibold text-[11px] tracking-[0.2em] uppercase rounded-[2px] transition-colors hover:border-[var(--gold-warm)] hover:text-[var(--gold-warm)]"
+              >
+                Full details
+              </Link>
             </div>
           </div>
         </div>
-        <NotePyramid product={product} />
+        <div className="mt-8 border-t border-[var(--border-fine)] pt-8">
+          <NotePyramid product={product} />
+        </div>
       </DialogContent>
     </Dialog>
   );

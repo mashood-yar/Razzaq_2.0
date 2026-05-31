@@ -17,12 +17,8 @@ type BurstParticle = {
 
 const GOLD = "#C49A1E";
 const GOLD_BRIGHT = "#D4A832";
-const CREAM = "#F5F0E8";
 const MUTED = "#C8BFA8";
-const SPARKLE_COLORS = [GOLD, GOLD_BRIGHT, CREAM, MUTED];
-const BURST_CHARS = ["✦", "✧", "·"] as const;
 const LERP = 0.12;
-const BURST_COUNT = 8;
 const MODE_DETECT_MS = 100;
 
 const INTERACTIVE_SELECTOR =
@@ -75,19 +71,11 @@ function detectCursorMode(target: Element | null): CursorMode {
   return mode;
 }
 
-function randomBetween(min: number, max: number) {
-  return min + Math.random() * (max - min);
-}
-
-function pick<T>(arr: readonly T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)]!;
-}
-
 export function CustomCursor() {
   const [mode, setMode] = useState<CursorMode>("default");
   const [visible, setVisible] = useState(false);
   const [bursts, setBursts] = useState<BurstParticle[]>([]);
-  const [ringClickPulse, setRingClickPulse] = useState(false);
+  const [ringClickPulse] = useState(false);
 
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
@@ -187,44 +175,17 @@ export function CustomCursor() {
       pendingModeTargetRef.current = { x: e.clientX, y: e.clientY };
     };
 
-    const onMouseLeave = () => setVisible(false);
-    const onMouseEnter = () => setVisible(true);
+    const handleMouseLeave = () => setVisible(false);
+    const handleMouseEnter = () => setVisible(true);
 
-    const onClick = (e: MouseEvent) => {
-      const { clientX: x, clientY: y } = e;
-      const particles: BurstParticle[] = [];
-
-      for (let i = 0; i < BURST_COUNT; i++) {
-        const angle = (i / BURST_COUNT) * Math.PI * 2 + randomBetween(-0.2, 0.2);
-        const distance = randomBetween(40, 80);
-        particles.push({
-          id: `b-${performance.now()}-${i}`,
-          x,
-          y,
-          endX: x + Math.cos(angle) * distance,
-          endY: y + Math.sin(angle) * distance,
-          size: randomBetween(6, 14),
-          char: pick(BURST_CHARS),
-          color: pick(SPARKLE_COLORS),
-        });
-      }
-
-      setBursts((prev) => [...prev, ...particles]);
-      setRingClickPulse(true);
-      if (clickPulseTimerRef.current) clearTimeout(clickPulseTimerRef.current);
-      clickPulseTimerRef.current = setTimeout(() => setRingClickPulse(false), 400);
-    };
-
-    document.addEventListener("mousemove", onMouseMove, { passive: true });
-    document.addEventListener("mouseleave", onMouseLeave);
-    document.addEventListener("mouseenter", onMouseEnter);
-    document.addEventListener("click", onClick);
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseleave", handleMouseLeave);
+    window.addEventListener("mouseenter", handleMouseEnter);
 
     return () => {
-      document.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mouseleave", onMouseLeave);
-      document.removeEventListener("mouseenter", onMouseEnter);
-      document.removeEventListener("click", onClick);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
+      window.removeEventListener("mouseenter", handleMouseEnter);
     };
   }, []);
 
