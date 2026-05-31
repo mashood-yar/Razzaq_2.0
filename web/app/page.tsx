@@ -164,7 +164,7 @@ export default async function HomePage() {
               preload="auto"
               aria-hidden
             >
-              <source src="/hero-bg.mp4" type="video/mp4" />
+              <source src="/hero-final-bg.mp4" type="video/mp4" />
             </video>
             <div
               className="absolute inset-0 bg-gradient-to-t from-[#0A0A08] via-[#0A0A08]/65 to-[#0A0A08]/15"
@@ -226,7 +226,7 @@ export default async function HomePage() {
                 <Link href="/shop">View All</Link>
               </Button>
             </div>
-            <div className="grid gap-12 sm:grid-cols-2 sm:gap-14 lg:grid-cols-3 lg:gap-16">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-14 lg:grid-cols-3 lg:gap-16">
               {bestSellers.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}

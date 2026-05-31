@@ -36,8 +36,13 @@ export function SiteFooter() {
   if (pathname?.startsWith("/admin")) return null;
 
   return (
-    <footer className="border-t border-border bg-noir">
-      <div className="mx-auto max-w-4xl px-5 py-16 pb-10 sm:px-6">
+    <footer className="relative overflow-hidden border-t border-border bg-noir">
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.02]">
+        <span className="font-display text-[15vw] whitespace-nowrap text-foreground leading-none">
+          RAZZAQ LUXE
+        </span>
+      </div>
+      <div className="relative z-10 mx-auto max-w-4xl px-5 py-16 pb-10 sm:px-6">
         <TrustBadges className="mb-12" />
         <div className="grid grid-cols-2 gap-10 md:grid-cols-[2fr_1fr_1fr_1fr] md:gap-10">
           <div className="col-span-2 md:col-span-1">
