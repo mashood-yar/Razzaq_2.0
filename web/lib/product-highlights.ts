@@ -72,21 +72,38 @@ export function isLegacyProductOnSale(product: LegacyProduct): boolean {
 export function highlightLabelText(label: HighlightLabel): string {
   switch (label) {
     case "most-selling":
-      return "Most Selling";
+      return "Selling fast";
     case "on-sale":
-      return "On Sale";
+      return "On sale";
     case "premium":
-      return "Premium Products";
+      return "Premium luxe";
   }
 }
 
+export type HighlightBadgeContent =
+  | { variant: "pill"; text: string }
+  | { variant: "seal"; line1: string; line2: string };
+
+/** Visual copy for storefront highlight badges (maazsafder-inspired, Nocturne Doré palette). */
+export function highlightBadgeContent(label: HighlightLabel): HighlightBadgeContent {
+  switch (label) {
+    case "most-selling":
+      return { variant: "pill", text: "SELLING FAST!" };
+    case "on-sale":
+      return { variant: "seal", line1: "SALE!", line2: "ON SALE" };
+    case "premium":
+      return { variant: "seal", line1: "LUXE", line2: "PREMIUM" };
+  }
+}
+
+/** @deprecated Use HighlightBadge component — kept for any legacy className consumers */
 export function highlightLabelClasses(label: HighlightLabel): string {
   switch (label) {
     case "most-selling":
-      return "border-transparent bg-gold-warm text-noir";
+      return "highlight-badge-pill";
     case "on-sale":
-      return "border-transparent bg-foreground text-noir";
+      return "highlight-badge-seal highlight-badge-seal--sale";
     case "premium":
-      return "border border-gold-warm bg-gold-subtle text-gold-bright";
+      return "highlight-badge-seal highlight-badge-seal--premium";
   }
 }

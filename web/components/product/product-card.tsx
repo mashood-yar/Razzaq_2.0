@@ -14,11 +14,10 @@ import { QuickViewModal } from "@/components/product/quick-view-modal";
 import { useFlyToCart } from "@/components/motion/fly-to-cart";
 import {
   type HighlightLabel,
-  highlightLabelClasses,
-  highlightLabelText,
   isLegacyProductOnSale,
   resolveHighlightLabel,
 } from "@/lib/product-highlights";
+import { HighlightBadge } from "@/components/product/highlight-badge";
 
 export type { HighlightLabel };
 
@@ -126,16 +125,7 @@ export function ProductCard({
             {badgeLabel(product.badge)}
           </Badge>
         )}
-        {resolvedHighlight && (
-          <span
-            className={cn(
-              "absolute right-3 top-3 z-10 rounded-none px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.18em]",
-              highlightLabelClasses(resolvedHighlight),
-            )}
-          >
-            {highlightLabelText(resolvedHighlight)}
-          </span>
-        )}
+        {resolvedHighlight && <HighlightBadge label={resolvedHighlight} />}
         <motion.div
           variants={overlayVariants}
           transition={{ duration: 0.2 }}

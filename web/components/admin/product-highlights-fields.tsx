@@ -115,7 +115,7 @@ export function ProductHighlightsFields({
       <ToggleRow
         id="is_trending"
         label="Most Selling / Trending"
-        description='Shows "Most Selling" badge and appears in Trending section.'
+        description='Shows amber "SELLING FAST!" pill on product cards and Trending on /highlights.'
         checked={value.is_trending}
         onChange={(checked) => onChange({ ...value, is_trending: checked })}
         disabled={disabled}
@@ -124,7 +124,7 @@ export function ProductHighlightsFields({
       <ToggleRow
         id="is_premium"
         label="Premium"
-        description='Shows "Premium Products" badge and appears in Premium section.'
+        description='Shows gold "LUXE / PREMIUM" seal on product cards and Premium on /highlights.'
         checked={value.is_premium}
         onChange={(checked) => onChange({ ...value, is_premium: checked })}
         disabled={disabled}
@@ -133,7 +133,7 @@ export function ProductHighlightsFields({
       <ToggleRow
         id="on_sale"
         label="On Sale"
-        description='Shows "On Sale" badge and sale pricing on product cards.'
+        description='Shows "SALE! / ON SALE" seal on product cards, sale pricing, and /highlights.'
         checked={value.on_sale}
         onChange={(checked) => onChange({ ...value, on_sale: checked })}
         disabled={disabled}
