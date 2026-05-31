@@ -177,7 +177,7 @@ export default async function HomePage() {
           />
         </div>
 
-        <div className="relative z-10 mx-auto w-full max-w-4xl px-5 pb-20 pt-8 sm:px-6 md:pb-28">
+        <div className="relative z-10 mx-auto lg:mx-0 lg:ml-[10%] w-full max-w-4xl px-5 pb-20 pt-8 sm:px-6 md:pb-28">
           <span className="mb-5 block font-body text-[11px] font-medium uppercase tracking-[0.3em] text-gold-bright opacity-85">
             Razzaq Luxe · Quetta, Pakistan
           </span>
