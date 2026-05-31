@@ -1,7 +1,14 @@
 import type { LegacyProduct } from "@/lib/products";
 import type { Product } from "@/lib/types";
 
-export type HighlightLabel = "most-selling" | "on-sale" | "premium";
+export type HighlightLabel = "most-selling" | "on-sale" | "premium" | "new-arrival";
+
+export type ResolvedHighlightBadges = {
+  /** Scalloped seal — top-right (one: on-sale > new-arrival > premium) */
+  seal?: HighlightLabel;
+  /** Pill — bottom-left (trending / selling fast) */
+  pill?: HighlightLabel;
+};
 
 export type ProductHighlightFields = Pick<
   Product,
@@ -39,17 +46,40 @@ export function computeSalePricePkr(
   return null;
 }
 
-/** Primary storefront badge — On Sale > Most Selling > Premium */
-export function resolveHighlightLabel(
+/** Primary seal badge — On Sale > New Arrival > Premium */
+export function resolveHighlightSealLabel(
   product: Pick<
     LegacyProduct,
-    "onSale" | "isTrending" | "isPremium" | "saleStartAt" | "saleEndAt"
+    "onSale" | "isPremium" | "saleStartAt" | "saleEndAt" | "badge"
   >,
 ): HighlightLabel | undefined {
   if (product.onSale && isSaleWindowActiveFromLegacy(product)) return "on-sale";
-  if (product.isTrending) return "most-selling";
+  if (product.badge === "new") return "new-arrival";
   if (product.isPremium) return "premium";
   return undefined;
+}
+
+/** @deprecated Use resolveHighlightBadges — single-badge fallback */
+export function resolveHighlightLabel(
+  product: Pick<
+    LegacyProduct,
+    "onSale" | "isTrending" | "isPremium" | "saleStartAt" | "saleEndAt" | "badge"
+  >,
+): HighlightLabel | undefined {
+  const { seal, pill } = resolveHighlightBadges(product);
+  return seal ?? pill;
+}
+
+/** Badges for /highlights product cards — seal + pill can coexist */
+export function resolveHighlightBadges(
+  product: Pick<
+    LegacyProduct,
+    "onSale" | "isTrending" | "isPremium" | "saleStartAt" | "saleEndAt" | "badge"
+  >,
+): ResolvedHighlightBadges {
+  const seal = resolveHighlightSealLabel(product);
+  const pill = product.isTrending ? ("most-selling" as const) : undefined;
+  return { seal, pill };
 }
 
 export function isSaleWindowActiveFromLegacy(
@@ -77,6 +107,8 @@ export function highlightLabelText(label: HighlightLabel): string {
       return "On sale";
     case "premium":
       return "Premium luxe";
+    case "new-arrival":
+      return "New arrival";
   }
 }
 
@@ -93,6 +125,8 @@ export function highlightBadgeContent(label: HighlightLabel): HighlightBadgeCont
       return { variant: "seal", line1: "SALE!", line2: "ON SALE" };
     case "premium":
       return { variant: "seal", line1: "LUXE", line2: "PREMIUM" };
+    case "new-arrival":
+      return { variant: "seal", line1: "NEW!", line2: "ARRIVAL" };
   }
 }
 
@@ -105,5 +139,7 @@ export function highlightLabelClasses(label: HighlightLabel): string {
       return "highlight-badge-seal highlight-badge-seal--sale";
     case "premium":
       return "highlight-badge-seal highlight-badge-seal--premium";
+    case "new-arrival":
+      return "highlight-badge-seal highlight-badge-seal--new";
   }
 }

@@ -13,13 +13,10 @@ import { useCartStore } from "@/stores/cart-store";
 import { QuickViewModal } from "@/components/product/quick-view-modal";
 import { useFlyToCart } from "@/components/motion/fly-to-cart";
 import {
-  type HighlightLabel,
   isLegacyProductOnSale,
-  resolveHighlightLabel,
+  resolveHighlightBadges,
 } from "@/lib/product-highlights";
 import { HighlightBadge } from "@/components/product/highlight-badge";
-
-export type { HighlightLabel };
 
 const imageVariants = {
   rest: {},
@@ -46,12 +43,13 @@ export function ProductCard({
   product,
   className,
   radiusClass = "rounded-sm",
-  highlightLabel,
+  showHighlightBadges = false,
 }: {
   product: Product;
   className?: string;
   radiusClass?: string;
-  highlightLabel?: HighlightLabel;
+  /** Styled sale / premium / new / trending badges — highlights page only */
+  showHighlightBadges?: boolean;
 }) {
   const addItem = useCartStore((s) => s.addItem);
   const fly = useFlyToCart();
@@ -60,7 +58,7 @@ export function ProductCard({
   const [quickOpen, setQuickOpen] = useState(false);
   const [canHover, setCanHover] = useState(false);
   const defaultSize = product.sizes[1] ?? product.sizes[0];
-  const resolvedHighlight = highlightLabel ?? resolveHighlightLabel(product);
+  const highlightBadges = showHighlightBadges ? resolveHighlightBadges(product) : {};
   const onSale = isLegacyProductOnSale(product);
   const displayPrice = defaultSize?.price ?? product.price;
   const comparePrice =
@@ -120,12 +118,17 @@ export function ProductCard({
             sizes="(max-width: 768px) 50vw, 25vw"
           />
         </Link>
-        {product.badge && (
+        {!showHighlightBadges && product.badge && (
           <Badge className="absolute left-3 top-3 z-10 rounded-none bg-gold-warm text-[10px] uppercase tracking-[0.18em] text-noir" variant="default">
             {badgeLabel(product.badge)}
           </Badge>
         )}
-        {resolvedHighlight && <HighlightBadge label={resolvedHighlight} />}
+        {highlightBadges.seal && (
+          <HighlightBadge label={highlightBadges.seal} className="highlight-badge-seal-slot" />
+        )}
+        {highlightBadges.pill && (
+          <HighlightBadge label={highlightBadges.pill} className="highlight-badge-pill-slot" />
+        )}
         <motion.div
           variants={overlayVariants}
           transition={{ duration: 0.2 }}

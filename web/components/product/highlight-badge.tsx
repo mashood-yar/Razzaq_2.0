@@ -5,6 +5,12 @@ import {
   highlightLabelText,
 } from "@/lib/product-highlights";
 
+const SEAL_MODIFIERS: Partial<Record<HighlightLabel, string>> = {
+  premium: "highlight-badge-seal--premium",
+  "on-sale": "highlight-badge-seal--sale",
+  "new-arrival": "highlight-badge-seal--new",
+};
+
 export function HighlightBadge({
   label,
   className,
@@ -32,15 +38,17 @@ export function HighlightBadge({
     <div
       className={cn(
         "highlight-badge-seal",
-        label === "premium" && "highlight-badge-seal--premium",
-        label === "on-sale" && "highlight-badge-seal--sale",
+        SEAL_MODIFIERS[label],
         className,
       )}
       role="status"
       aria-label={ariaLabel}
     >
-      <span className="highlight-badge-seal__line1">{content.line1}</span>
-      <span className="highlight-badge-seal__line2">{content.line2}</span>
+      <div className="highlight-badge-seal__scallop" aria-hidden />
+      <div className="highlight-badge-seal__body">
+        <span className="highlight-badge-seal__line1">{content.line1}</span>
+        <span className="highlight-badge-seal__line2">{content.line2}</span>
+      </div>
     </div>
   );
 }

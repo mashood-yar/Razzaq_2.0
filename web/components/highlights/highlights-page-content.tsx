@@ -54,10 +54,8 @@ function SectionHeader({
 
 function ProductGrid({
   products,
-  highlightLabel,
 }: {
   products: HighlightsSections["trending"];
-  highlightLabel: "most-selling" | "on-sale" | "premium";
 }) {
   if (products.length === 0) {
     return (
@@ -73,7 +71,7 @@ function ProductGrid({
         <ProductCard
           key={product.id}
           product={product}
-          highlightLabel={highlightLabel}
+          showHighlightBadges
           radiusClass={RADIUS_CYCLE[i % RADIUS_CYCLE.length]}
         />
       ))}
@@ -149,7 +147,7 @@ export function HighlightsPageContent({
             href="/shop?sort=bestselling"
             linkLabel="View all trending"
           />
-          <ProductGrid products={trending} highlightLabel="most-selling" />
+          <ProductGrid products={trending} />
         </section>
 
         <SectionCta
@@ -174,7 +172,7 @@ export function HighlightsPageContent({
             href="/shop?sale=true"
             linkLabel="All sale items"
           />
-          <ProductGrid products={onSale} highlightLabel="on-sale" />
+          <ProductGrid products={onSale} />
         </section>
 
         <SectionCta
@@ -199,7 +197,7 @@ export function HighlightsPageContent({
             href="/shop?sort=price-desc"
             linkLabel="View all premium"
           />
-          <ProductGrid products={premium} highlightLabel="premium" />
+          <ProductGrid products={premium} />
         </section>
       </div>
     </div>
