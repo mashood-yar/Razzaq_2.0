@@ -28,6 +28,31 @@
     --success: #4caf82;
     --radius: 4px;
 
+    /* Primary Background Progression — darkest to lightest surface */
+    --bg-void:     #080705;
+    --bg-obsidian: #100F0C;
+    --bg-dusk:     #1A1814;
+    --bg-stone:    #252219;
+    --bg-ash:      #2E2B23;
+
+    /* Gold — the brand's soul */
+    --gold-deep:   #7A5C1E;
+    --gold-earth:  #A07830;
+    --gold-warm:   #C9A050;
+    --gold-bright: #E8C06A;
+    --gold-pale:   #F5E4B8;
+
+    /* Neutral Creams */
+    --cream-bone:  #F5F0E8;
+    --cream-warm:  #DDD5C4;
+    --cream-muted: #8C8070;
+    --cream-ghost: #4A4538;
+
+    /* Semantic Accents */
+    --ember:       #C4603A;
+    --sage:        #5C7A5E;
+    --rose-dust:   #9E6B6B;
+
     --text-on-light: #f5f0e8;
     --text-muted-on-light: #7a7468;
     --text-caption-on-light: #7a7468;
