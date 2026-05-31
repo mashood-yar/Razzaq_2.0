@@ -236,52 +236,11 @@
   }
 
   .site-nav-bar {
-    @apply flex h-[60px] w-full items-center justify-center px-4 transition-[padding] duration-300 sm:px-6;
+    @apply border-b border-transparent bg-noir/90 shadow-none backdrop-blur-xl transition-[border-color,background] duration-300;
   }
 
-  .site-nav-pill {
-    @apply flex max-w-[calc(100vw-2rem)] items-stretch overflow-hidden rounded-full border border-noir-muted/55 bg-graphite/90 shadow-[0_2px_20px_rgb(0_0_0/0.28)] backdrop-blur-xl transition-[border-color,box-shadow,background] duration-300;
-  }
-
-  .site-nav-bar.scrolled .site-nav-pill {
-    @apply border-gold-warm/25 bg-graphite shadow-[0_8px_32px_rgb(0_0_0/0.42)];
-  }
-
-  .nav-pill-divider {
-    @apply w-px shrink-0 self-stretch bg-noir-muted/65;
-  }
-
-  .nav-pill-segment {
-    @apply relative flex shrink-0 items-center justify-center px-3 py-2.5 text-[11px] font-medium uppercase tracking-[0.15em] transition-[color,background] duration-200 xl:px-4;
-  }
-
-  .nav-pill-link {
-    @apply whitespace-nowrap text-text-secondary hover:bg-gold-subtle/80 hover:text-gold-bright;
-  }
-
-  .nav-pill-link-active {
-    @apply bg-gold-subtle/70 text-gold-bright;
-  }
-
-  .nav-pill-brand {
-    @apply px-5 font-display text-sm italic normal-case tracking-[0.28em] text-foreground hover:bg-gold-subtle/50 hover:text-gold-bright xl:px-6;
-  }
-
-  .nav-pill-icon-segment {
-    @apply px-3 text-text-secondary hover:bg-gold-subtle/80 hover:text-gold-bright;
-  }
-
-  .nav-pill-icon-segment > button,
-  .nav-pill-icon-segment > a {
-    @apply flex items-center justify-center;
-  }
-
-  .nav-pill-cta {
-    @apply bg-gold-warm px-3.5 text-noir hover:bg-gold-bright xl:px-4;
-  }
-
-  .nav-pill-cta:hover {
-    @apply text-noir;
+  .site-nav-bar.scrolled {
+    @apply border-border bg-noir/[0.98];
   }
 
   .btn-ghost-link {
