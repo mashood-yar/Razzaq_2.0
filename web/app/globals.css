@@ -214,8 +214,36 @@
     @apply flex h-12 w-full rounded-none border border-border bg-[#111110]/80 px-5 text-sm font-light text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C49A1E]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50;
   }
 
+  .input-luxe-line {
+    @apply h-auto w-full rounded-none border-0 border-b border-noir-muted bg-transparent px-0 py-3.5 text-[15px] font-light text-foreground placeholder:italic placeholder:text-muted-foreground focus-visible:border-gold-bright focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .textarea-luxe-line {
+    @apply min-h-[100px] w-full resize-y rounded-none border-0 border-b border-noir-muted bg-transparent px-0 py-3.5 text-[15px] font-light text-foreground placeholder:italic placeholder:text-muted-foreground focus-visible:border-gold-bright focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .label-luxe {
+    @apply mb-2 block font-body text-[10px] font-medium uppercase tracking-[0.25em] text-muted-foreground;
+  }
+
+  .filter-btn {
+    @apply border border-noir-muted bg-transparent px-[18px] py-2 font-body text-[11px] font-medium uppercase tracking-[0.12em] text-text-secondary transition-[border-color,color,background] duration-300 hover:border-gold-warm hover:bg-gold-subtle hover:text-gold-bright;
+  }
+
+  .filter-btn-active {
+    @apply border-gold-warm bg-gold-subtle text-gold-bright;
+  }
+
+  .quiz-pill {
+    @apply border border-noir-muted bg-transparent px-5 py-2.5 font-body text-[11px] font-medium uppercase tracking-[0.15em] text-text-secondary transition-[border-color,color,background] duration-300 hover:border-gold-warm hover:bg-gold-subtle hover:text-gold-bright;
+  }
+
+  .quiz-pill-active {
+    @apply border-gold-warm bg-gold-subtle text-gold-bright;
+  }
+
   .site-nav-bar {
-    @apply h-[60px] w-full border-b border-transparent bg-noir/90 shadow-none backdrop-blur-xl transition-[border-color,background] duration-300;
+    @apply border-b border-transparent bg-noir/90 shadow-none backdrop-blur-xl transition-[border-color,background] duration-300;
   }
 
   .site-nav-bar.scrolled {
@@ -459,6 +487,199 @@
     to {
       transform: rotate(360deg);
     }
+  }
+
+  /* ── Highlights product badges (maazsafder-inspired, Nocturne Doré) ── */
+  .highlight-badge-seal-slot {
+    @apply pointer-events-none absolute right-2 top-2 z-20 sm:right-3 sm:top-3;
+  }
+
+  .highlight-badge-pill-slot {
+    @apply pointer-events-none absolute bottom-2 left-2 z-20 sm:bottom-3 sm:left-3;
+  }
+
+  .highlight-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.65rem 0.35rem 0.5rem;
+    border-radius: 9999px;
+    background: linear-gradient(180deg, #f5c842 0%, #e8a820 48%, #d4920f 100%);
+    box-shadow:
+      0 2px 8px rgb(0 0 0 / 0.45),
+      inset 0 1px 0 rgb(255 255 255 / 0.35);
+    filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.35));
+  }
+
+  .highlight-badge-pill__dot {
+    flex-shrink: 0;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: #c45a08;
+    box-shadow: 0 0 0 2px rgb(196 90 8 / 0.25);
+  }
+
+  .highlight-badge-pill__text {
+    font-family: var(--font-body), system-ui, sans-serif;
+    font-size: 0.5625rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.06em;
+    color: #0a0a08;
+    white-space: nowrap;
+  }
+
+  @media (min-width: 640px) {
+    .highlight-badge-pill {
+      gap: 0.5rem;
+      padding: 0.4rem 0.75rem 0.4rem 0.55rem;
+    }
+
+    .highlight-badge-pill__dot {
+      width: 0.5rem;
+      height: 0.5rem;
+    }
+
+    .highlight-badge-pill__text {
+      font-size: 0.625rem;
+      letter-spacing: 0.08em;
+    }
+  }
+
+  .highlight-badge-seal {
+    position: relative;
+    width: 4.25rem;
+    height: 4.25rem;
+    filter: drop-shadow(0 3px 10px rgb(0 0 0 / 0.5));
+  }
+
+  @media (min-width: 640px) {
+    .highlight-badge-seal {
+      width: 4.75rem;
+      height: 4.75rem;
+    }
+  }
+
+  .highlight-badge-seal__scallop {
+    position: absolute;
+    inset: 0;
+    background: inherit;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='black' d='M50 2 L56.5 8.2 L65 3.5 L70.5 11 L79 6.5 L83 15.5 L92 12 L93.5 22 L100 28.5 L95 37 L100 50 L93.5 61.5 L100 71.5 L92 76 L88 85.5 L79 81 L70.5 88.5 L65 80 L56.5 85.2 L50 92 L43.5 85.2 L35 80 L29.5 88.5 L21 81 L12 85.5 L8 76 L0 71.5 L7 61.5 L0 50 L7 37 L0 28.5 L7.5 22 L8 12 L17 15.5 L21 11 L29.5 6.5 L35 11 L43.5 3.5 Z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='black' d='M50 2 L56.5 8.2 L65 3.5 L70.5 11 L79 6.5 L83 15.5 L92 12 L93.5 22 L100 28.5 L95 37 L100 50 L93.5 61.5 L100 71.5 L92 76 L88 85.5 L79 81 L70.5 88.5 L65 80 L56.5 85.2 L50 92 L43.5 85.2 L35 80 L29.5 88.5 L21 81 L12 85.5 L8 76 L0 71.5 L7 61.5 L0 50 L7 37 L0 28.5 L7.5 22 L8 12 L17 15.5 L21 11 L29.5 6.5 L35 11 L43.5 3.5 Z'/%3E%3C/svg%3E");
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .highlight-badge-seal__body {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.35rem 0.25rem 0.2rem;
+    text-align: center;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='black' d='M50 2 L56.5 8.2 L65 3.5 L70.5 11 L79 6.5 L83 15.5 L92 12 L93.5 22 L100 28.5 L95 37 L100 50 L93.5 61.5 L100 71.5 L92 76 L88 85.5 L79 81 L70.5 88.5 L65 80 L56.5 85.2 L50 92 L43.5 85.2 L35 80 L29.5 88.5 L21 81 L12 85.5 L8 76 L0 71.5 L7 61.5 L0 50 L7 37 L0 28.5 L7.5 22 L8 12 L17 15.5 L21 11 L29.5 6.5 L35 11 L43.5 3.5 Z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='black' d='M50 2 L56.5 8.2 L65 3.5 L70.5 11 L79 6.5 L83 15.5 L92 12 L93.5 22 L100 28.5 L95 37 L100 50 L93.5 61.5 L100 71.5 L92 76 L88 85.5 L79 81 L70.5 88.5 L65 80 L56.5 85.2 L50 92 L43.5 85.2 L35 80 L29.5 88.5 L21 81 L12 85.5 L8 76 L0 71.5 L7 61.5 L0 50 L7 37 L0 28.5 L7.5 22 L8 12 L17 15.5 L21 11 L29.5 6.5 L35 11 L43.5 3.5 Z'/%3E%3C/svg%3E");
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .highlight-badge-seal__line1 {
+    font-family: var(--font-display), Georgia, serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    color: #fff;
+    text-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
+  }
+
+  .highlight-badge-seal__line2 {
+    margin-top: 0.15rem;
+    width: calc(100% - 0.5rem);
+    max-width: 3.4rem;
+    padding: 0.12rem 0.2rem;
+    border-radius: 2px;
+    font-family: var(--font-body), system-ui, sans-serif;
+    font-size: 0.4375rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: center;
+    color: #f5e6a8;
+    background: rgb(10 10 8 / 0.72);
+  }
+
+  @media (min-width: 640px) {
+    .highlight-badge-seal__line1 {
+      font-size: 1.05rem;
+    }
+
+    .highlight-badge-seal__line2 {
+      font-size: 0.5rem;
+    }
+  }
+
+  .highlight-badge-seal--new {
+    background: linear-gradient(145deg, #7c3aed 0%, #a855f7 38%, #db2777 100%);
+  }
+
+  .highlight-badge-seal--new .highlight-badge-seal__scallop {
+    background: linear-gradient(145deg, #7c3aed 0%, #a855f7 38%, #db2777 100%);
+  }
+
+  .highlight-badge-seal--new .highlight-badge-seal__body {
+    background: linear-gradient(145deg, #7c3aed 0%, #a855f7 38%, #db2777 100%);
+  }
+
+  .highlight-badge-seal--sale {
+    background: linear-gradient(145deg, #b91c1c 0%, #dc2626 42%, #991b1b 100%);
+  }
+
+  .highlight-badge-seal--sale .highlight-badge-seal__scallop {
+    background: linear-gradient(145deg, #b91c1c 0%, #dc2626 42%, #991b1b 100%);
+  }
+
+  .highlight-badge-seal--sale .highlight-badge-seal__body {
+    background: linear-gradient(145deg, #b91c1c 0%, #dc2626 42%, #991b1b 100%);
+  }
+
+  .highlight-badge-seal--sale .highlight-badge-seal__line2 {
+    color: #fde68a;
+    background: rgb(10 10 8 / 0.78);
+  }
+
+  .highlight-badge-seal--premium {
+    background: linear-gradient(145deg, #0a0a08 0%, #1a1810 35%, #3d3520 100%);
+    box-shadow:
+      inset 0 0 0 1px rgb(212 168 50 / 0.35),
+      0 3px 12px rgb(0 0 0 / 0.55);
+  }
+
+  .highlight-badge-seal--premium .highlight-badge-seal__scallop {
+    background: linear-gradient(145deg, #0a0a08 0%, #1a1810 35%, #3d3520 100%);
+  }
+
+  .highlight-badge-seal--premium .highlight-badge-seal__body {
+    background: linear-gradient(145deg, #0a0a08 0%, #1a1810 35%, #3d3520 100%);
+  }
+
+  .highlight-badge-seal--premium .highlight-badge-seal__line1 {
+    color: #f0c84a;
+    text-shadow: 0 1px 4px rgb(0 0 0 / 0.6);
+  }
+
+  .highlight-badge-seal--premium .highlight-badge-seal__line2 {
+    color: #d4a832;
+    background: rgb(10 10 8 / 0.85);
+    border: 1px solid rgb(212 168 50 / 0.25);
   }
 }
 

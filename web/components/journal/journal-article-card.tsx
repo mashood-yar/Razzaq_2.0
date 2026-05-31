@@ -5,46 +5,27 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import type { Article } from "@/lib/types";
 import { formatArticleDate } from "@/lib/articles";
-import {
-  getCardRotation,
-  getTornClipPath,
-} from "@/components/journal/journal-utils";
+import { JOURNAL_CARD_CLASS } from "@/components/journal/journal-utils";
 
 type JournalArticleCardProps = {
   article: Article;
   index: number;
-  background: string;
   compact?: boolean;
 };
 
 export function JournalArticleCard({
   article,
   index,
-  background,
   compact = false,
 }: JournalArticleCardProps) {
-  const rotation = getCardRotation(index);
-  const clipPath = getTornClipPath();
-
   return (
     <motion.article
-      initial={{ opacity: 0, rotateX: -15, y: 40 }}
-      whileInView={{ opacity: 1, rotateX: 0, y: 0 }}
-      transition={{ duration: 0.7, ease: "easeOut", delay: index * 0.1 }}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut", delay: index * 0.08 }}
       viewport={{ once: true }}
-      style={{
-        clipPath,
-        backgroundColor: background,
-        rotate: `${rotation}deg`,
-      }}
-      className="group relative flex flex-col transition-all duration-300 hover:-translate-y-2 border border-[var(--border-fine)]"
+      className={`group relative flex h-full flex-col ${JOURNAL_CARD_CLASS}`}
     >
-      {/* Pushpin */}
-      <span
-        className="absolute left-1/2 top-0 z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold shadow-[0_2px_4px_rgba(44,44,36,0.25)] ring-2 ring-gold/30"
-        aria-hidden="true"
-      />
-
       <Link
         href={`/journal/${article.slug}`}
         className={`relative block overflow-hidden ${compact ? "aspect-[4/3]" : "aspect-[16/10]"}`}
@@ -53,23 +34,21 @@ export function JournalArticleCard({
           src={article.image}
           alt={article.title}
           fill
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           sizes="(max-width: 768px) 100vw, 33vw"
         />
       </Link>
 
-      <div className={`flex flex-1 flex-col ${compact ? "p-4" : "p-6 sm:p-7"} bg-[var(--bg-dusk)]`}>
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <span
-            className="inline-block -rotate-1 rounded-full bg-gold px-3 py-0.5 text-xs font-semibold text-noir"
-          >
+      <div className={`flex flex-1 flex-col ${compact ? "p-4" : "p-6 sm:p-7"}`}>
+        <div className="flex items-center justify-between gap-2">
+          <span className="inline-block rounded-full bg-gold px-3 py-0.5 font-body text-[10px] font-medium uppercase tracking-[0.15em] text-noir">
             {article.category}
           </span>
-          <span className="text-[12px] font-body text-[var(--cream-ghost)]">{article.readTime}</span>
+          <span className="text-xs text-muted-foreground">{article.readTime}</span>
         </div>
 
         <h2
-          className={`font-display italic font-light leading-snug text-[var(--cream-bone)] ${compact ? "text-xl" : "text-[1.75rem]"}`}
+          className={`mt-3 font-display font-semibold leading-snug text-foreground ${compact ? "text-lg" : "text-xl sm:text-2xl"}`}
         >
           <Link href={`/journal/${article.slug}`} className="hover:text-gold-bright">
             {article.title}
@@ -77,13 +56,13 @@ export function JournalArticleCard({
         </h2>
 
         <p
-          className={`mt-3 flex-1 font-body font-light text-[var(--cream-muted)] leading-[1.6] ${compact ? "line-clamp-2 text-[13px]" : "line-clamp-3 text-[14px]"}`}
+          className={`mt-2 flex-1 font-body text-muted-foreground ${compact ? "line-clamp-2 text-sm" : "line-clamp-2 text-sm sm:text-base"}`}
         >
           {article.excerpt}
         </p>
 
-        <div className="mt-4 flex items-center gap-3 border-t border-border/60 pt-4">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold/15 font-display text-xs font-bold text-gold">
+        <div className="mt-4 flex items-center gap-3 border-t border-border pt-4">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold-subtle font-display text-xs font-bold text-gold-bright">
             {article.author
               .split(" ")
               .map((w) => w[0])
@@ -92,12 +71,12 @@ export function JournalArticleCard({
               .toUpperCase()}
           </span>
           <div className="min-w-0">
-            <p className="truncate text-[13px] font-body text-[var(--cream-bone)]">
+            <p className="truncate text-sm font-medium text-foreground">
               {article.author}
             </p>
             <time
               dateTime={article.date}
-              className="text-[11px] font-body text-[var(--cream-ghost)]"
+              className="text-xs text-muted-foreground"
             >
               {formatArticleDate(article.date)}
             </time>

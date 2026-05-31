@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { ContactForm } from "@/components/contact/contact-form";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 
@@ -13,10 +14,22 @@ export default function ContactPage() {
   return (
     <div>
       <section className="relative flex min-h-[50vh] items-end overflow-hidden bg-noir pt-[100px]">
-        <div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(196,154,30,0.06),transparent_60%)]"
-          aria-hidden
-        />
+        <div className="absolute inset-0" aria-hidden>
+          <div className="relative h-full w-full">
+            <Image
+              src="/images/contact-hero.png"
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover opacity-55"
+            />
+            <div
+              className="absolute inset-0 bg-gradient-to-t from-[#0A0A08] via-[#0A0A08]/65 to-[#0A0A08]/15"
+              aria-hidden
+            />
+          </div>
+        </div>
         <div className="relative z-10 mx-auto w-full max-w-4xl px-5 pb-16 pt-8 sm:px-6 md:pb-20">
           <span className="eyebrow mb-5 block">Reach Out</span>
           <h1 className="font-display text-[clamp(2.5rem,10vw,5rem)] font-light leading-[0.95] tracking-tight text-foreground">
@@ -61,8 +74,10 @@ export default function ContactPage() {
           </div>
 
           <div>
-            <h2 className="mb-8 font-display text-2xl font-light">Send us a message</h2>
-            <ContactForm />
+            <h2 className="font-display text-2xl font-light text-foreground">Send Us a Message</h2>
+            <div className="mt-10">
+              <ContactForm />
+            </div>
           </div>
         </div>
       </div>

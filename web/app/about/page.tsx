@@ -46,10 +46,22 @@ export default function AboutPage() {
   return (
     <div>
       <section className="relative flex min-h-[70vh] items-end overflow-hidden bg-noir pt-[100px]">
-        <div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(196,154,30,0.08),transparent_50%),linear-gradient(to_top,#0A0A08_0%,#111110_100%)]"
-          aria-hidden
-        />
+        <div className="absolute inset-0" aria-hidden>
+          <div className="relative h-full w-full">
+            <Image
+              src="/images/about-hero.png"
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover opacity-55"
+            />
+            <div
+              className="absolute inset-0 bg-gradient-to-t from-[#0A0A08] via-[#0A0A08]/65 to-[#0A0A08]/15"
+              aria-hidden
+            />
+          </div>
+        </div>
         <div className="relative z-10 mx-auto w-full max-w-4xl px-5 pb-20 pt-8 sm:px-6 md:pb-28">
           <span className="eyebrow mb-5 block">Our Story</span>
           <h1 className="font-display text-[clamp(2.5rem,10vw,5rem)] font-light leading-[0.95] tracking-tight text-foreground">
@@ -84,7 +96,7 @@ export default function AboutPage() {
           <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-noir-surface">
             <Image
               src="/images/areeb.png"
-              alt="Razzaq Luxe founder"
+              alt="Illustration of diverse hands holding Razzaq Luxe fragrance bottles"
               fill
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 480px"

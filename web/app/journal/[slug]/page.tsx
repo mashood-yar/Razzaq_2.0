@@ -37,7 +37,7 @@ export async function generateMetadata({
 
 function PullQuote({ text }: { text: string }) {
   return (
-    <blockquote className="my-8 border-l-4 border-gold py-2 pl-6 font-display text-xl italic leading-snug text-gold-bright sm:text-2xl">
+    <blockquote className="my-10 border-l-2 border-gold-warm py-1 pl-6 font-display text-xl italic leading-snug text-gold-bright sm:text-2xl">
       &ldquo;{text}&rdquo;
     </blockquote>
   );
@@ -62,26 +62,22 @@ export default async function ArticlePage({
       <ArticleReadingProgress />
 
       <article className="relative min-h-screen bg-noir">
-        <div
-          className="pointer-events-none absolute inset-0 bg-[url('/arabesque.svg')] bg-repeat opacity-[0.02]"
-          aria-hidden="true"
-        />
-
         <div className="relative mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
           <Link
             href="/journal"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-gold transition-colors hover:text-gold-bright"
+            className="inline-flex items-center gap-1 font-body text-[11px] font-medium uppercase tracking-[0.15em] text-gold-bright transition-colors hover:text-gold"
           >
             ← Back to Journal
           </Link>
 
           <header className="mx-auto mt-10 max-w-2xl text-center">
-            <span className="inline-block -rotate-1 rounded-full bg-gold px-3 py-1 text-xs font-semibold text-noir">
+            <span className="inline-block rounded-full bg-gold px-3 py-1 font-body text-[10px] font-medium uppercase tracking-[0.15em] text-noir">
               {article.category}
             </span>
-            <h1 className="mt-5 font-display text-3xl font-bold leading-tight text-foreground sm:text-4xl lg:text-5xl">
+            <h1 className="mt-5 font-display text-3xl font-light leading-tight text-foreground sm:text-4xl lg:text-5xl">
               {article.title}
             </h1>
+            <div className="mx-auto mt-5 h-px w-16 bg-gold-warm" aria-hidden="true" />
             <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
               <span className="inline-flex items-center gap-2">
                 <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gold/15 font-display text-xs font-bold text-gold">
@@ -100,10 +96,8 @@ export default async function ArticlePage({
             </div>
           </header>
 
-          <div className="relative mx-auto mt-16 max-w-3xl">
-            <div
-              className="relative aspect-[16/9] overflow-hidden border border-[var(--border-fine)] shadow-2xl rounded-[2px]"
-            >
+          <div className="relative mx-auto mt-12 max-w-3xl">
+            <div className="relative aspect-[16/9] overflow-hidden border border-border bg-noir-surface">
               <Image
                 src={article.image}
                 alt={article.title}
@@ -126,11 +120,11 @@ export default async function ArticlePage({
             ))}
           </div>
 
-          <div className="mx-auto mt-16 max-w-2xl">
+          <div className="mx-auto mt-12 max-w-2xl">
             <ArticleShareButtons title={article.title} slug={article.slug} />
           </div>
 
-          <div className="mx-auto mt-16 max-w-5xl">
+          <div className="mx-auto max-w-5xl">
             <ArticleRelated articles={related} />
           </div>
         </div>

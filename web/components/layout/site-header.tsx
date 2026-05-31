@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+  Menu,
   Search,
   ShoppingCart,
   Heart,
@@ -12,7 +13,6 @@ import {
   Home,
   Store,
   User,
-  Menu,
 } from "lucide-react";
 import type React from "react";
 import { cn } from "@/lib/utils";
@@ -20,6 +20,10 @@ import { Button } from "@/components/ui/button";
 import { useUiStore } from "@/stores/ui-store";
 import { useCartStore } from "@/stores/cart-store";
 import { useSession } from "@/lib/auth/use-session";
+import {
+  AccountAvatarGlyph,
+  NavPersonOutlineIcon,
+} from "@/components/layout/account-avatar-glyph";
 import { HeaderAccountDropdown } from "@/components/layout/header-account-dropdown";
 import {
   AnnouncementBar,
@@ -34,8 +38,70 @@ const nav = [
   { href: "/contact", label: "Contact" },
 ];
 
+function navLinkClass(pathname: string | null, href: string) {
+  const active =
+    pathname === href || (pathname?.startsWith(href + "/") ?? false);
+  return cn(
+    "text-[11px] font-medium uppercase tracking-[0.18em] transition-colors hover:text-gold-bright",
+    active ? "text-gold-bright" : "text-text-secondary",
+  );
+}
+
+function HeaderIconActions({
+  itemCount,
+  onSearch,
+  onCart,
+  className,
+}: {
+  itemCount: number;
+  onSearch: () => void;
+  onCart: () => void;
+  className?: string;
+}) {
+  return (
+    <div className={cn("flex items-center gap-0.5 sm:gap-1", className)}>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="text-text-secondary hover:text-gold-bright"
+        aria-label="Search"
+        onClick={onSearch}
+      >
+        <Search className="h-[18px] w-[18px]" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="text-text-secondary hover:text-gold-bright"
+        asChild
+      >
+        <Link href="/wishlist" aria-label="Wishlist">
+          <Heart className="h-[18px] w-[18px]" aria-hidden />
+        </Link>
+      </Button>
+      <HeaderAccountDropdown />
+      <Button
+        id="cart-fly-anchor"
+        data-cart-fly-anchor
+        variant="ghost"
+        size="icon"
+        className="relative text-text-secondary hover:text-gold-bright"
+        aria-label={`Cart${itemCount ? `, ${itemCount} items` : ""}`}
+        onClick={onCart}
+      >
+        <ShoppingCart className="h-[18px] w-[18px]" />
+        {itemCount > 0 && (
+          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center bg-gold-warm px-0.5 text-[10px] font-medium text-noir">
+            {itemCount > 99 ? "99+" : itemCount}
+          </span>
+        )}
+      </Button>
+    </div>
+  );
+}
+
 export function SiteHeader() {
-  const { user } = useSession();
+  const { status, user } = useSession();
   const pathname = usePathname();
   const { dismissed: announcementDismissed, setDismissed: dismissAnnouncement } =
     useAnnouncementDismissed();
@@ -48,6 +114,17 @@ export function SiteHeader() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [mobileOpen]);
+
   const setSearchOpen = useUiStore((s) => s.setSearchOpen);
   const setCartOpen = useUiStore((s) => s.setCartOpen);
   const itemCount = useCartStore((s) =>
@@ -57,8 +134,10 @@ export function SiteHeader() {
   if (pathname?.startsWith("/admin")) return null;
 
   const headerTop = announcementDismissed ? "top-0" : "top-10";
+  const openSearch = () => setSearchOpen(true);
+  const openCart = () => setCartOpen(true);
 
-  // Mobile bottom nav helper
+  // Mobile bottom nav active helper
   const isActive = (path: string) => {
     if (path === "/" && pathname === "/") return true;
     if (path !== "/" && pathname?.startsWith(path)) return true;
@@ -71,9 +150,9 @@ export function SiteHeader() {
         dismissed={announcementDismissed}
         onDismiss={() => dismissAnnouncement(true)}
       />
-      
-      {/* 
-        DESKTOP HEADER (≥ 1024px)
+
+      {/*
+        DESKTOP HEADER — centered 3-column layout (≥ 1024px)
       */}
       <header
         className={cn(
@@ -83,36 +162,26 @@ export function SiteHeader() {
       >
         <div
           className={cn(
-            "site-nav-bar pointer-events-auto flex items-center justify-between px-5 sm:px-6",
+            "site-nav-bar pointer-events-auto grid h-[60px] w-full grid-cols-[1fr_auto_1fr] items-center gap-3 px-5 sm:px-8 lg:px-10",
             scrolled && "scrolled",
           )}
         >
-          <Link
-            href="/"
-            className="font-display text-sm italic uppercase tracking-[0.3em] text-foreground transition-colors hover:text-gold-bright"
-            aria-label="Razzaq Luxe — home"
-          >
-            Razzaq Luxe
-          </Link>
-
-          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 lg:flex" aria-label="Main">
+          {/* Left: desktop nav links + mobile hamburger */}
+          <div className="flex min-w-0 items-center justify-start">
+            <nav
+              className="hidden items-center gap-6 lg:flex xl:gap-8"
+              aria-label="Main"
+            >
               {nav.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={cn(
-                    "text-[11px] font-medium uppercase tracking-[0.18em] transition-colors hover:text-gold-bright",
-                    pathname === item.href || pathname.startsWith(item.href + "/")
-                      ? "text-gold-bright"
-                      : "text-text-secondary",
-                  )}
+                  className={navLinkClass(pathname, item.href)}
                 >
                   {item.label}
                 </Link>
               ))}
-          </nav>
-
-          <div className="flex items-center gap-1 sm:gap-2">
+            </nav>
             <button
               type="button"
               className="p-2 text-text-secondary transition-colors hover:text-gold-bright lg:hidden"
@@ -123,95 +192,38 @@ export function SiteHeader() {
               <Menu className="h-5 w-5" aria-hidden />
               <span className="sr-only">Open menu</span>
             </button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-text-secondary hover:text-gold-bright"
-              aria-label="Search"
-              onClick={() => setSearchOpen(true)}
-            >
-              <Search className="h-[18px] w-[18px]" />
-            </Button>
-            <Button variant="ghost" size="icon" className="text-text-secondary hover:text-gold-bright" asChild>
-              <Link href="/wishlist" aria-label="Wishlist">
-                <Heart className="h-[18px] w-[18px]" aria-hidden />
-              </Link>
-            </Button>
-            <HeaderAccountDropdown />
-            <Button
-              id="cart-fly-anchor"
-              variant="ghost"
-              size="icon"
-              className="relative text-text-secondary hover:text-gold-bright"
-              aria-label={`Cart${itemCount ? `, ${itemCount} items` : ""}`}
-              onClick={() => setCartOpen(true)}
-            >
-              <ShoppingCart className="h-[18px] w-[18px]" />
-              {itemCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center bg-gold-warm px-0.5 text-[10px] font-medium text-noir">
-                  {itemCount > 99 ? "99+" : itemCount}
-                </span>
-              )}
-            </Button>
           </div>
+
+          {/* Center: brand logo */}
+          <Link
+            href="/"
+            className="justify-self-center whitespace-nowrap font-display text-sm italic uppercase tracking-[0.3em] text-foreground transition-colors hover:text-gold-bright"
+            aria-label="Razzaq Luxe — home"
+          >
+            Razzaq Luxe
+          </Link>
+
+          {/* Right: utility icons */}
+          <HeaderIconActions
+            itemCount={itemCount}
+            onSearch={openSearch}
+            onCart={openCart}
+            className="justify-self-end"
+          />
         </div>
       </header>
 
-      {/* 
-        MOBILE HEADER (< 1024px) - TOP BAR
-      */}
-      <header
-        className={cn(
-          "lg:hidden fixed inset-x-0 z-40 transition-[top] duration-300 h-[56px] w-full flex items-center justify-between px-4",
-          "bg-[rgba(8,7,5,0.92)] backdrop-blur-xl border-b",
-          scrolled ? "border-[var(--border-mid)]" : "border-[var(--border-fine)]",
-          headerTop,
-        )}
-      >
-        {/* Left: Search */}
-        <button
-          type="button"
-          className="flex h-12 w-12 items-center justify-start text-[var(--cream-warm)] active:text-[var(--gold-warm)]"
-          aria-label="Search"
-          onClick={() => setSearchOpen(true)}
-        >
-          <Search className="h-[22px] w-[22px]" />
-        </button>
-
-        {/* Center: Logo — taps to open slide-in menu */}
-        <button 
-          className="font-display text-[17px] font-medium tracking-[0.18em] text-[var(--cream-bone)] uppercase absolute left-1/2 -translate-x-1/2"
-          onClick={() => setMobileOpen(true)}
-        >
-          RAZZAQ LUXE
-        </button>
-
-        {/* Right: Cart */}
-        <button
-          className="relative flex h-12 w-12 items-center justify-end text-[var(--cream-warm)] active:text-[var(--gold-warm)]"
-          aria-label="Cart"
-          onClick={() => setCartOpen(true)}
-        >
-          <ShoppingCart className="h-[22px] w-[22px]" />
-          {itemCount > 0 && (
-            <span className="absolute right-0 top-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[var(--gold-warm)] px-1 font-body text-[9px] font-bold text-[var(--bg-void)]">
-              {itemCount > 99 ? "99+" : itemCount}
-            </span>
-          )}
-        </button>
-      </header>
-
-      {/* 
+      {/*
         MOBILE BOTTOM NAV (< 1024px)
       */}
-      <nav 
+      <nav
         className="lg:hidden fixed bottom-0 left-0 right-0 z-40 flex h-[calc(64px+env(safe-area-inset-bottom))] items-start justify-between bg-[rgba(8,7,5,0.96)] backdrop-blur-xl border-t border-[var(--border-fine)] pb-[env(safe-area-inset-bottom)]"
       >
         {[
           { href: "/", label: "Home", icon: Home },
           { href: "/shop", label: "Shop", icon: Store },
-          { href: "/search", label: "Search", icon: Search, onClick: (e: React.MouseEvent) => { e.preventDefault(); setSearchOpen(true); } },
-          { href: "/cart", label: "Cart", icon: ShoppingCart, count: itemCount, onClick: (e: React.MouseEvent) => { e.preventDefault(); setCartOpen(true); } },
+          { href: "/search", label: "Search", icon: Search, onClick: (e: React.MouseEvent) => { e.preventDefault(); openSearch(); } },
+          { href: "/cart", label: "Cart", icon: ShoppingCart, count: itemCount, onClick: (e: React.MouseEvent) => { e.preventDefault(); openCart(); } },
           { href: user ? "/account" : "/login", label: "Account", icon: User },
         ].map((item) => {
           const active = isActive(item.href) && !item.onClick;
@@ -227,11 +239,11 @@ export function SiteHeader() {
                 <span className="absolute top-0 left-1/2 w-8 -translate-x-1/2 h-[2px] bg-[var(--gold-warm)]" />
               )}
               <div className="relative">
-                <Icon 
+                <Icon
                   className={cn(
                     "h-[22px] w-[22px] transition-colors",
                     active ? "text-[var(--gold-warm)]" : "text-[var(--cream-muted)]"
-                  )} 
+                  )}
                 />
                 {item.count !== undefined && (
                   <span className={cn(
@@ -242,7 +254,7 @@ export function SiteHeader() {
                   </span>
                 )}
               </div>
-              <span 
+              <span
                 className={cn(
                   "font-body text-[10px] font-medium transition-colors",
                   active ? "text-[var(--gold-warm)]" : "text-[var(--cream-muted)]"
@@ -255,12 +267,13 @@ export function SiteHeader() {
         })}
       </nav>
 
-      {/* 
-        MOBILE SLIDE-IN MENU (< 1024px)
+      {/*
+        MOBILE SLIDE-IN MENU (< 1024px) — premium staggered entrance
       */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
+            id="mobile-nav"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -268,7 +281,7 @@ export function SiteHeader() {
             className="fixed inset-0 z-[200] lg:hidden"
             role="dialog"
             aria-modal="true"
-            aria-label="Mobile menu"
+            aria-label="Mobile navigation"
           >
             {/* Backdrop tap to close */}
             <motion.div
@@ -295,7 +308,7 @@ export function SiteHeader() {
                 <X className="h-4 w-4" />
               </motion.button>
 
-              {/* Brand logo */}
+              {/* Brand mark */}
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -328,22 +341,80 @@ export function SiteHeader() {
                     </Link>
                   </motion.div>
                 ))}
+
+                {/* Account link with avatar */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 + nav.length * 0.07, duration: 0.4, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+                >
+                  <Link
+                    href={user ? "/account" : "/login"}
+                    className="mt-2 flex items-center gap-3 border-b border-border/50 py-4 text-sm font-medium uppercase tracking-[0.15em] text-text-secondary transition-colors hover:text-gold-warm"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {status === "loading" ? (
+                      <span className="flex h-9 w-9 shrink-0 animate-pulse rounded-full bg-muted" />
+                    ) : user ? (
+                      <AccountAvatarGlyph user={user} />
+                    ) : (
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center">
+                        <NavPersonOutlineIcon />
+                      </span>
+                    )}
+                    {user ? "Account" : "Sign in"}
+                  </Link>
+                </motion.div>
               </nav>
 
+              {/* Quick actions */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6, duration: 0.4 }}
-                className="mt-8 flex flex-col gap-4 border-t border-border pt-6"
+                className="mt-8 flex items-center gap-2 border-t border-border pt-6"
+                aria-label="Quick actions"
               >
-                <Link
-                  href={user ? "/account" : "/login"}
-                  className="flex items-center gap-3 text-sm font-medium uppercase tracking-[0.15em] text-text-secondary transition-colors hover:text-gold-warm"
-                  onClick={() => setMobileOpen(false)}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-text-secondary hover:text-gold-bright"
+                  aria-label="Search"
+                  onClick={() => { setMobileOpen(false); openSearch(); }}
                 >
-                  {user ? "My Account" : "Sign In"}
-                </Link>
+                  <Search className="h-5 w-5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-text-secondary hover:text-gold-bright"
+                  asChild
+                >
+                  <Link
+                    href="/wishlist"
+                    aria-label="Wishlist"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <Heart className="h-5 w-5" aria-hidden />
+                  </Link>
+                </Button>
+                <Button
+                  data-cart-fly-anchor
+                  variant="ghost"
+                  size="icon"
+                  className="relative text-text-secondary hover:text-gold-bright"
+                  aria-label={`Cart${itemCount ? `, ${itemCount} items` : ""}`}
+                  onClick={() => { setMobileOpen(false); openCart(); }}
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  {itemCount > 0 && (
+                    <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center bg-gold-warm px-0.5 text-[10px] font-medium text-noir">
+                      {itemCount > 99 ? "99+" : itemCount}
+                    </span>
+                  )}
+                </Button>
               </motion.div>
+
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
