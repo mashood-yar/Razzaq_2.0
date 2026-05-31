@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Search, SlidersHorizontal } from "lucide-react";
 import type { LegacyProduct as Product } from "@/lib/products";
@@ -170,10 +171,22 @@ export function ShopContent({ initialProducts }: { initialProducts: Product[] })
         className="relative flex min-h-[45svh] items-end overflow-hidden bg-noir pt-[100px]"
         aria-label="Fragrances collection"
       >
-        <div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_75%_30%,rgba(196,154,30,0.07),transparent_55%),linear-gradient(135deg,#0A0A08_0%,#181816_100%)]"
-          aria-hidden
-        />
+        <div className="absolute inset-0" aria-hidden>
+          <div className="relative h-full w-full">
+            <Image
+              src="/images/fragrances-hero.png"
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover opacity-55"
+            />
+            <div
+              className="absolute inset-0 bg-gradient-to-t from-[#0A0A08] via-[#0A0A08]/65 to-[#0A0A08]/15"
+              aria-hidden
+            />
+          </div>
+        </div>
         <div className="relative z-10 mx-auto w-full max-w-4xl px-5 pb-16 pt-8 sm:px-6">
           <span className="mb-5 block font-body text-[11px] font-medium uppercase tracking-[0.3em] text-gold-bright opacity-85">
             The Collection
