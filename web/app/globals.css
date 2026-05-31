@@ -236,11 +236,11 @@
   }
 
   .site-nav-bar {
-    @apply h-[60px] w-full border-b border-transparent bg-noir/90 shadow-none backdrop-blur-xl transition-[border-color,background] duration-300;
+    @apply mx-3 h-[60px] w-[calc(100%-1.5rem)] rounded-b-2xl border border-transparent border-t-0 bg-noir/90 shadow-none backdrop-blur-xl transition-[border-color,background,box-shadow] duration-300 sm:mx-4 sm:w-[calc(100%-2rem)];
   }
 
   .site-nav-bar.scrolled {
-    @apply border-border bg-noir/[0.98];
+    @apply border-border/60 bg-noir/[0.98] shadow-[0_8px_32px_rgb(0_0_0/0.35)];
   }
 
   .btn-ghost-link {

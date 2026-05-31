@@ -72,36 +72,12 @@ export function SiteHeader() {
       >
         <div
           className={cn(
-            "site-nav-bar pointer-events-auto flex items-center justify-between px-5 sm:px-6",
+            "site-nav-bar pointer-events-auto grid grid-cols-[1fr_auto_1fr] items-center px-5 sm:px-6",
             scrolled && "scrolled",
           )}
         >
-          <Link
-            href="/"
-            className="font-display text-sm italic uppercase tracking-[0.3em] text-foreground transition-colors hover:text-gold-bright"
-            aria-label="Razzaq Luxe — home"
-          >
-            Razzaq Luxe
-          </Link>
-
-          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 lg:flex" aria-label="Main">
-              {nav.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "text-[11px] font-medium uppercase tracking-[0.18em] transition-colors hover:text-gold-bright",
-                    pathname === item.href || pathname.startsWith(item.href + "/")
-                      ? "text-gold-bright"
-                      : "text-text-secondary",
-                  )}
-                >
-                  {item.label}
-                </Link>
-              ))}
-          </nav>
-
-          <div className="flex items-center gap-1 sm:gap-2">
+          {/* Left column — primary nav (desktop) / hamburger (mobile) */}
+          <div className="flex min-w-0 items-center justify-start lg:justify-end lg:gap-8 lg:pr-6">
             <button
               type="button"
               className="p-2 text-text-secondary transition-colors hover:text-gold-bright lg:hidden"
@@ -112,6 +88,35 @@ export function SiteHeader() {
               <Menu className="h-5 w-5" aria-hidden />
               <span className="sr-only">Open menu</span>
             </button>
+            <nav className="hidden items-center gap-6 xl:gap-8 lg:flex" aria-label="Main">
+              {nav.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.18em] transition-colors hover:text-gold-bright",
+                    pathname === item.href || pathname.startsWith(item.href + "/")
+                      ? "text-gold-bright"
+                      : "text-text-secondary",
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Center column — logo always dead center */}
+          <Link
+            href="/"
+            className="justify-self-center font-display text-sm italic uppercase tracking-[0.3em] text-foreground transition-colors hover:text-gold-bright"
+            aria-label="Razzaq Luxe — home"
+          >
+            Razzaq Luxe
+          </Link>
+
+          {/* Right column — utility actions */}
+          <div className="flex min-w-0 items-center justify-end gap-1 sm:gap-2 lg:justify-start lg:pl-6">
             <Button
               variant="ghost"
               size="icon"
