@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu,
@@ -33,6 +33,14 @@ const nav = [
   { href: "/journal", label: "Journal" },
   { href: "/contact", label: "Contact" },
 ];
+
+function NavPillDivider() {
+  return <div className="nav-pill-divider" aria-hidden />;
+}
+
+function isNavActive(pathname: string | null, href: string) {
+  return pathname === href || (pathname?.startsWith(href + "/") ?? false);
+}
 
 export function SiteHeader() {
   const { status, user } = useSession();
@@ -72,15 +80,15 @@ export function SiteHeader() {
       >
         <div
           className={cn(
-            "site-nav-bar pointer-events-auto grid grid-cols-[1fr_auto_1fr] items-center px-5 sm:px-6",
+            "site-nav-bar pointer-events-auto",
             scrolled && "scrolled",
           )}
         >
-          {/* Left column — primary nav (desktop) / hamburger (mobile) */}
-          <div className="flex min-w-0 items-center justify-start lg:justify-end lg:gap-8 lg:pr-6">
+          {/* Mobile — hamburger, logo, compact actions */}
+          <div className="flex w-full items-center justify-between lg:hidden">
             <button
               type="button"
-              className="p-2 text-text-secondary transition-colors hover:text-gold-bright lg:hidden"
+              className="p-2 text-text-secondary transition-colors hover:text-gold-bright"
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav"
               onClick={() => setMobileOpen(true)}
@@ -88,66 +96,119 @@ export function SiteHeader() {
               <Menu className="h-5 w-5" aria-hidden />
               <span className="sr-only">Open menu</span>
             </button>
-            <nav className="hidden items-center gap-6 xl:gap-8 lg:flex" aria-label="Main">
-              {nav.map((item) => (
+            <Link
+              href="/"
+              className="font-display text-sm italic uppercase tracking-[0.3em] text-foreground transition-colors hover:text-gold-bright"
+              aria-label="Razzaq Luxe — home"
+            >
+              Razzaq Luxe
+            </Link>
+            <div className="flex items-center gap-0.5">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 text-text-secondary hover:text-gold-bright"
+                aria-label="Search"
+                onClick={() => setSearchOpen(true)}
+              >
+                <Search className="h-[18px] w-[18px]" />
+              </Button>
+              <Button
+                id="cart-fly-anchor"
+                data-cart-fly-anchor
+                variant="ghost"
+                size="icon"
+                className="relative h-10 w-10 text-text-secondary hover:text-gold-bright"
+                aria-label={`Cart${itemCount ? `, ${itemCount} items` : ""}`}
+                onClick={() => setCartOpen(true)}
+              >
+                <ShoppingCart className="h-[18px] w-[18px]" />
+                {itemCount > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center bg-gold-warm px-0.5 text-[10px] font-medium text-noir">
+                    {itemCount > 99 ? "99+" : itemCount}
+                  </span>
+                )}
+              </Button>
+            </div>
+          </div>
+
+          {/* Desktop — unified segmented pill */}
+          <nav
+            className="site-nav-pill hidden lg:flex"
+            aria-label="Main"
+          >
+            {nav.map((item, index) => (
+              <Fragment key={item.href}>
+                {index > 0 && <NavPillDivider />}
                 <Link
-                  key={item.href}
                   href={item.href}
                   className={cn(
-                    "whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.18em] transition-colors hover:text-gold-bright",
-                    pathname === item.href || pathname.startsWith(item.href + "/")
-                      ? "text-gold-bright"
-                      : "text-text-secondary",
+                    "nav-pill-segment nav-pill-link",
+                    isNavActive(pathname, item.href) && "nav-pill-link-active",
                   )}
                 >
                   {item.label}
                 </Link>
-              ))}
-            </nav>
-          </div>
+              </Fragment>
+            ))}
 
-          {/* Center column — logo always dead center */}
-          <Link
-            href="/"
-            className="justify-self-center font-display text-sm italic uppercase tracking-[0.3em] text-foreground transition-colors hover:text-gold-bright"
-            aria-label="Razzaq Luxe — home"
-          >
-            Razzaq Luxe
-          </Link>
+            <NavPillDivider />
 
-          {/* Right column — utility actions */}
-          <div className="flex min-w-0 items-center justify-end gap-1 sm:gap-2 lg:justify-start lg:pl-6">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-text-secondary hover:text-gold-bright"
-              aria-label="Search"
-              onClick={() => setSearchOpen(true)}
+            <Link
+              href="/"
+              className="nav-pill-segment nav-pill-brand"
+              aria-label="Razzaq Luxe — home"
             >
-              <Search className="h-[18px] w-[18px]" />
-            </Button>
-            <Button variant="ghost" size="icon" className="text-text-secondary hover:text-gold-bright" asChild>
-              <Link href="/wishlist" aria-label="Wishlist">
-                <Heart className="h-[18px] w-[18px]" aria-hidden />
-              </Link>
-            </Button>
-            <HeaderAccountDropdown />
-            <Button
-              id="cart-fly-anchor"
-              variant="ghost"
-              size="icon"
-              className="relative text-text-secondary hover:text-gold-bright"
+              Razzaq Luxe
+            </Link>
+
+            <NavPillDivider />
+
+            <div className="nav-pill-segment nav-pill-icon-segment">
+              <button
+                type="button"
+                className="p-1 transition-colors"
+                aria-label="Search"
+                onClick={() => setSearchOpen(true)}
+              >
+                <Search className="h-[18px] w-[18px]" aria-hidden />
+              </button>
+            </div>
+
+            <NavPillDivider />
+
+            <Link
+              href="/wishlist"
+              className="nav-pill-segment nav-pill-icon-segment"
+              aria-label="Wishlist"
+            >
+              <Heart className="h-[18px] w-[18px]" aria-hidden />
+            </Link>
+
+            <NavPillDivider />
+
+            <div className="nav-pill-segment nav-pill-icon-segment [&_button]:h-auto [&_button]:min-h-0 [&_button]:w-auto [&_button]:p-1 [&_button]:text-inherit [&_button]:hover:bg-transparent [&_button]:hover:text-inherit">
+              <HeaderAccountDropdown />
+            </div>
+
+            <NavPillDivider />
+
+            <button
+              id="cart-fly-anchor-desktop"
+              data-cart-fly-anchor
+              type="button"
+              className="nav-pill-segment nav-pill-cta relative"
               aria-label={`Cart${itemCount ? `, ${itemCount} items` : ""}`}
               onClick={() => setCartOpen(true)}
             >
-              <ShoppingCart className="h-[18px] w-[18px]" />
+              <ShoppingCart className="h-[18px] w-[18px]" aria-hidden />
               {itemCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center bg-gold-warm px-0.5 text-[10px] font-medium text-noir">
+                <span className="absolute right-1.5 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-noir px-0.5 text-[9px] font-semibold text-cream">
                   {itemCount > 99 ? "99+" : itemCount}
                 </span>
               )}
-            </Button>
-          </div>
+            </button>
+          </nav>
         </div>
       </header>
 

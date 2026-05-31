@@ -16,6 +16,16 @@ const FlyContext = createContext<(imageUrl: string, source: HTMLElement | null) 
   () => {},
 );
 
+function getCartFlyAnchor(): HTMLElement | null {
+  if (typeof document === "undefined") return null;
+  const anchors = document.querySelectorAll<HTMLElement>("[data-cart-fly-anchor]");
+  for (const el of anchors) {
+    const rect = el.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) return el;
+  }
+  return null;
+}
+
 export function FlyToCartProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const [fly, setFly] = useState<FlyPayload | null>(null);
@@ -24,7 +34,7 @@ export function FlyToCartProvider({ children }: { children: React.ReactNode }) {
 
   const runFly = useCallback((imageUrl: string, source: HTMLElement | null) => {
     if (!source || typeof window === "undefined") return;
-    const anchor = document.getElementById("cart-fly-anchor");
+    const anchor = getCartFlyAnchor();
     if (!anchor) return;
     setFly({ imageUrl, startRect: source.getBoundingClientRect() });
   }, []);
@@ -52,7 +62,7 @@ function FlyingThumb({
   fly: FlyPayload;
   onDone: () => void;
 }) {
-  const anchor = typeof document !== "undefined" ? document.getElementById("cart-fly-anchor") : null;
+  const anchor = getCartFlyAnchor();
   const fr = fly.startRect;
   const tr = anchor?.getBoundingClientRect();
   const startCx = fr.left + fr.width / 2;
