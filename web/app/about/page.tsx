@@ -79,7 +79,7 @@ export default function AboutPage() {
           <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-noir-surface">
             <Image
               src="/images/areeb.png"
-              alt="Razzaq Luxe founder"
+              alt="Illustration of diverse hands holding Razzaq Luxe fragrance bottles"
               fill
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 480px"
