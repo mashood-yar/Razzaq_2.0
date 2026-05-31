@@ -78,6 +78,7 @@ function HeaderIconActions({
       <HeaderAccountDropdown />
       <Button
         id="cart-fly-anchor"
+        data-cart-fly-anchor
         variant="ghost"
         size="icon"
         className="relative text-text-secondary hover:text-gold-bright"
@@ -289,6 +290,7 @@ export function SiteHeader() {
                   </Link>
                 </Button>
                 <Button
+                  data-cart-fly-anchor
                   variant="ghost"
                   size="icon"
                   className="relative text-text-secondary hover:text-gold-bright"
